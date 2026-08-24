@@ -3,7 +3,7 @@ import { A, useMatch } from "solid-navigator";
 import { createSignal, For, JSXElement, onMount, Show } from "solid-js";
 import useStore from "@/chat-api/store/useStore";
 
-import settings from "@/common/Settings";
+import settings, { Setting, settingGroups } from "@/common/Settings";
 import ItemContainer from "@/components/ui/LegacyItem";
 import { css, styled } from "solid-styled-components";
 import Text from "@/components/ui/Text";
@@ -56,6 +56,21 @@ const SettingItemContainer = styled(ItemContainer)<{ nested?: boolean }>`
 
   &:hover .label {
     opacity: 1;
+  }
+`;
+
+const GroupLabel = styled("div")`
+  padding: 12px 10px 4px;
+  margin-left: 3px;
+  color: var(--content-color-dim60);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  user-select: none;
+
+  &:first-child {
+    padding-top: 4px;
   }
 `;
 
@@ -161,30 +176,61 @@ export default function SettingsDrawer() {
 }
 
 function SettingsList() {
-  const { tickets } = useStore();
-  const [t] = useTransContext();
+  const visible = () => settings.filter((setting) => !setting.hide);
+
+  const grouped = () =>
+    settingGroups
+      .map((group) => ({
+        label: group.name(),
+        items: visible().filter((setting) => setting.group === group.id)
+      }))
+      .filter((group) => group.items.length);
+
+  // Rede de seguranca: uma tela visivel que nao caiu em nenhum grupo continua
+  // acessivel no fim da lista em vez de desaparecer do drawer.
+  const ungrouped = () =>
+    visible().filter(
+      (setting) =>
+        !settingGroups.some((group) => group.id === setting.group)
+    );
+
   return (
     <SettingsListContainer>
-      <For each={settings.filter((setting) => !setting.hide)}>
-        {(setting) => (
-          <ShowExperiment id={setting.experimentId}>
-            <Item
-              path={setting.path || "#  "}
-              icon={setting.icon}
-              label={setting.name()}
-            >
-              <Show
-                when={
-                  setting.path === "tickets" && tickets.hasTicketNotification()
-                }
-              >
-                <NotificationCircle />
-              </Show>
-            </Item>
-          </ShowExperiment>
+      <For each={grouped()}>
+        {(group) => (
+          <>
+            <GroupLabel>{group.label}</GroupLabel>
+            <For each={group.items}>
+              {(setting) => <SettingLink setting={setting} />}
+            </For>
+          </>
         )}
       </For>
+      <For each={ungrouped()}>
+        {(setting) => <SettingLink setting={setting} />}
+      </For>
     </SettingsListContainer>
+  );
+}
+
+function SettingLink(props: { setting: Setting }) {
+  const { tickets } = useStore();
+  return (
+    <ShowExperiment id={props.setting.experimentId}>
+      <Item
+        path={props.setting.path || "#  "}
+        icon={props.setting.icon}
+        label={props.setting.name()}
+      >
+        <Show
+          when={
+            props.setting.path === "tickets" && tickets.hasTicketNotification()
+          }
+        >
+          <NotificationCircle />
+        </Show>
+      </Item>
+    </ShowExperiment>
   );
 }
 

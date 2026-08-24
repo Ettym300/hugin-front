@@ -21,7 +21,9 @@ body {
   --bottom-pane-gap: 70px;
   --app-gap: 8px;
   --panel-radius: 18px;
-  --panel-border: 1px solid rgba(255, 255, 255, 0.055);
+  /* O fallback cobre o primeiro paint, antes de o tema ser aplicado no
+     documento pelo JS. */
+  --panel-border: 1px solid var(--panel-border-color, rgba(255, 255, 255, 0.055));
   --panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 

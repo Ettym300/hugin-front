@@ -378,6 +378,12 @@
     "settings": {
         "drawer": {
             "title": "Configurações",
+            "groups": {
+                "account": "Conta",
+                "app": "Aplicativo",
+                "voice": "Voz e vídeo",
+                "advanced": "Avançado"
+            },
             "account": "Conta",
             "interface": "Interface",
             "language": "Idioma",
@@ -546,15 +552,22 @@
             "inputSensitivityClosed": "Abaixo do limite",
             "inputVolume": "Volume de entrada",
             "inputVolumeDescription": "Aumenta ou diminui o microfone enviado nas chamadas. 100% é o nível original. Se o volume parecer travado, desative o controle automático de ganho.",
+            "outputVolume": "Volume de saída",
+            "outputVolumeDescription": "Aumenta ou diminui o áudio que você ouve nas chamadas. 100% é o nível original. Acima de 100% pode distorcer.",
             "bindButton": "Configurar",
             "leaveCall": "Você deve sair da chamada primeiro",
             "inputConstraints": {
                 "echoCancelation": "Cancelamento de eco",
                 "echoCancelationDescription": "Impede que o microfone capte o som dos alto-falantes.",
                 "noiseSuppression": "Supressão de ruído",
-                "noiseSuppressionDescription": "Remove ruído de fundo (teclado, ventilador, ambiente) para os outros ouvirem principalmente a sua voz.",
+                "noiseSuppressionDescription": "Remove ruído de fundo. O modo aprimorado usa RNNoise com compressor para voz mais limpa.",
                 "autoGainControl": "Controle automático de ganho",
                 "autoGainControlDescription": "Ajusta automaticamente os níveis de volume para manter um sinal estável. Pode atrapalhar o volume de entrada manual."
+            },
+            "noiseModes": {
+                "disabled": "Desativado",
+                "browser": "Navegador",
+                "enhanced": "Aprimorado (RNNoise)"
             },
             "useTurn": "Use os servidores TURN da Cloudflare",
             "useTurnDescription": "Use servidores TURN para obter uma melhor conectividade",
@@ -731,6 +744,7 @@
         "changeNickname": "Alterar apelido",
         "callVolume": "Volume da chamada",
         "userVolume": "Volume do usuário",
+        "liveVolume": "Volume da live",
         "transferOwnership": "Transferir propriedade"
     },
     "kickServerMemberModal": {
@@ -1265,6 +1279,9 @@
             "watchLive": "Assistir",
             "stopWatchingLive": "Ocultar esta live",
             "hiddenLives": "Lives ocultas",
+            "theaterMode": "Modo teatro",
+            "noLiveSelected": "Nenhuma live selecionada",
+            "noLiveSelectedHint": "Escolha abaixo quem você quer assistir",
             "webcamModal": {
                 "title": "Compartilhamento de webcam",
                 "error": "Não foi possível compartilhar a câmera",
@@ -1273,15 +1290,27 @@
             "screenShareModal": {
                 "title": "Compartilhamento de tela",
                 "quality": "Qualidade",
+                "videoQuality": "Qualidade de vídeo",
                 "framerate": "Taxa de quadros",
+                "sourceQuality": "Origem",
+                "shareAudio": "Compartilhar áudio",
                 "shareSystemAudio": "Compartilhar áudio do sistema",
                 "shareAppAudio": "Compartilhar áudio do aplicativo",
+                "startSharing": "Iniciar compartilhamento",
+                "preventEcho": "Evitar eco do aplicativo",
+                "screenSource": "Tela",
+                "windowSource": "Janela",
                 "chooseWindowButton": "Selecionar janela",
                 "bitrate": "Bitrate",
                 "bitrateHint": "Digite um valor em Mbps (0,25 a 8).",
+                "bitrateSfuHint": "Limite do servidor: até {{max}} Mbps (protege a banda do SFU).",
                 "bitrateHeavyGameHint": "Modo jogo pesado limita a live a {{max}} Mbps.",
                 "heavyGameMode": "Modo jogo pesado",
                 "heavyGameModeDescription": "Usa o encoder de hardware (H.264) e limita a 720p/30fps, para a live quase não roubar desempenho do jogo. Prefira só a janela do jogo.",
+                "sfuQualityHint": "1080p e 60fps ficam desativados no servidor SFU para não estourar a banda.",
+                "preset480": "Economiza banda — bom pra conexão mais fraca.",
+                "preset720": "Equilíbrio entre qualidade e uso do servidor.",
+                "preset1080": "Máxima qualidade — usa mais banda.",
                 "changeTitle": "Trocar tela da live"
             },
             "liveControls": {

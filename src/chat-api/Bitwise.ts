@@ -14,7 +14,6 @@ const USER_BADGE_BITS = {
   ADMIN: 2,
   CONTRIBUTOR: 4,
   SUPPORTER: 8,
-  PALESTINE: 16,
   BOT: 32,
   MOD: 64,
   EMO_SUPPORTER: 128,
@@ -292,21 +291,6 @@ export const USER_BADGES = {
     color: "#ffffff",
     type: "earned",
     icon: "crowdsource"
-  },
-
-  PALESTINE: {
-    name: () => t("badges.palestine.name"),
-    description: () =>
-      "[Click to help](https://arab.org/click-to-help/palestine/)",
-    bit: USER_BADGE_BITS.PALESTINE,
-    color: "linear-gradient(90deg, red, white, green)",
-    credit: () =>
-      t("badges.credit.avatarBorderEdited", {
-        author: "upklyak",
-        platform: "Freepik",
-        editor: "Supertiger"
-      }),
-    icon: "volunteer_activism"
   },
 
   BOT: {

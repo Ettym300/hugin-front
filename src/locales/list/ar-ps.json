@@ -7,7 +7,7 @@
     },
     "homePage": {
         "slogan": "تطبيق محادثة عصري وأنيق.",
-        "subslogan": "‫تقدم Nerimity تجربة أنيقة وغنية بالمميزات تميزها عن غيرها.‬",
+        "subslogan": "‫تقدم HUGIN تجربة أنيقة وغنية بالمميزات تميزها عن غيرها.‬",
         "viewGitHubButton": "‫عرض GitHub‬",
         "getStarted": "ابدأ الآن",
         "availableOn": "متاح على",
@@ -128,7 +128,7 @@
         "bots": {
             "title": "استكشف - البوتات",
             "noticeMessage": "يمكن الترويج للبوت مرة واحدة كل {{hours}} ساعة. جميع الترويجات تُعاد تعيينها كل {{date}}.",
-            "moderationNotice": "البوتات لا يتم الإشراف عليها من قبل Nerimity. المرجو الإبلاغ عن أي بوتات خبيثة أو منتهكة ل TOS.",
+            "moderationNotice": "البوتات لا يتم الإشراف عليها من قبل HUGIN. المرجو الإبلاغ عن أي بوتات خبيثة أو منتهكة ل TOS.",
             "inviteButton": "ادعو",
             "serverCount": "في {{count}} من السيرفرات"
         },
@@ -146,14 +146,14 @@
             "visitServerButton": "زيارة",
             "joinServerButton": "انضم",
             "bumpButton": "ترويج ({{count}})",
-            "moderationNotice": "السيرفرات لا يتم الإشراف عليها من قبل Nerimity. المرجوا الإبلاغ عن السيرفرات المنتهكة ل TOS.",
+            "moderationNotice": "السيرفرات لا يتم الإشراف عليها من قبل HUGIN. المرجوا الإبلاغ عن السيرفرات المنتهكة ل TOS.",
             "sortMostActive": "الأكثر نشاطا (تجريبي)",
             "pinnedServers": "السيرفرات المثبتة",
             "recentlyBumped": "السيرفرات المروجة مؤخرا"
         },
         "themes": {
             "title": "اكتشف - القوالب",
-            "themesHeaderDescription": "قم بتشخيص Nerimity بقوالب مخصصة.",
+            "themesHeaderDescription": "قم بتشخيص HUGIN بقوالب مخصصة.",
             "officialThemes": "قوالب رسمية",
             "communityThemes": "قوالب المجتمع",
             "noCommunityThemes": "لم يتم العثور على أي من قوالب المجتمع.",
@@ -383,7 +383,7 @@
             "deleteAccountDescription": "لا يمكن التراجع عن هذا!",
             "deleteAccountNotice": "يجب أن تغادر/تحذف جميع السيرفرات قبل أن تتمكن من حذف حسابك.",
             "understoodButton": "مفهوم",
-            "deletionNotice": "‫نحن حزينون لرؤيتك تذهب :( إذا لم يعجبك شيء، يرجى إعلامنا في سيرفر Nerimity الرسمي.‬",
+            "deletionNotice": "‫نحن حزينون لرؤيتك تذهب :( إذا لم يعجبك شيء، يرجى إعلامنا في سيرفر HUGIN الرسمي.‬",
             "deletedInfo": {
                 "title": "ما سيتم حذفه",
                 "email": "• البريد الإلكتروني",
@@ -450,7 +450,7 @@
             "pushToTalk": "اضغط للتحدث",
             "bindButton": "ربط",
             "stopButton": "إيقاف",
-            "downloadAppNotice": "‫حمّل تطبيق Nerimity لسطح المكتب لاستخدام هذه الميزة بدون تركيز نافذة المتصفح.‬"
+            "downloadAppNotice": "‫حمّل تطبيق HUGIN لسطح المكتب لاستخدام هذه الميزة بدون تركيز نافذة المتصفح.‬"
         },
         "interface": {
             "customCSS": "‫CSS مخصص‬",
@@ -470,11 +470,11 @@
             "customizeColorsDescription": "تعديل ألوان السمة الحالية."
         },
         "window": {
-            "downloadAppNotice": "‫لتعديل هذه الإعدادات، يجب عليك تحميل تطبيق Nerimity لسطح المكتب.‬",
+            "downloadAppNotice": "‫لتعديل هذه الإعدادات، يجب عليك تحميل تطبيق HUGIN لسطح المكتب.‬",
             "startupOptions": "خيارات بدء التشغيل",
-            "openOnStartup": "‫فتح Nerimity عند بدء التشغيل‬",
+            "openOnStartup": "‫فتح HUGIN عند بدء التشغيل‬",
             "startMinimized": "بدء التشغيل مصغّراً",
-            "startMinimizedDescription": "‫تصغير Nerimity إلى شريط المهام تلقائياً.‬",
+            "startMinimizedDescription": "‫تصغير HUGIN إلى شريط المهام تلقائياً.‬",
             "disableHardwareAcceleration": "‫تعطيل Hardware Acceleration‬",
             "disableCustomTitlebar": "تعطيل شريط العنوان المخصص",
             "reopenAppNotice": "يجب عليك إعادة فتح التطبيق لتطبيق التغيير."
@@ -693,15 +693,15 @@
         "by": "من طرف",
         "deletionNotice": "حسابك ومعلوماتك سيتم خذفها خلال 15 يوما",
         "ipBanned": "تم حظر IP الخاص بك.",
-        "ipBanNotice": "تم توقبف شخص بنفس IP من Nerimity. حسابك لم يتأثر.",
+        "ipBanNotice": "تم توقبف شخص بنفس IP من HUGIN. حسابك لم يتأثر.",
         "defaultReason": "انتهاك شروط الخدمة"
     },
     "welcomePopup": {
-        "subtitle": "نشكرك على تجربة Nerimity!",
-        "joinServer": "انضم إلى سيرفر Nerimity الرسمي",
+        "subtitle": "نشكرك على تجربة HUGIN!",
+        "joinServer": "انضم إلى سيرفر HUGIN الرسمي",
         "editProfile": "تعديل الملف الشخصي",
         "support": "ادعمي في {{platform}}",
-        "contribute": "ساهم في Nerimity على GitHub"
+        "contribute": "ساهم في HUGIN على GitHub"
     },
     "status": {
         "online": "متصل",

@@ -73,13 +73,13 @@
         "by": "Av",
         "deletionNotice": "Ditt konto och dina uppgifter kommer att raderas om 15 dagar",
         "ipBanned": "Din IP-adress är bannad.",
-        "ipBanNotice": "Någon med samma IP-address har stängts av från Nerimity. Ditt konto påverkas inte.",
+        "ipBanNotice": "Någon med samma IP-address har stängts av från HUGIN. Ditt konto påverkas inte.",
         "title": "Anslutningsfel",
         "ok": "OK"
     },
     "homePage": {
         "slogan": "En modern och elegant chattapp.",
-        "subslogan": "Nerimity erbjuder en elegant och funktionsrik upplevelse som skiljer sig från mängden.",
+        "subslogan": "HUGIN erbjuder en elegant och funktionsrik upplevelse som skiljer sig från mängden.",
         "viewGitHubButton": "Visa på GitHub",
         "getStarted": "Kom igång",
         "availableOn": "Tillgänglig på",
@@ -246,13 +246,13 @@
         "bots": {
             "title": "Utforska - Bottar",
             "noticeMessage": "En bot kan bli bumpad en gång var {{hours}} timme. Alla bumpar återställs var {{date}}.",
-            "moderationNotice": "Bottar modereras inte av Nerimity. Vänligen rapportera bottar som är elakartade eller bryter mot användarvillkoren.",
+            "moderationNotice": "Bottar modereras inte av HUGIN. Vänligen rapportera bottar som är elakartade eller bryter mot användarvillkoren.",
             "inviteButton": "Bjud in",
             "serverCount": "I {{count}} servrar"
         },
         "themes": {
             "title": "Utforska - Teman",
-            "themesHeaderDescription": "Personalisera Nerimity med ett eget tema.",
+            "themesHeaderDescription": "Personalisera HUGIN med ett eget tema.",
             "officialThemes": "Officiella Teman",
             "communityThemes": "Community Teman",
             "noCommunityThemes": "Inga community teman hittades.",
@@ -262,7 +262,7 @@
         "servers": {
             "title": "Utforska - Servrar",
             "noticeMessage": "En server kan bli bumpad en gång per {{hours}} timme. Alla bumpar nollställs var {{date}}.",
-            "moderationNotice": "Servrar modereras inte av Nerimity. Anmäl servrar som bryter mot Användarvillkoren, tack.",
+            "moderationNotice": "Servrar modereras inte av HUGIN. Anmäl servrar som bryter mot Användarvillkoren, tack.",
             "sortMostBumps": "Mest Bumpar",
             "sortMostMembers": "Mest Medlemmar",
             "sortRecentlyAdded": "Nyligen tillagda",
@@ -538,7 +538,7 @@
         "language": {
             "reloadNotice": "Starta om appen för att applicera översättningen helt.",
             "reloadButton": "Ladda om",
-            "searchNotice": "Översättningar överses av Nerimitys användare. Var snäll och rapportera felaktiga eller olämpliga översättningar till Nerimity.",
+            "searchNotice": "Översättningar överses av HUGINs användare. Var snäll och rapportera felaktiga eller olämpliga översättningar till HUGIN.",
             "contributors": "De som bidrar"
         },
         "header": {
@@ -607,11 +607,11 @@
         }
     },
     "welcomePopup": {
-        "subtitle": "Tack för att du provar på Nerimity!",
-        "joinServer": "Gå med i den officiella Nerimity servern",
+        "subtitle": "Tack för att du provar på HUGIN!",
+        "joinServer": "Gå med i den officiella HUGIN servern",
         "editProfile": "Redigera min profil",
         "support": "Stötta mig på {{platform}}",
-        "contribute": "Bidra till Nerimity på GitHub"
+        "contribute": "Bidra till HUGIN på GitHub"
     },
     "dropDown": {
         "selectItem": "Markera Objekt",

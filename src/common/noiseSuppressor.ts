@@ -1,16 +1,10 @@
-import {
-  GtcrnWorkletNode,
-  RnnoiseWorkletNode,
-  loadGtcrn,
-  loadRnnoise
-} from "@sapphi-red/web-noise-suppressor";
-import gtcrnWorkletPath from "@sapphi-red/web-noise-suppressor/gtcrnWorklet.js?url";
-import gtcrnWasmPath from "@sapphi-red/web-noise-suppressor/gtcrn.wasm?url";
+import { RnnoiseWorkletNode, loadRnnoise } from "@sapphi-red/web-noise-suppressor";
 import rnnoiseWorkletPath from "@sapphi-red/web-noise-suppressor/rnnoiseWorklet.js?url";
 import rnnoiseWasmPath from "@sapphi-red/web-noise-suppressor/rnnoise.wasm?url";
 import rnnoiseSimdWasmPath from "@sapphi-red/web-noise-suppressor/rnnoise_simd.wasm?url";
 import { log } from "@/common/logger";
 import { getStorageObject, StorageKeys } from "@/common/localStorage";
+import type { NoiseSuppressionMode } from "@/common/voiceAudioSettings";
 
 export type WrappedMic = {
   stream: MediaStream;
@@ -25,16 +19,8 @@ export function getMicGainLinear() {
   return Math.max(0, Math.min(2, percent / 100));
 }
 
-let gtcrnWasm: ArrayBuffer | null = null;
 let rnnoiseWasm: ArrayBuffer | null = null;
 let preloadPromise: Promise<void> | null = null;
-
-async function loadGtcrnWasm() {
-  if (!gtcrnWasm) {
-    gtcrnWasm = await loadGtcrn({ url: gtcrnWasmPath });
-  }
-  return gtcrnWasm;
-}
 
 async function loadRnnoiseWasm() {
   if (!rnnoiseWasm) {
@@ -48,7 +34,7 @@ async function loadRnnoiseWasm() {
 
 export function preloadNoiseSuppressor() {
   if (!preloadPromise) {
-    preloadPromise = Promise.all([loadGtcrnWasm(), loadRnnoiseWasm()])
+    preloadPromise = loadRnnoiseWasm()
       .then(() => undefined)
       .catch((err) => {
         preloadPromise = null;
@@ -56,6 +42,24 @@ export function preloadNoiseSuppressor() {
       });
   }
   return preloadPromise;
+}
+
+function createStoatHighpass(ctx: AudioContext) {
+  const highpass = ctx.createBiquadFilter();
+  highpass.type = "highpass";
+  highpass.frequency.value = 50;
+  highpass.Q.value = Math.SQRT1_2;
+  return highpass;
+}
+
+function createStoatCompressor(ctx: AudioContext) {
+  const compressor = ctx.createDynamicsCompressor();
+  compressor.threshold.value = -3;
+  compressor.knee.value = 0;
+  compressor.ratio.value = 20;
+  compressor.attack.value = 0.003;
+  compressor.release.value = 0.05;
+  return compressor;
 }
 
 function createAudioContext() {
@@ -199,20 +203,21 @@ async function tryBrowserNoiseSuppression(input: MediaStream) {
   }
 }
 
-async function wrapWithNode(
-  input: MediaStream,
-  createNode: (
-    ctx: AudioContext
-  ) => Promise<{ node: AudioWorkletNode; destroy: () => void }>,
-  allowedRates: number[] = [48000, 16000]
-): Promise<WrappedMic> {
+async function wrapWithStoatVoice(input: MediaStream) {
+  const wasmBinary = await loadRnnoiseWasm();
   const ctx = createAudioContext();
   try {
-    if (!allowedRates.includes(ctx.sampleRate)) {
+    if (ctx.sampleRate !== 48000) {
       throw new Error(`Unsupported sample rate: ${ctx.sampleRate}`);
     }
     await ctx.resume();
-    const { node, destroy } = await createNode(ctx);
+    await ctx.audioWorklet.addModule(rnnoiseWorkletPath);
+    const rnnoise = new RnnoiseWorkletNode(ctx, {
+      wasmBinary,
+      maxChannels: 1
+    });
+    const highpass = createStoatHighpass(ctx);
+    const compressor = createStoatCompressor(ctx);
     const source = ctx.createMediaStreamSource(input);
     const dest = ctx.createMediaStreamDestination();
     dest.channelCount = 2;
@@ -223,14 +228,14 @@ async function wrapWithNode(
     gain.gain.value = getMicGainLinear();
     const keepAlive = ctx.createGain();
     keepAlive.gain.value = 0;
-    source.connect(node);
-    // Worklet output is mono; HTMLAudio/WebRTC otherwise plays it only on the left.
-    node.connect(merger, 0, 0);
-    node.connect(merger, 0, 1);
+
+    source.connect(highpass);
+    highpass.connect(rnnoise);
+    rnnoise.connect(compressor);
+    compressor.connect(merger, 0, 0);
+    compressor.connect(merger, 0, 1);
     merger.connect(gain);
     gain.connect(dest);
-    // Chrome will not send MediaStreamDestination tracks over WebRTC unless the
-    // graph also runs to the context destination and the track is locally consumed.
     gain.connect(keepAlive);
     keepAlive.connect(ctx.destination);
 
@@ -241,7 +246,7 @@ async function wrapWithNode(
     try {
       await pump.play();
     } catch {
-      // autoplay can fail; unmute wait below still helps
+      // autoplay can fail
     }
 
     const processedTrack = dest.stream.getAudioTracks()[0];
@@ -265,7 +270,7 @@ async function wrapWithNode(
     return {
       stream: webRtc.stream,
       originalStream: input,
-      setGain: (linear) => {
+      setGain: (linear: number) => {
         gain.gain.value = linear;
       },
       dispose: () => {
@@ -274,13 +279,15 @@ async function wrapWithNode(
         pump.srcObject = null;
         dest.stream.getTracks().forEach((track) => track.stop());
         try {
-          destroy();
+          rnnoise.destroy();
         } catch {
           // already torn down
         }
         try {
           source.disconnect();
-          node.disconnect();
+          highpass.disconnect();
+          rnnoise.disconnect();
+          compressor.disconnect();
           merger.disconnect();
           gain.disconnect();
           keepAlive.disconnect();
@@ -297,54 +304,28 @@ async function wrapWithNode(
   }
 }
 
-async function wrapWithGtcrn(input: MediaStream) {
-  const wasmBinary = await loadGtcrnWasm();
-  return wrapWithNode(input, async (ctx) => {
-    await ctx.audioWorklet.addModule(gtcrnWorkletPath);
-    const node = new GtcrnWorkletNode(ctx, {
-      wasmBinary,
-      maxChannels: 1
-    });
-    return { node, destroy: () => node.destroy() };
-  });
-}
-
-async function wrapWithRnnoise(input: MediaStream) {
-  const wasmBinary = await loadRnnoiseWasm();
-  return wrapWithNode(input, async (ctx) => {
-    await ctx.audioWorklet.addModule(rnnoiseWorkletPath);
-    const node = new RnnoiseWorkletNode(ctx, {
-      wasmBinary,
-      maxChannels: 1
-    });
-    return { node, destroy: () => node.destroy() };
-  }, [48000]);
-}
-
 export async function wrapMicWithNoiseSuppression(
   input: MediaStream,
-  enabled: boolean
+  mode: NoiseSuppressionMode
 ): Promise<WrappedMic> {
-  if (!enabled) return wrapWithGainOnly(input);
+  if (mode === "disabled") return wrapWithGainOnly(input);
+
+  if (mode === "browser") {
+    await tryBrowserNoiseSuppression(input);
+    return wrapWithGainOnly(input);
+  }
 
   try {
-    const wrapped = await wrapWithGtcrn(input);
-    log("RTC", "Using GTCRN noise suppression");
+    const wrapped = await wrapWithStoatVoice(input);
+    log("RTC", "Using enhanced voice processing (RNNoise + compressor)");
     return wrapped;
-  } catch (gtcrnError) {
-    log("RTC", "GTCRN failed, trying RNNoise", gtcrnError);
-    try {
-      const wrapped = await wrapWithRnnoise(input);
-      log("RTC", "Using RNNoise noise suppression");
-      return wrapped;
-    } catch (rnnoiseError) {
-      log(
-        "RTC",
-        "Neural noise suppression failed, using browser filter",
-        rnnoiseError
-      );
-      await tryBrowserNoiseSuppression(input);
-      return wrapWithGainOnly(input);
-    }
+  } catch (enhancedError) {
+    log(
+      "RTC",
+      "Enhanced voice processing failed, using browser filter",
+      enhancedError
+    );
+    await tryBrowserNoiseSuppression(input);
+    return wrapWithGainOnly(input);
   }
 }

@@ -35,7 +35,7 @@
     },
     "homePage": {
         "slogan": "Сучасная й элегантная аплікацыя для памену паведамленьнямі.",
-        "subslogan": "Nerimity прапаноўвае элегантны й насычаны досьвед, які робіць яе асабліваю.",
+        "subslogan": "HUGIN прапаноўвае элегантны й насычаны досьвед, які робіць яе асабліваю.",
         "viewGitHubButton": "Праглядзець на GitHub",
         "getStarted": "Пачнем",
         "availableOn": "Даступная на",
@@ -171,13 +171,13 @@
         "bots": {
             "title": "Дасьледваньне - Боты",
             "noticeMessage": "Бота можна ўсхваліць раз у {{hours}} гадзін. Усе ўсхваленьні скідваюцца кожны {{date}}.",
-            "moderationNotice": "Боты не мадэрыруюцца Nerimity. Калі вы заўважыце шкодных альбо парушаючых умовы карыстаньня ботаў, адпраўце на іх скаргу.",
+            "moderationNotice": "Боты не мадэрыруюцца HUGIN. Калі вы заўважыце шкодных альбо парушаючых умовы карыстаньня ботаў, адпраўце на іх скаргу.",
             "inviteButton": "Запрасіць",
             "serverCount": "На {{count}} сэрвэрох"
         },
         "themes": {
             "title": "Дасьледаваньне - Тэмы",
-            "themesHeaderDescription": "Пэрсаналізуйце Nerimity зь адмысловае тэмаю.",
+            "themesHeaderDescription": "Пэрсаналізуйце HUGIN зь адмысловае тэмаю.",
             "officialThemes": "Афіцыйныя тэмы",
             "communityThemes": "Тэмы супольнасьці",
             "noCommunityThemes": "Тэмаў ад супольнасьці ня знойдзена.",
@@ -187,7 +187,7 @@
         "servers": {
             "title": "Дасьледаваньне - Сэрвэры",
             "noticeMessage": "Сэрвэр можна ўсхваліць раз у {{hours}} гадзін. Усе ўсхваленьні скідваюцца кожны {{date}}.",
-            "moderationNotice": "Сэрвэры не мадэруюцца Nerimity. Калі вы заўважыце сэрвэр, які парушае ўмовы карыстаньня, адпраўце на яго скаргу.",
+            "moderationNotice": "Сэрвэры не мадэруюцца HUGIN. Калі вы заўважыце сэрвэр, які парушае ўмовы карыстаньня, адпраўце на яго скаргу.",
             "sortMostBumps": "Найбольш усхваленьняў",
             "sortMostMembers": "Найбольш удзельнікаў",
             "sortRecentlyAdded": "Нядаўна даданыя",
@@ -490,7 +490,7 @@
             "reloadNotice": "Вы мусіце перазагрузіць аплікацыю каб поўнасьцю ўжыць новую мову.",
             "reloadButton": "Перазагрузіць",
             "contributors": "Удзельнікі",
-            "searchNotice": "Пераклады кіруюцца супольнасьцю. Калі якія-небудзь пераклады няправільныя ці непрыстойныя, паведаміце аб іх Nerimity."
+            "searchNotice": "Пераклады кіруюцца супольнасьцю. Калі якія-небудзь пераклады няправільныя ці непрыстойныя, паведаміце аб іх HUGIN."
         },
         "header": {
             "servers": "сэрвэры",
@@ -524,7 +524,7 @@
             "deleteAccountDescription": "Гэта нельга адрабіць!",
             "deleteAccountNotice": "Вы мусіце выйсьці зь усіх сэрвэраў, альбо выдаліць іх перад выдаленьнем вашага ўліковага запісу.",
             "understoodButton": "Зразумела",
-            "deletionNotice": "Шкада, што вы ад нас уходзіце :( Калі вам штосьці не спадабалася, паведаміце аб гэтым на афіцыйным сэрвэры Nerimity.",
+            "deletionNotice": "Шкада, што вы ад нас уходзіце :( Калі вам штосьці не спадабалася, паведаміце аб гэтым на афіцыйным сэрвэры HUGIN.",
             "deletedInfo": {
                 "title": "Што будзе выдалена",
                 "email": "• Электроная пошта",
@@ -610,7 +610,7 @@
             "pushToTalk": "Па націсканьні",
             "bindButton": "Прывязаць",
             "stopButton": "Спыніць",
-            "downloadAppNotice": "Спампуйце аплікацыю Nerimity на кампутар, каб карыстацца гэтае функцыяй без факусаваньня на ўкладцы.",
+            "downloadAppNotice": "Спампуйце аплікацыю HUGIN на кампутар, каб карыстацца гэтае функцыяй без факусаваньня на ўкладцы.",
             "leaveCall": "Спачатку выйдзіце з выкліку",
             "inputConstraints": {
                 "echoCancelation": "Прыглушэньне водгульля",
@@ -660,18 +660,18 @@
             "reduceAnimationsDescription": "Не прайграваць GIF-відарысы і эмодзі да навядзеньня альбо націсканьня."
         },
         "window": {
-            "downloadAppNotice": "Каб змяніць гэтыя налады, вы мусіце спампаваць аплікацыю Nerimity на кампутар.",
+            "downloadAppNotice": "Каб змяніць гэтыя налады, вы мусіце спампаваць аплікацыю HUGIN на кампутар.",
             "startupOptions": "Налады запуску",
-            "openOnStartup": "Адкрываць Nerimity пры ўключэньні",
+            "openOnStartup": "Адкрываць HUGIN пры ўключэньні",
             "startMinimized": "Запускаць згорнутай",
-            "startMinimizedDescription": "Аўтаматычна згортваць Nerimity.",
+            "startMinimizedDescription": "Аўтаматычна згортваць HUGIN.",
             "disableHardwareAcceleration": "Адключыць апаратнае паскарэньне",
             "disableCustomTitlebar": "Адключыць уласную аблямоўку аплікацыйі",
             "reopenAppNotice": "Вы мусіце перазагрузіць аплікацыю, каб зьмены набылі сілу."
         },
         "activity": {
             "extension": "Пашырэньне для браўзэра",
-            "extensionDescription": "Наша RPC-пашырэньне дазваляе вам абагульваць вашу актыўнасьць у Spotify і YouTube з карыстачамі Nerimity!",
+            "extensionDescription": "Наша RPC-пашырэньне дазваляе вам абагульваць вашу актыўнасьць у Spotify і YouTube з карыстачамі HUGIN!",
             "visitButton": "Наведаць {{store}}",
             "activityStatus": "Статус актыўнасьці",
             "activityStatusDescription": "Абагульце, чым вы займайцеся, са ўсімі",
@@ -683,7 +683,7 @@
                 "emoji": "Эмодзі"
             },
             "discordActivity": "Актыўнасьць Discord",
-            "discordActivityDescription": "Абагульце вашу актыўнасьць з Discord з карыстачамі Nerimity",
+            "discordActivityDescription": "Абагульце вашу актыўнасьць з Discord з карыстачамі HUGIN",
             "idPlaceholder": "ID карыстача Discord",
             "serverModal": {
                 "text": "Далучыцеся да сэрвэра Discord, каб актываваць абагульненьне актыўнасьці.",
@@ -707,7 +707,7 @@
                 "uri": "URI {{count}}",
                 "redirectUri": "Перанакіравальная URI"
             },
-            "applicationsDescription": "Стварайце ботаў для Nerimity.",
+            "applicationsDescription": "Стварайце ботаў для HUGIN.",
             "apiDocumentation": "Дакумэнтацыя API (няпоўная)",
             "addButton": "Дадаць аплікацыю",
             "name": "Назва аплікацыйі",
@@ -770,7 +770,7 @@
             "googleDescription": "Далучэньне вашага ўліковага запісу Google дазволіць вам хутка й лёгка ўваходзіць у свой уліковы запіс праз Google.",
             "linkButton": "Далучыць",
             "unlinkButton": "Адлучыць",
-            "googleDriveDescription": "Калі далучыце свой уліковы запіс Google, вы зможаце запампоўваць файлы ў Nerimity. Файлы будуць захоўвацца на вашым Google Drive.",
+            "googleDriveDescription": "Калі далучыце свой уліковы запіс Google, вы зможаце запампоўваць файлы ў HUGIN. Файлы будуць захоўвацца на вашым Google Drive.",
             "driveWarning": {
                 "title": "Выкарыстаньне вашага асноўнага ўліковага запісу Google для абагульненьня й забесьпячэньня хостынґу далучэньняў не рэкамэндуецца.",
                 "message": "Праз тое, як Google Drive API працуе з мэтаданымі, вашае бачнае ймя й электронны адрас Google часта будуць бачныя ў фонавых даных файлаў, якія вы абагульвайце.\n\nВыкарыстоўвайце альтэрнатыўны ўліковы запіс, калі вы хочаце далей карыстацца йнтэґрацыяй з Google Drive."
@@ -780,7 +780,7 @@
             "noExperiments": "Зараз няма экспэрымэнтаў.",
             "reloadRequired": {
                 "title": "Патрэбная перазагрузка",
-                "body": "Каб ужыць зьмены, трэба перазагрузіць Nerimity.",
+                "body": "Каб ужыць зьмены, трэба перазагрузіць HUGIN.",
                 "restartNow": "Перазагрузіць зараз",
                 "restartLater": "Перазагрузіць пазней"
             }
@@ -1010,10 +1010,10 @@
             "videoModified": "Відэа было зьмененае.",
             "couldNotGetVideo": "Не ўдалося атрымаць відэа.",
             "modifiedOrDeleted": "Гэтае відэа было зьмененае/выдаленае стваральнікам на йх Google Drive.",
-            "googleDrivePolicy": "Праз новую палітыку Google Drive, вы можаце прайграваць відэа толькі ў аплікацыйі Nerimity на камп’ютары."
+            "googleDrivePolicy": "Праз новую палітыку Google Drive, вы можаце прайграваць відэа толькі ў аплікацыйі HUGIN на камп’ютары."
         },
         "audioEmbed": {
-            "googleDrivePolicy": "Праз новую палітыку Google Drive, вы можаце прайграваць аўдыё толькі ў аплікацыйі Nerimity на камп’ютары."
+            "googleDrivePolicy": "Праз новую палітыку Google Drive, вы можаце прайграваць аўдыё толькі ў аплікацыйі HUGIN на камп’ютары."
         }
     },
     "addFriendModal": {
@@ -1107,15 +1107,15 @@
         },
         "founder": {
             "name": "Заснавальнік",
-            "description": "Стваральнік Nerimity"
+            "description": "Стваральнік HUGIN"
         },
         "admin": {
             "name": "Адмін",
-            "description": "Адміністратар Nerimity"
+            "description": "Адміністратар HUGIN"
         },
         "mod": {
             "name": "Мадэратар",
-            "description": "Мадэратар Nerimity"
+            "description": "Мадэратар HUGIN"
         },
         "supporter": {
             "name": "Прыхільнік",
@@ -1205,7 +1205,7 @@
         "by": "Хто",
         "deletionNotice": "Ваш уліковы запіс і дадзеныя будуць выдаленыя праз 15 дзён",
         "ipBanned": "Ваш IP заблякаваны.",
-        "ipBanNotice": "Хтосьці з такім жа IP быў заблякаваны на Nerimity. Ваш запіс не зьмяніўся."
+        "ipBanNotice": "Хтосьці з такім жа IP быў заблякаваны на HUGIN. Ваш запіс не зьмяніўся."
     },
     "mainPaneHeader": {
         "mentions": {
@@ -1252,7 +1252,7 @@
                 "header": "Сартаваць",
                 "member": "Удзельнік",
                 "joined": "Далучыўся",
-                "joinedNerimity": "Далучыўся да Nerimity"
+                "joinedHUGIN": "Далучыўся да HUGIN"
             },
             "order": {
                 "header": "Упарадкаваць",
@@ -1323,11 +1323,11 @@
         "transferring": "Перадаем…"
     },
     "welcomePopup": {
-        "subtitle": "Дзякуй, што паспрабавалі Nerimity!",
-        "joinServer": "Далучыцеся да афіцыйнага сэрвэра Nerimity",
+        "subtitle": "Дзякуй, што паспрабавалі HUGIN!",
+        "joinServer": "Далучыцеся да афіцыйнага сэрвэра HUGIN",
         "editProfile": "Адрэдагуйце ваш профіль",
         "support": "Падтрымайце мяне на {{platform}}",
-        "contribute": "Паўдзельнічайце ў Nerimity на GitHub"
+        "contribute": "Паўдзельнічайце ў HUGIN на GitHub"
     },
     "dropDown": {
         "selectItem": "Абярыце элэмэнт",

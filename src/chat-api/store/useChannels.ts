@@ -233,9 +233,11 @@ async function joinCall(this: Channel, reconnect = false) {
     return;
   }
   const { setCurrentChannelId } = useVoiceUsers();
-  await loadSimplePeer();
-  if (!env.DEV_MODE && getStorageBoolean(StorageKeys.voiceUseTurnServers, true)) {
-    await postGenerateCredential().catch(() => {});
+  if (!env.LIVEKIT_ENABLED) {
+    await loadSimplePeer();
+    if (!env.DEV_MODE && getStorageBoolean(StorageKeys.voiceUseTurnServers, true)) {
+      await postGenerateCredential().catch(() => {});
+    }
   }
   postJoinVoice(this.id, socketClient.id()!).then(() => {
     if (reconnect) return;

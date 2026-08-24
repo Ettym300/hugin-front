@@ -21,6 +21,7 @@ window.__CONCORD_ENV__ = {
   VITE_EMOJI_URL: "$(json_quote "${VITE_EMOJI_URL:-}")",
   VITE_OFFICIAL_SERVER: "$(json_quote "${VITE_OFFICIAL_SERVER:-concord}")",
   VITE_EMAIL_CONFIRMATION_ENABLED: "$(json_quote "${VITE_EMAIL_CONFIRMATION_ENABLED:-false}")",
+  VITE_LIVEKIT_ENABLED: "$(json_quote "${VITE_LIVEKIT_ENABLED:-false}")",
   VITE_BUILD_ID: "$(json_quote "${BUILD_ID}")"
 };
 EOF
@@ -77,6 +78,23 @@ if [ -n "$WS_URL" ]; then
   }"
 fi
 
+LIVEKIT_URL="${LIVEKIT_UPSTREAM%/}"
+LIVEKIT_PROXY=""
+if [ -n "$LIVEKIT_URL" ]; then
+  LIVEKIT_PROXY="  location /livekit/ {
+    proxy_pass ${LIVEKIT_URL}/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade \$http_upgrade;
+    proxy_set_header Connection \"upgrade\";
+    proxy_set_header Host \$host;
+    proxy_set_header X-Real-IP \$remote_addr;
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto \$scheme;
+    proxy_read_timeout 86400;
+    proxy_send_timeout 86400;
+  }"
+fi
+
 cat > /etc/nginx/conf.d/default.conf <<EOF
 server {
   listen 80;
@@ -106,6 +124,8 @@ ${API_PROXY}
 ${CDN_PROXY}
 
 ${WS_PROXY}
+
+${LIVEKIT_PROXY}
 
   location / {
     try_files \$uri \$uri/ /index.html;

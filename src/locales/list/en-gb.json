@@ -571,6 +571,12 @@
   "settings": {
     "drawer": {
       "title": "Settings",
+      "groups": {
+        "account": "Account",
+        "app": "App",
+        "voice": "Voice & Video",
+        "advanced": "Advanced"
+      },
       "account": "Account",
       "interface": "Interface",
       "language": "Language",
@@ -735,6 +741,8 @@
       "inputSensitivityClosed": "Below threshold",
       "inputVolume": "Input Volume",
       "inputVolumeDescription": "Boost or lower the microphone sent in calls. 100% is the original level. Turn off Auto Gain Control if the volume still feels stuck.",
+      "outputVolume": "Output Volume",
+      "outputVolumeDescription": "Boost or lower the audio you hear in calls. 100% is the original level. Above 100% may distort.",
       "leaveCall": "You must leave the call first",
       "inputDevices": "Input Devices",
       "outputDevices": "Output Devices",
@@ -743,9 +751,14 @@
         "echoCancelation": "Echo Cancellation",
         "echoCancelationDescription": "Prevents the microphone from picking up sound from the speakers.",
         "noiseSuppression": "Noise Suppression",
-        "noiseSuppressionDescription": "Removes background noise (keyboard, fan, room) so others mainly hear your voice.",
+        "noiseSuppressionDescription": "Removes background noise. Enhanced mode uses RNNoise with a compressor for cleaner voice.",
         "autoGainControl": "Auto Gain Control",
         "autoGainControlDescription": "Automatically adjusts volume levels to maintain a consistent signal. Can fight the input volume slider."
+      },
+      "noiseModes": {
+        "disabled": "Disabled",
+        "browser": "Browser",
+        "enhanced": "Enhanced (RNNoise)"
       },
       "inputMode": "Input Mode",
       "openMic": "Open Mic",
@@ -986,7 +999,8 @@
         "changeNickname": "Change Nickname",
         "transferOwnership": "Transfer Ownership",
         "callVolume": "Call Volume",
-        "userVolume": "User Volume"
+        "userVolume": "User Volume",
+        "liveVolume": "Live volume"
     },
   "emojiModal": {
     "title": "Emoji",
@@ -1155,6 +1169,9 @@
       "watchLive": "Watch",
       "stopWatchingLive": "Hide this live",
       "hiddenLives": "Hidden lives",
+      "theaterMode": "Theatre mode",
+      "noLiveSelected": "No live selected",
+      "noLiveSelectedHint": "Pick below who you want to watch",
       "fullscreen": "Fullscreen",
       "resizeLive": "Drag to resize live",
       "webcamModal": {
@@ -1165,15 +1182,27 @@
       "screenShareModal": {
         "title": "Screen Share",
         "quality": "Quality",
-        "framerate": "Framerate",
+        "videoQuality": "Video Quality",
+        "framerate": "Frame Rate",
+        "sourceQuality": "Source",
+        "shareAudio": "Share Audio",
         "shareSystemAudio": "Share System Audio",
         "shareAppAudio": "Share App Audio",
+        "startSharing": "Start Sharing",
+        "preventEcho": "Prevent application echo",
+        "screenSource": "Screen",
+        "windowSource": "Window",
         "chooseWindowButton": "Choose Window",
         "bitrate": "Bitrate",
         "bitrateHint": "Type a value in Mbps (0.25 to 8).",
+        "bitrateSfuHint": "Server limit: up to {{max}} Mbps (protects SFU bandwidth).",
         "bitrateHeavyGameHint": "Heavy game mode caps live at {{max}} Mbps.",
         "heavyGameMode": "Heavy game mode",
         "heavyGameModeDescription": "Uses the hardware encoder (H.264) and caps at 720p/30fps so the live barely takes performance from the game. Share the game window only.",
+        "sfuQualityHint": "1080p and 60fps are disabled on the SFU server to protect bandwidth.",
+        "preset480": "Saves bandwidth — better for weaker connections.",
+        "preset720": "Balance between quality and server load.",
+        "preset1080": "Highest quality — uses more bandwidth.",
         "changeTitle": "Change Live Screen"
       },
       "liveControls": {

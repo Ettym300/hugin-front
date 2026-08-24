@@ -1,3 +1,4 @@
+import { APP_NAME } from "@/common/appBrand";
 import Input from "@/components/ui/input/Input";
 import { registerRequest } from "../chat-api/services/UserService";
 import Button from "@/components/ui/Button";
@@ -99,7 +100,7 @@ export default function RegisterPage() {
   const registerClicked = async (event?: SubmitEvent | MouseEvent) => {
     event?.preventDefault();
     event?.stopPropagation();
-    const redirectTo = location.query.redirect || "/app/explore/servers";
+    const redirectTo = location.query.redirect || "/app/explore/themes";
     if (requestSent()) return;
 
     const emailValue = fieldValue(emailInput, email());
@@ -180,7 +181,7 @@ export default function RegisterPage() {
             onSubmit={registerClicked}
           >
             <TitleContainer>
-              {t("registerPage.title", { appName: "Concord" })}
+              {t("registerPage.title", { appName: APP_NAME })}
             </TitleContainer>
             <NoticesContainer gap={5}>
               <span style={{ "margin-bottom": "6px" }}>

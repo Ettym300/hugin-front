@@ -6,7 +6,10 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/Button";
 import { useCustomPortal } from "../ui/custom-portal/CustomPortal";
 import { useWindowProperties } from "@/common/useWindowProperties";
-import { ScreenShareModal, LiveBitratePicker, HeavyGameModePicker } from "./ScreenShareModal";
+import {
+  ScreenShareModal,
+  LiveShareSettingsPicker
+} from "./ScreenShareModal";
 import { WebcamModal } from "./WebcamModal";
 
 const Body = styled("div")`
@@ -43,7 +46,7 @@ export function LiveStreamModal(props: { close: () => void }) {
   };
 
   return (
-    <Modal.Root close={props.close} desktopMaxWidth={520} desktopMinWidth={420}>
+    <Modal.Root close={props.close} desktopMaxWidth={560} desktopMinWidth={420}>
       <Modal.Header
         title={t("mainPaneHeader.voice.liveControls.title")}
         icon="monitor"
@@ -64,8 +67,7 @@ export function LiveStreamModal(props: { close: () => void }) {
               onClick={openWebcam}
             />
           </Actions>
-          <LiveBitratePicker />
-          <HeavyGameModePicker />
+          <LiveShareSettingsPicker showAdvanced />
           <Button
             iconName="stop_screen_share"
             color="var(--alert-color)"

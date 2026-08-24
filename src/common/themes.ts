@@ -14,7 +14,8 @@ export const ThemeCategory = {
   Status: "Status",
   Text: "Text",
   Markup: "Markup",
-  Drawer: "Drawer"
+  Drawer: "Drawer",
+  Call: "Call"
 } as const;
 
 const ThemeTokensBase = [
@@ -36,6 +37,11 @@ const ThemeTokensBase = [
     category: ThemeCategory.Surface,
     value: "#0e1016",
     allowGradient: true
+  },
+  {
+    key: "panel-border-color",
+    category: ThemeCategory.Surface,
+    value: "rgba(255, 255, 255, 0.055)"
   },
 
   // Overlays
@@ -195,6 +201,23 @@ const ThemeTokensBase = [
     key: "drawer-item-hover-background-color",
     category: ThemeCategory.Drawer,
     value: "rgba(255, 255, 255, 0.05)"
+  },
+
+  // Call
+  {
+    key: "call-background-color",
+    category: ThemeCategory.Call,
+    value: "#04050a"
+  },
+  {
+    key: "call-tile-background-color",
+    category: ThemeCategory.Call,
+    value: "#16181e"
+  },
+  {
+    key: "call-bar-background-color",
+    category: ThemeCategory.Call,
+    value: "#1e1f22"
   }
 ] as const;
 
@@ -234,6 +257,27 @@ export const themeVars = (
   vars["--alert-color-faded"] ??= dimmedColor(theme["alert-color"], 0.6);
   vars["--content-color-dim60"] ??= dimmedColor(theme["content-color"], 0.6);
   vars["--content-color-dim80"] ??= dimmedColor(theme["content-color"], 0.8);
+
+  // Accents translucidos. Sem isto, superficies como a borda do tile em foco
+  // ou o selo de "ao vivo" precisariam de rgba fixo e parariam de acompanhar
+  // o tema quando o usuario troca a cor.
+  vars["--primary-color-faded"] ??= dimmedColor(theme["primary-color"], 0.6);
+  vars["--primary-color-dim20"] ??= dimmedColor(theme["primary-color"], 0.2);
+  vars["--alert-color-dim20"] ??= dimmedColor(theme["alert-color"], 0.2);
+  vars["--warn-color-faded"] ??= dimmedColor(theme["warn-color"], 0.6);
+  vars["--warn-color-dim20"] ??= dimmedColor(theme["warn-color"], 0.2);
+  vars["--success-color-faded"] ??= dimmedColor(theme["success-color"], 0.6);
+
+  // Texto legivel sobre os accents. Escolher no claro/escuro evita o caso em
+  // que um accent escuro deixa o rotulo do botao invisivel.
+  vars["--on-primary-color"] ??= contrastColor(
+    theme["primary-color"],
+    theme["background-color"]
+  );
+  vars["--on-alert-color"] ??= contrastColor(
+    theme["alert-color"],
+    theme["background-color"]
+  );
   return vars;
 };
 
@@ -266,7 +310,7 @@ export const themePresets: Record<string, ThemePreset> = {
     colors: DefaultTheme,
     maintainers: ["Superkitten", "Asraye"]
   },
-  Concord: {
+  Hugin: {
     colors: DefaultTheme,
     maintainers: ["local"]
   },
@@ -357,6 +401,51 @@ const dimmedColor = (color: string, opacity: number): string => {
 
   const [r, g, b, a] = computed;
   return `rgba(${r},${g},${b},${a * opacity})`;
+};
+
+/**
+ * Luminancia relativa da WCAG, usada so para decidir entre texto claro e
+ * escuro sobre uma cor de destaque.
+ */
+const luminance = (r: number, g: number, b: number) => {
+  const channel = (value: number) => {
+    const v = value / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  };
+  return (
+    0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
+  );
+};
+
+const contrastRatio = (a: number, b: number) => {
+  const [hi, lo] = a > b ? [a, b] : [b, a];
+  return (hi + 0.05) / (lo + 0.05);
+};
+
+/**
+ * Devolve a cor de texto mais legivel sobre `background`, comparando o
+ * contraste real do branco com o da cor escura do tema.
+ *
+ * Um limiar fixo de luminancia nao serve aqui: o accent padrao (#7aa2ff) fica
+ * logo abaixo do meio da escala, mas rende 8:1 com texto escuro contra 2,5:1
+ * com branco.
+ */
+const contrastColor = (background: string, dark: string): string => {
+  const computed = computedColor(background);
+  if (computed === null) return "#ffffff";
+  const backgroundLuminance = luminance(computed[0], computed[1], computed[2]);
+
+  // Um gradiente nao pode ser lido como cor unica; nesse caso o preto puro e
+  // a melhor alternativa ao branco.
+  const darkComputed = computedColor(dark);
+  const darkLuminance = darkComputed
+    ? luminance(darkComputed[0], darkComputed[1], darkComputed[2])
+    : 0;
+
+  const white = contrastRatio(backgroundLuminance, 1);
+  const darker = contrastRatio(backgroundLuminance, darkLuminance);
+  if (white > darker) return "#ffffff";
+  return darkComputed ? dark : "#000000";
 };
 
 updateTheme();

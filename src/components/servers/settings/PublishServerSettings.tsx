@@ -139,7 +139,7 @@ export default function PublishServerSettings() {
       <Text color="rgba(255,255,255,0.6)" style={{ "margin-bottom": "10px" }}>
         <Trans key="servers.settings.publishServer.publishNotice">
           Publishing your server will make it be available in the
-          <A href="/app/explore/servers">explore</A> page.
+          <A href="/app/explore/themes">explore</A> page.
         </Trans>
       </Text>
 

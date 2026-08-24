@@ -1,10 +1,11 @@
 import { appLogoUrl } from "@/common/worldEvents";
+import { APP_NAME } from "@/common/appBrand";
 
 export const LogoMono = () => {
   return (
     <img
       src={appLogoUrl()}
-      alt="Concord"
+      alt={APP_NAME}
       draggable={false}
       style={{
         width: "100%",

@@ -232,16 +232,6 @@ const OwnedBadges = () => {
       })
       .filter((item) => item !== null);
 
-    const hasPalestine = badges.find(
-      (badge) => badge.bit === USER_BADGES.PALESTINE.bit
-    );
-    if (!hasPalestine) {
-      badges.unshift({
-        ...USER_BADGES.PALESTINE,
-        acquiredAt: 0,
-        enabled: hasBit(user()?.badges || 0, USER_BADGES.PALESTINE.bit)
-      });
-    }
     return badges;
   };
 

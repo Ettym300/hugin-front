@@ -8,7 +8,7 @@
     "homePage": {
         "slogan": "Isang moderno at matikas na chat app.",
         "viewGitHubButton": "Tingnan ang GitHub",
-        "subslogan": "Nag-aalok ang Nerimity ng isang eleganteng karanasan na puno ng mga tampok na nagpapaiba dito.",
+        "subslogan": "Nag-aalok ang HUGIN ng isang eleganteng karanasan na puno ng mga tampok na nagpapaiba dito.",
         "getStarted": "Magsimula",
         "availableOn": "Available sa",
         "browser": "Browser",
@@ -88,7 +88,7 @@
             "visitServerButton": "Bisitahin",
             "joinServerButton": "Sumali",
             "bumpButton": "Bump ({{count}})",
-            "moderationNotice": "Ang mga server ay hindi minomoderate ng Nerimity. Mangyaring i-report ang mga server na lumalabag sa TOS.",
+            "moderationNotice": "Ang mga server ay hindi minomoderate ng HUGIN. Mangyaring i-report ang mga server na lumalabag sa TOS.",
             "sortMostActive": "Pinaka-active (Beta)",
             "pinnedServers": "Mga Na-pin na Server",
             "recentlyBumped": "Kamakailang Na-bump na Mga Server"
@@ -96,13 +96,13 @@
         "bots": {
             "title": "Tuklasin - Mga Bot",
             "noticeMessage": "Maaaring i-bump ang isang bot isang beses kada {{hours}} na oras. Lahat ng bump ay magre-reset sa {{date}}.",
-            "moderationNotice": "Ang mga bot ay hindi minomoderate ng Nerimity. Mangyaring i-report ang mga bot na mapanganib o lumalabag sa TOS.",
+            "moderationNotice": "Ang mga bot ay hindi minomoderate ng HUGIN. Mangyaring i-report ang mga bot na mapanganib o lumalabag sa TOS.",
             "inviteButton": "Imbitahin",
             "serverCount": "Sa {{count}} na server"
         },
         "themes": {
             "title": "Tuklasin - Mga Tema",
-            "themesHeaderDescription": "I-personalize ang Nerimity gamit ang sariling tema.",
+            "themesHeaderDescription": "I-personalize ang HUGIN gamit ang sariling tema.",
             "officialThemes": "Opisyal na Mga Tema",
             "communityThemes": "Mga Tema ng Komunidad",
             "noCommunityThemes": "Walang natagpuang tema ng komunidad.",
@@ -322,7 +322,7 @@
         "language": {
             "reloadNotice": "Kailangan mong i-reload ang app upang ganap na maipakita ang bagong wika.",
             "reloadButton": "I-reload",
-            "searchNotice": "Ang mga salin ay pinamamahalaan ng komunidad. Mangyaring i-report ang anumang maling o hindi angkop na salin kay Nerimity.",
+            "searchNotice": "Ang mga salin ay pinamamahalaan ng komunidad. Mangyaring i-report ang anumang maling o hindi angkop na salin kay HUGIN.",
             "contributors": "Mga Nag-ambag"
         },
         "header": {
@@ -357,7 +357,7 @@
             "deleteAccountDescription": "Hindi na ito maibabalik!",
             "deleteAccountNotice": "Kailangan mong iwanan o tanggalin ang lahat ng server bago mo ma-delete ang iyong account.",
             "understoodButton": "Naiintindihan",
-            "deletionNotice": "Nalulungkot kami na aalis ka :( Kung may hindi ka nagustuhan, pakisabi sa opisyal na Nerimity server.",
+            "deletionNotice": "Nalulungkot kami na aalis ka :( Kung may hindi ka nagustuhan, pakisabi sa opisyal na HUGIN server.",
             "deletedInfo": {
                 "title": "Ano ang matatanggal",
                 "email": "• Email",
@@ -538,7 +538,7 @@
         "by": "Sa pamamagitan ng",
         "deletionNotice": "Ang iyong account at data ay tatanggalin sa loob ng 15 araw",
         "ipBanned": "Ang iyong IP ay na-ban.",
-        "ipBanNotice": "Mayroong isang taong may parehong IP na na-suspend sa Nerimity. Ang iyong account ay hindi naapektuhan."
+        "ipBanNotice": "Mayroong isang taong may parehong IP na na-suspend sa HUGIN. Ang iyong account ay hindi naapektuhan."
     },
     "resetPassword": {
         "title": "I-reset ang Password",

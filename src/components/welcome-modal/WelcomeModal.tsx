@@ -1,3 +1,4 @@
+import { APP_NAME } from "@/common/appBrand";
 import styles from "./WelcomeModal.module.scss";
 import env from "@/common/env";
 import Button from "../ui/Button";
@@ -20,7 +21,7 @@ export function WelcomeModal(props: { close: () => void }) {
   return (
     <LegacyModal
       ignoreBackgroundClick
-      title={t("registerPage.title", { appName: "Concord" })}
+      title={t("registerPage.title", { appName: APP_NAME })}
       maxWidth={600}
       actionButtons={ActionButtons}
     >

@@ -49,6 +49,7 @@ import {
 
 import useAccount from "./chat-api/store/useAccount";
 import { MetaProvider, Title } from "@solidjs/meta";
+import { APP_NAME } from "@/common/appBrand";
 import { ReminderProvider } from "./components/useReminders";
 import env from "./common/env";
 import DevTestRoutes from "./test";
@@ -258,7 +259,7 @@ render(
 
     return (
       <MetaProvider>
-        <Title>Concord</Title>
+        <Title>{APP_NAME}</Title>
         <Router root={Root}>
           <Route
             path="/app"

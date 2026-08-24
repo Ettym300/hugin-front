@@ -15,6 +15,11 @@ import {
   useLocalStorage
 } from "@/common/localStorage";
 import { wrapMicWithNoiseSuppression } from "@/common/noiseSuppressor";
+import type { NoiseSuppressionMode } from "@/common/voiceAudioSettings";
+import {
+  getVoiceMicConstraints,
+  resolveNoiseSuppressionMode
+} from "@/common/voiceAudioSettings";
 import SettingsBlock from "../ui/settings-block/SettingsBlock";
 import Button from "../ui/Button";
 import { FlexRow } from "../ui/Flexbox";
@@ -122,15 +127,12 @@ const GainRow = styled("div")`
 `;
 
 function getPreviewConstraints(): MediaTrackConstraints {
-  const constraints = getStorageObject(StorageKeys.voiceMicConstraints, {
-    echo: true,
-    noise: true,
-    gain: true
-  });
+  const constraints = getVoiceMicConstraints();
+  const noiseMode = resolveNoiseSuppressionMode(constraints);
   const deviceId = getStorageString(StorageKeys.inputDeviceId, undefined);
   const audio: MediaTrackConstraints = {
-    echoCancellation: false,
-    noiseSuppression: false,
+    echoCancellation: constraints.echo,
+    noiseSuppression: noiseMode === "browser",
     autoGainControl: constraints.gain
   };
   if (deviceId) {
@@ -155,7 +157,11 @@ function levelFromAnalyser(analyser: AnalyserNode, buffer: Uint8Array) {
 
 export function VoiceMicPreview(props: {
   inputDeviceId?: string;
-  constraints: { echo: boolean; noise: boolean; gain: boolean };
+  constraints: {
+    echo: boolean;
+    gain: boolean;
+    noiseMode: NoiseSuppressionMode;
+  };
 }) {
   const { voiceUsers } = useStore();
   const [level, setLevel] = createSignal(0);
@@ -266,7 +272,7 @@ export function VoiceMicPreview(props: {
 
     const wrapped = await wrapMicWithNoiseSuppression(
       rawStream,
-      props.constraints.noise
+      props.constraints.noiseMode
     );
 
     if (id !== generation) {
@@ -318,7 +324,7 @@ export function VoiceMicPreview(props: {
   createEffect(() => {
     props.inputDeviceId;
     props.constraints.echo;
-    props.constraints.noise;
+    props.constraints.noiseMode;
     props.constraints.gain;
     void startPreview();
     onCleanup(() => stopPreview());

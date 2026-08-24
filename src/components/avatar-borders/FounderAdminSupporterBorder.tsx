@@ -11,36 +11,23 @@ export function FounderAdminSupporterBorder(props: {
   overlay?: JSXElement;
   serverOrUser: ServerOrUserAvatar;
   size: number;
-  type:
-    | "founder"
-    | "supporter"
-    | "admin"
-    | "palestine"
-    | "mod"
-    | "emo-supporter";
+  type: "founder" | "supporter" | "admin" | "mod" | "emo-supporter";
 }) {
   return (
     <div
-      class={classNames(
-        styles.container,
-        props.hovered && props.type !== "palestine" ? styles.hover : undefined
-      )}
+      class={classNames(styles.container, props.hovered ? styles.hover : undefined)}
     >
-      <Show when={props.type !== "palestine"}>
-        <img
-          src={`/borders/${props.type}-left-wing.webp`}
-          class={classNames(styles.wing, styles.leftWing)}
-        />
-      </Show>
+      <img
+        src={`/borders/${props.type}-left-wing.webp`}
+        class={classNames(styles.wing, styles.leftWing)}
+      />
       <img src={`/borders/${props.type}.webp`} class={styles.border} />
       <RawAvatar {...props} />
       {props.overlay}
-      <Show when={props.type !== "palestine"}>
-        <img
-          src={`/borders/${props.type}-right-wing.webp`}
-          class={classNames(styles.wing, styles.rightWing)}
-        />
-      </Show>
+      <img
+        src={`/borders/${props.type}-right-wing.webp`}
+        class={classNames(styles.wing, styles.rightWing)}
+      />
     </div>
   );
 }

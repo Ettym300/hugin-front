@@ -39,6 +39,7 @@ interface VoiceSignalReceivedPayload {
 
 export function onVoiceSignalReceived(payload: VoiceSignalReceivedPayload) {
   const voiceUsers = useVoiceUsers();
+  if (voiceUsers.isLiveKitEnabled()) return;
 
   const voiceUser = voiceUsers.getVoiceUser(
     payload.channelId,

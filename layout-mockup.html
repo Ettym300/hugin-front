@@ -1,0 +1,1735 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concord — proposta de layout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ==========================================================================
+   TOKENS — nomes exatos de src/common/themes.ts e src/index.css
+   ========================================================================== */
+:root {
+  --background-color: #07080d;
+  --pane-color: #12141c;
+  --side-pane-color: #0e1016;
+  --header-background-color: rgba(18, 20, 28, 0.78);
+  --tooltip-background-color: #08090f;
+  --chat-input-background-color: #1a1d28;
+  --chat-markup-bar-background-color: #141722;
+  --message-hover-background-color: rgba(122, 162, 255, 0.06);
+  --message-floating-options-background-color: #0a0b12;
+  --primary-color: #7aa2ff;
+  --primary-color-dark: #3d5cb8;
+  --alert-color: #ff5c7a;
+  --warn-color: #f0b232;
+  --success-color: #3dd68c;
+  --status-online: #3dd68c;
+  --status-offline: #6b7280;
+  --status-do-not-disturb: #ff5c7a;
+  --status-away-from-keyboard: #f0b232;
+
+  --text-color: #e8eaf2;
+  --text-muted: #8b93a7;
+  --text-dim: #5d6478;
+
+  --header-height: 52px;
+  --app-gap: 8px;
+  --panel-radius: 18px;
+  --panel-border: 1px solid rgba(255, 255, 255, 0.055);
+  --panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+
+  /* propostos */
+  --rail-radius: 14px;
+  --control-radius: 12px;
+  --row-radius: 10px;
+  --rail-width: 68px;
+  --side-width: 248px;
+  --members-width: 232px;
+  --call-bg: #04050a;
+}
+
+body.skin-classic {
+  --background-color: #1e1f22;
+  --pane-color: #313338;
+  --side-pane-color: #2b2d31;
+  --header-background-color: #313338;
+  --chat-input-background-color: #383a40;
+  --chat-markup-bar-background-color: #2b2d31;
+  --primary-color: #5865f2;
+  --message-hover-background-color: rgba(255, 255, 255, 0.03);
+  --call-bg: #000000;
+
+  --app-gap: 0px;
+  --panel-radius: 0px;
+  --panel-border: 1px solid transparent;
+  --panel-shadow: none;
+  --rail-radius: 50%;
+  --control-radius: 4px;
+  --row-radius: 4px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Isto precisa vir com !important: as regras display:flex abaixo venceriam o
+   atributo hidden, e as duas telas apareceriam juntas. */
+[hidden] { display: none !important; }
+
+html, body {
+  width: 100%; height: 100%;
+  color: var(--text-color);
+  background: var(--background-color);
+  font-family: "Inter", "gg sans", "Noto Sans", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 12% 0%, rgba(122, 162, 255, 0.10), transparent 70%),
+    radial-gradient(50% 40% at 100% 100%, rgba(61, 214, 140, 0.06), transparent 70%);
+}
+body.skin-classic::before { display: none; }
+
+.app {
+  position: relative; z-index: 1;
+  display: flex; gap: var(--app-gap);
+  width: 100%; height: 100%;
+  padding: var(--app-gap);
+  transition: gap .25s ease, padding .25s ease;
+}
+
+.panel {
+  background: var(--pane-color);
+  border: var(--panel-border);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--panel-shadow);
+  transition: border-radius .25s ease, background .25s ease;
+}
+
+/* ---------- RAIL ---------- */
+.rail {
+  width: var(--rail-width); flex-shrink: 0;
+  background: var(--side-pane-color);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 10px 0; gap: 8px; overflow: hidden;
+}
+.rail-scroll { flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; overflow-y: auto; scrollbar-width: none; }
+.rail-scroll::-webkit-scrollbar { display: none; }
+
+.server {
+  position: relative; width: 46px; height: 46px; flex-shrink: 0;
+  border-radius: var(--rail-radius);
+  display: grid; place-items: center;
+  font-weight: 700; font-size: 15px; color: #fff; cursor: pointer;
+  transition: border-radius .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+.server:hover { transform: translateY(-1px); border-radius: 16px; }
+.server::before {
+  content: ""; position: absolute; left: -10px; top: 50%;
+  width: 4px; height: 0; border-radius: 0 4px 4px 0;
+  background: var(--text-color); transform: translateY(-50%);
+  transition: height .18s ease;
+}
+.server.unread::before { height: 8px; }
+.server.active::before { height: 26px; background: var(--primary-color); }
+.server.active { box-shadow: 0 0 0 2px var(--primary-color), 0 6px 18px rgba(122,162,255,.25); }
+.server .badge {
+  position: absolute; right: -3px; bottom: -3px;
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--alert-color); color: #fff; font-size: 11px; font-weight: 700;
+  display: grid; place-items: center;
+  border: 3px solid var(--side-pane-color); box-sizing: content-box;
+}
+.rail-sep { width: 28px; height: 2px; border-radius: 2px; background: rgba(255,255,255,.07); flex-shrink: 0; }
+.rail-btn {
+  width: 46px; height: 46px; flex-shrink: 0; border-radius: var(--rail-radius);
+  background: rgba(255,255,255,.04); border: 1px dashed rgba(255,255,255,.14);
+  color: var(--success-color); display: grid; place-items: center;
+  font-size: 22px; cursor: pointer;
+  transition: background .18s ease, border-radius .18s ease;
+}
+.rail-btn:hover { background: rgba(61,214,140,.12); border-radius: 16px; }
+
+/* ---------- SIDE PANE ---------- */
+.side { width: var(--side-width); flex-shrink: 0; background: var(--side-pane-color); display: flex; flex-direction: column; overflow: hidden; }
+.side-head {
+  height: var(--header-height); flex-shrink: 0; padding: 0 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,.05); cursor: pointer;
+}
+.side-head:hover { background: rgba(255,255,255,.03); }
+.side-head h2 { font-size: 15px; font-weight: 700; }
+.side-head .chev { color: var(--text-muted); font-size: 12px; }
+
+.search {
+  margin: 10px; padding: 8px 12px; flex-shrink: 0;
+  border-radius: var(--control-radius);
+  background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.05);
+  display: flex; align-items: center; gap: 8px;
+  color: var(--text-dim); font-size: 13px; cursor: pointer;
+}
+.search:hover { border-color: rgba(122,162,255,.3); color: var(--text-muted); }
+.search kbd {
+  margin-left: auto; padding: 2px 6px; border-radius: 5px;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+  font-family: inherit; font-size: 10px; font-weight: 600;
+}
+
+.chan-scroll { flex: 1; overflow-y: auto; padding: 0 8px 8px; scrollbar-width: thin; }
+.chan-scroll::-webkit-scrollbar { width: 6px; }
+.chan-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.09); border-radius: 3px; }
+
+.cat {
+  display: flex; align-items: center; gap: 5px; padding: 14px 8px 5px;
+  color: var(--text-dim); font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em; cursor: pointer;
+}
+.cat:hover { color: var(--text-muted); }
+
+.chan {
+  display: flex; align-items: center; gap: 8px;
+  height: 34px; padding: 0 8px; margin-bottom: 1px;
+  border-radius: var(--row-radius);
+  color: var(--text-muted); font-size: 14px; font-weight: 500; cursor: pointer;
+  transition: background .12s ease, color .12s ease;
+}
+.chan .ic { color: var(--text-dim); font-size: 16px; width: 18px; text-align: center; flex-shrink: 0; }
+.chan span.nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chan:hover { background: rgba(255,255,255,.045); color: var(--text-color); }
+.chan.active { background: linear-gradient(90deg, rgba(122,162,255,.16), rgba(122,162,255,.05)); color: #fff; font-weight: 600; }
+body.skin-classic .chan.active { background: rgba(255,255,255,.08); }
+.chan.active .ic { color: var(--primary-color); }
+.chan.unread { color: #fff; font-weight: 600; }
+.chan .pill { margin-left: auto; padding: 1px 7px; border-radius: 9px; background: var(--alert-color); color: #fff; font-size: 11px; font-weight: 700; }
+
+.voice-members { padding: 2px 0 6px 30px; display: flex; flex-direction: column; gap: 3px; }
+.vm { display: flex; align-items: center; gap: 7px; padding: 3px 6px; border-radius: 8px; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+.vm:hover { background: rgba(255,255,255,.04); }
+.vm .av { width: 20px; height: 20px; border-radius: 50%; font-size: 9px; }
+.vm .live { margin-left: auto; padding: 0 5px; border-radius: 4px; background: var(--alert-color); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .04em; }
+
+.me {
+  flex-shrink: 0; margin: 8px; padding: 8px; border-radius: var(--control-radius);
+  background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.05);
+  display: flex; align-items: center; gap: 9px;
+}
+.me .info { flex: 1; min-width: 0; }
+.me .info b { display: block; font-size: 13px; font-weight: 600; }
+.me .info small { display: block; font-size: 11px; color: var(--text-dim); }
+.me .acts { display: flex; gap: 2px; }
+.icon-btn {
+  width: 28px; height: 28px; border-radius: 8px; border: none;
+  background: transparent; color: var(--text-muted);
+  display: grid; place-items: center; cursor: pointer; font-size: 15px;
+  transition: background .12s ease, color .12s ease;
+}
+.icon-btn:hover { background: rgba(255,255,255,.07); color: var(--text-color); }
+.icon-btn.on { background: rgba(122,162,255,.18); color: var(--primary-color); }
+.icon-btn.danger:hover { background: rgba(255,92,122,.14); color: var(--alert-color); }
+
+/* ---------- MAIN (CHAT) ---------- */
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+.main-head {
+  height: var(--header-height); flex-shrink: 0; padding: 0 14px; gap: 10px;
+  display: flex; align-items: center;
+  background: var(--header-background-color); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.main-head .hash { color: var(--text-dim); font-size: 19px; font-weight: 500; }
+.main-head h1 { font-size: 15px; font-weight: 700; white-space: nowrap; }
+.main-head .topic {
+  padding-left: 10px; margin-left: 2px;
+  border-left: 1px solid rgba(255,255,255,.09);
+  color: var(--text-dim); font-size: 12px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.main-head .spacer { flex: 1; }
+
+.live-bar {
+  flex-shrink: 0; margin: 8px 10px 0; padding: 9px 12px;
+  border-radius: var(--control-radius);
+  background: linear-gradient(95deg, rgba(255,92,122,.14), rgba(122,162,255,.10));
+  border: 1px solid rgba(255,92,122,.22);
+  display: flex; align-items: center; gap: 10px;
+}
+.live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--alert-color); animation: pulse 1.8s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,92,122,.6); } 70% { box-shadow: 0 0 0 8px rgba(255,92,122,0); } 100% { box-shadow: 0 0 0 0 rgba(255,92,122,0); } }
+.live-bar b { font-size: 13px; font-weight: 600; }
+.live-bar small { color: var(--text-muted); font-size: 12px; }
+.btn {
+  padding: 6px 14px; border: none; border-radius: 9px;
+  background: var(--primary-color); color: #08090f;
+  font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: filter .15s ease, transform .15s ease;
+}
+.btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn.ghost { background: rgba(255,255,255,.07); color: var(--text-color); }
+.btn.ghost:hover { background: rgba(255,255,255,.12); }
+
+.msgs { flex: 1; overflow-y: auto; padding: 12px 6px 4px; scrollbar-width: thin; }
+.msgs::-webkit-scrollbar { width: 8px; }
+.msgs::-webkit-scrollbar-thumb { background: rgba(255,255,255,.09); border-radius: 4px; }
+
+.day { display: flex; align-items: center; gap: 12px; margin: 14px 10px 16px; color: var(--text-dim); font-size: 11px; font-weight: 600; }
+.day::before, .day::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,.07); }
+
+.msg { position: relative; display: flex; gap: 12px; padding: 7px 12px; margin: 0 4px 2px; border-radius: var(--row-radius); }
+.msg:hover { background: var(--message-hover-background-color); }
+.msg.grouped { padding-top: 1px; padding-bottom: 1px; }
+.msg.grouped .av { visibility: hidden; height: 0; }
+.msg .body { flex: 1; min-width: 0; }
+.msg .line1 { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 3px; }
+.msg .who { font-size: 14px; font-weight: 600; }
+.msg time { color: var(--text-dim); font-size: 11px; }
+.msg p { font-size: 14px; line-height: 1.55; color: #d3d8e6; word-wrap: break-word; }
+
+.chip { padding: 1px 7px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: .03em; border: 1px solid transparent; }
+.chip.owner { background: rgba(240,178,50,.16); color: var(--warn-color); border-color: rgba(240,178,50,.3); }
+.chip.sup { background: rgba(122,162,255,.16); color: var(--primary-color); border-color: rgba(122,162,255,.3); }
+.chip.bot { background: var(--primary-color); color: #08090f; }
+
+.msg .float {
+  position: absolute; top: -12px; right: 14px;
+  display: none; gap: 1px; padding: 3px; border-radius: 9px;
+  background: var(--message-floating-options-background-color);
+  border: 1px solid rgba(255,255,255,.07);
+  box-shadow: 0 6px 18px rgba(0,0,0,.45);
+}
+.msg:hover .float { display: flex; }
+
+.reacts { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+.react { padding: 2px 8px; border-radius: 8px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+.react:hover { border-color: rgba(122,162,255,.4); }
+.react.mine { background: rgba(122,162,255,.14); border-color: var(--primary-color); color: var(--primary-color); }
+
+.embed { margin-top: 8px; max-width: 420px; border-radius: var(--control-radius); overflow: hidden; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.07); border-left: 3px solid var(--primary-color); }
+.embed .thumb { height: 148px; background: linear-gradient(135deg, #1a2340, #2d1a3d 60%, #0f1420); display: grid; place-items: center; }
+.embed .thumb .play { width: 44px; height: 44px; border-radius: 50%; background: rgba(122,162,255,.9); color: #08090f; display: grid; place-items: center; font-size: 17px; }
+.embed .meta { padding: 9px 11px; }
+.embed .meta b { display: block; font-size: 13px; margin-bottom: 2px; }
+.embed .meta small { color: var(--text-dim); font-size: 11px; }
+
+.composer { flex-shrink: 0; padding: 6px 10px 10px; }
+.markup-bar { display: flex; align-items: center; gap: 1px; padding: 4px 6px; border-radius: var(--control-radius) var(--control-radius) 0 0; background: var(--chat-markup-bar-background-color); border: 1px solid rgba(255,255,255,.05); border-bottom: none; }
+.markup-bar .sep { width: 1px; height: 16px; background: rgba(255,255,255,.09); margin: 0 5px; }
+.input-row { display: flex; align-items: flex-end; gap: 8px; padding: 9px 11px; border-radius: 0 0 var(--control-radius) var(--control-radius); background: var(--chat-input-background-color); border: 1px solid rgba(255,255,255,.05); transition: border-color .18s ease; }
+.input-row:focus-within { border-color: rgba(122,162,255,.45); }
+.input-row .ta { flex: 1; min-height: 22px; color: var(--text-color); font-size: 14px; line-height: 1.5; outline: none; }
+.input-row .ta:empty::before { content: "Conversar em #geral"; color: var(--text-dim); }
+.send { width: 32px; height: 32px; border: none; border-radius: 9px; background: var(--primary-color); color: #08090f; display: grid; place-items: center; cursor: pointer; font-size: 15px; }
+.send:hover { filter: brightness(1.1); }
+
+/* ---------- MEMBROS ---------- */
+.members { width: var(--members-width); flex-shrink: 0; background: var(--side-pane-color); display: flex; flex-direction: column; overflow: hidden; }
+.members-head { height: var(--header-height); flex-shrink: 0; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 13px; font-weight: 600; }
+.members-head small { color: var(--text-dim); font-weight: 500; }
+.members-scroll { flex: 1; overflow-y: auto; padding: 8px; scrollbar-width: thin; }
+.members-scroll::-webkit-scrollbar { width: 6px; }
+.members-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.09); border-radius: 3px; }
+.mem { display: flex; align-items: center; gap: 9px; padding: 6px 8px; border-radius: var(--row-radius); cursor: pointer; }
+.mem:hover { background: rgba(255,255,255,.05); }
+.mem .info { min-width: 0; flex: 1; }
+.mem .info b { display: block; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mem .info small { display: block; font-size: 11px; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mem.off { opacity: .42; }
+
+/* ---------- AVATAR ---------- */
+.av { position: relative; flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; color: #fff; }
+.av.sm { width: 30px; height: 30px; font-size: 11px; }
+.av.lg { width: 76px; height: 76px; font-size: 24px; }
+.av[data-st]::after { content: ""; position: absolute; right: -1px; bottom: -1px; width: 11px; height: 11px; border-radius: 50%; border: 2.5px solid var(--side-pane-color); }
+.av.sm[data-st]::after { width: 9px; height: 9px; border-width: 2px; }
+.av[data-st="on"]::after { background: var(--status-online); }
+.av[data-st="dnd"]::after { background: var(--status-do-not-disturb); }
+.av[data-st="afk"]::after { background: var(--status-away-from-keyboard); }
+.av[data-st="off"]::after { background: var(--status-offline); }
+.av.bordered { box-shadow: 0 0 0 2px var(--warn-color), 0 0 12px rgba(240,178,50,.4); }
+
+.g1 { background: linear-gradient(135deg,#7aa2ff,#3d5cb8); }
+.g2 { background: linear-gradient(135deg,#ff5c7a,#a02040); }
+.g3 { background: linear-gradient(135deg,#3dd68c,#12704a); }
+.g4 { background: linear-gradient(135deg,#f0b232,#8a5d10); }
+.g5 { background: linear-gradient(135deg,#b66cff,#5a2196); }
+.g6 { background: linear-gradient(135deg,#4ad3e0,#166b75); }
+
+/* ==========================================================================
+   TELA DE LIVE — no formato do Discord
+   Área de chamada preta ocupando o pane, stream em letterbox no centro,
+   tiles dos participantes sobrepostos no canto e barra de controles
+   flutuante que aparece no hover.
+   ========================================================================== */
+.live-view { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+.call-row { flex: 1; display: flex; min-height: 0; }
+
+/* Área da chamada: palco em cima, bandeja embaixo */
+.call {
+  position: relative; flex: 1; min-width: 0;
+  background: var(--call-bg);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+/* O stream em si, em letterbox como o Discord faz */
+.focus {
+  position: relative;
+  width: 100%; height: 100%;
+  max-width: calc((100% - 24px) * 1);
+  display: flex; align-items: center; justify-content: center;
+  padding: 12px;
+}
+.screen {
+  position: relative;
+  width: 100%; max-width: 1100px;
+  aspect-ratio: 16 / 9;
+  max-height: 100%;
+  border-radius: 8px; overflow: hidden;
+  background:
+    radial-gradient(70% 60% at 30% 25%, #22406b, transparent 70%),
+    linear-gradient(150deg, #16233c 0%, #2a1838 55%, #0a0d16 100%);
+  display: grid; place-items: center;
+}
+body.skin-classic .screen { border-radius: 8px; }
+.screen .fake { color: rgba(255,255,255,.14); font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+
+/* Etiqueta do dono do stream, canto inferior esquerdo */
+.screen-tag {
+  position: absolute; left: 10px; bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 9px; border-radius: 7px;
+  background: rgba(0,0,0,.68);
+  font-size: 11px; font-weight: 600;
+}
+.screen-tag i { width: 6px; height: 6px; border-radius: 50%; background: var(--alert-color); }
+
+/* Botões de tela cheia / destacar, canto inferior direito no hover */
+.screen-corner {
+  position: absolute; right: 10px; bottom: 10px;
+  display: flex; gap: 5px;
+  opacity: 0; transition: opacity .18s ease;
+}
+.call:hover .screen-corner { opacity: 1; }
+
+/* Overlay de informações do stream — desligado por padrão */
+.stream-info {
+  position: absolute; top: 10px; left: 10px;
+  padding: 9px 11px; border-radius: 8px;
+  background: rgba(0,0,0,.7); backdrop-filter: blur(10px);
+  font-size: 11px; line-height: 1.75; color: var(--text-muted);
+  min-width: 178px;
+}
+.stream-info b { display: block; margin-bottom: 4px; color: #fff; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
+.stream-info .r { display: flex; justify-content: space-between; gap: 14px; }
+.stream-info .r span:last-child { color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stream-info .ok { color: var(--success-color) !important; }
+
+/* Tiles dos participantes, sobrepostos no canto — como o Discord faz quando
+   um stream está em foco */
+.tiles {
+  position: absolute; right: 12px; top: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  max-height: calc(100% - 110px); overflow: hidden;
+}
+.tile {
+  position: relative; width: 132px; height: 76px; flex-shrink: 0;
+  border-radius: 8px; overflow: hidden;
+  background: #1a1c22;
+  display: grid; place-items: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.tile.speaking { border-color: var(--success-color); }
+.tile .nm {
+  position: absolute; bottom: 4px; left: 6px; right: 6px;
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0,0,0,.9);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.tile .nm .mute { color: var(--alert-color); }
+
+/* --------------------------------------------------------------------------
+   GRADE — o modo padrão do Discord quando ninguém está em foco.
+   Tiles 16:9 iguais, o grid escolhe as colunas conforme cabe.
+   -------------------------------------------------------------------------- */
+/* PALCO — só o que você escolheu assistir. Linhas e colunas explícitas para
+   todos os tiles saírem do mesmo tamanho. */
+.grid {
+  flex: 1; min-height: 0;
+  padding: 12px;
+  display: grid; gap: 8px;
+  overflow: hidden;
+}
+.grid[data-cols="1"] { grid-template-columns: minmax(0, 1fr); }
+.grid[data-cols="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid[data-cols="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid[data-cols="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid[data-rows="1"] { grid-template-rows: minmax(0, 1fr); }
+.grid[data-rows="2"] { grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.grid[data-rows="3"] { grid-template-rows: repeat(3, minmax(0, 1fr)); }
+
+/* Nada selecionado */
+.stage-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  color: var(--text-dim); text-align: center; padding: 20px;
+}
+.stage-empty b { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+.stage-empty small { font-size: 12px; }
+
+/* --------------------------------------------------------------------------
+   BANDEJA — quem está na sala mas você não está assistindo.
+   As lives disponíveis ficam aqui até você escolher.
+   -------------------------------------------------------------------------- */
+.tray {
+  flex-shrink: 0;
+  padding: 10px 12px 74px;
+  display: flex; align-items: center; gap: 8px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.tray::-webkit-scrollbar { display: none; }
+.tray-label {
+  flex-shrink: 0; margin-right: 2px;
+  font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--text-dim);
+}
+
+.tcard {
+  position: relative; flex-shrink: 0;
+  width: 128px; height: 72px;
+  border-radius: 8px; overflow: hidden;
+  background: #16181e;
+  border: 2px solid transparent;
+  display: grid; place-items: center;
+  cursor: default;
+}
+.tcard.speaking { border-color: var(--success-color); }
+/* Uma live disponível: dá para clicar e trazer para o palco */
+.tcard.live { background: #1f1722; border-color: rgba(255,92,122,.35); cursor: pointer; }
+.tcard.live:hover { border-color: var(--alert-color); }
+.tcard .nm {
+  position: absolute; bottom: 4px; left: 6px; right: 6px;
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0,0,0,.9);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.tcard .nm .mute { color: var(--alert-color); }
+.tcard .lv {
+  position: absolute; top: 5px; left: 6px;
+  display: flex; align-items: center; gap: 4px;
+  padding: 2px 6px; border-radius: 5px;
+  background: rgba(255,92,122,.92); color: #fff;
+  font-size: 9px; font-weight: 800; letter-spacing: .05em;
+}
+.tcard .add {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(0,0,0,.55);
+  font-size: 11px; font-weight: 700;
+  opacity: 0; transition: opacity .15s ease;
+}
+.tcard.live:hover .add { opacity: 1; }
+
+.gtile {
+  position: relative;
+  min-width: 0; min-height: 0;
+  width: 100%; height: 100%;
+  border-radius: 8px; overflow: hidden;
+  background: #16181e;
+  border: 2px solid transparent;
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+}
+.gtile.speaking { border-color: var(--success-color); }
+
+/* Tudo que está no palco está sendo assistido, então mostra vídeo. */
+.gtile.watching {
+  background:
+    radial-gradient(70% 60% at 30% 25%, #22406b, transparent 70%),
+    linear-gradient(150deg, #16233c 0%, #2a1838 55%, #0a0d16 100%);
+}
+.gtile .fake-sm { color: rgba(255,255,255,.14); font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.gtile .nm {
+  position: absolute; bottom: 5px; left: 7px; right: 7px;
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0,0,0,.9);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.gtile .nm .mute { color: var(--alert-color); }
+.gtile .lv {
+  position: absolute; top: 6px; left: 7px;
+  display: flex; align-items: center; gap: 4px;
+  padding: 2px 6px; border-radius: 5px;
+  background: rgba(255,92,122,.92); color: #fff;
+  font-size: 9px; font-weight: 800; letter-spacing: .05em;
+}
+.gtile .watch {
+  position: absolute; top: 6px; right: 7px;
+  padding: 2px 6px; border-radius: 5px;
+  background: rgba(0,0,0,.6);
+  font-size: 9px; font-weight: 700;
+}
+
+/* Botão de parar, canto superior direito do tile no palco */
+.gtile .stop {
+  position: absolute; top: 6px; right: 7px;
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 9px; border-radius: 7px;
+  background: rgba(0,0,0,.66); backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,.14);
+  color: #fff; font-size: 10px; font-weight: 700;
+  cursor: pointer;
+  opacity: 0; transition: opacity .15s ease, background .15s ease;
+}
+.gtile:hover .stop { opacity: 1; }
+.gtile .stop:hover { background: var(--alert-color); border-color: var(--alert-color); }
+
+/* Contador de custo no header da live */
+.cost {
+  display: flex; align-items: center; gap: 6px;
+  padding: 3px 9px; border-radius: 7px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  font-size: 11px; font-weight: 600; color: var(--text-muted);
+  white-space: nowrap;
+}
+.cost b { color: var(--text-color); }
+.cost.warn { background: rgba(240,178,50,.14); border-color: rgba(240,178,50,.3); color: var(--warn-color); }
+.cost.warn b { color: var(--warn-color); }
+
+/* Barra de controles flutuante, centralizada embaixo — padrão Discord */
+.callbar {
+  position: absolute; left: 50%; bottom: 16px;
+  transform: translateX(-50%) translateY(6px);
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px; border-radius: 26px;
+  background: rgba(30, 31, 34, .94);
+  border: 1px solid rgba(255,255,255,.07);
+  box-shadow: 0 8px 30px rgba(0,0,0,.6);
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.call:hover .callbar { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+
+.cb {
+  width: 42px; height: 42px; border: none; border-radius: 50%;
+  background: rgba(255,255,255,.09); color: #fff;
+  display: grid; place-items: center; cursor: pointer; font-size: 16px;
+  transition: background .15s ease;
+}
+.cb:hover { background: rgba(255,255,255,.17); }
+.cb.live { background: #fff; color: #1e1f22; }
+.cb.muted { background: #fff; color: #da373c; }
+.cb.hang { background: #da373c; }
+.cb.hang:hover { background: #a12828; }
+.callbar .sep { width: 1px; height: 26px; background: rgba(255,255,255,.11); }
+
+/* Popover de qualidade, abre pela engrenagem */
+.quality {
+  position: absolute; right: 12px; bottom: 74px;
+  width: 236px; padding: 12px;
+  border-radius: 12px;
+  background: rgba(20, 21, 26, .97);
+  border: 1px solid rgba(255,255,255,.09);
+  box-shadow: 0 14px 40px rgba(0,0,0,.7);
+}
+.quality h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim); margin-bottom: 8px; }
+.seg { display: flex; gap: 2px; padding: 3px; border-radius: 9px; background: rgba(0,0,0,.42); border: 1px solid rgba(255,255,255,.06); }
+.seg button { flex: 1; padding: 6px 0; border: none; border-radius: 7px; background: transparent; color: var(--text-muted); font-family: inherit; font-size: 11px; font-weight: 600; cursor: pointer; }
+.seg button.on { background: var(--primary-color); color: #08090f; }
+.q-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; font-size: 12px; cursor: pointer; }
+.q-row small { display: block; color: var(--text-dim); font-size: 11px; margin-top: 2px; }
+.sw { width: 34px; height: 19px; border-radius: 10px; flex-shrink: 0; background: rgba(255,255,255,.13); position: relative; transition: background .18s ease; }
+.sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; transition: transform .18s ease; }
+.q-row.on .sw { background: var(--success-color); }
+.q-row.on .sw::after { transform: translateX(15px); }
+
+/* Chat lateral da live — showLiveChat */
+.live-chat { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; background: var(--pane-color); border-left: 1px solid rgba(255,255,255,.06); }
+.lc-head { flex-shrink: 0; height: var(--header-height); padding: 0 14px; border-bottom: 1px solid rgba(255,255,255,.06); display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 700; }
+.lc-head small { color: var(--text-dim); font-weight: 500; }
+.lc-body { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; }
+.lc-body::-webkit-scrollbar { width: 5px; }
+.lc-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
+.lc-msg { display: flex; gap: 8px; font-size: 13px; line-height: 1.5; }
+.lc-msg .av { width: 24px; height: 24px; font-size: 9px; }
+.lc-msg b { font-weight: 600; }
+.lc-msg p { color: #cfd5e4; }
+.lc-foot { flex-shrink: 0; padding: 10px; border-top: 1px solid rgba(255,255,255,.06); }
+.lc-input { display: flex; align-items: center; gap: 6px; padding: 8px 11px; border-radius: 9px; background: var(--chat-input-background-color); border: 1px solid rgba(255,255,255,.06); font-size: 12px; }
+.lc-input:focus-within { border-color: rgba(122,162,255,.4); }
+.lc-input .ta { flex: 1; outline: none; color: var(--text-color); }
+.lc-input .ta:empty::before { content: "Mandar mensagem"; color: var(--text-dim); }
+
+/* ==========================================================================
+   CONFIGURAÇÕES
+   Reaproveita o drawer + main pane. Os itens do menu são os 14 de
+   src/common/Settings.ts, agrupados (hoje a lista é plana).
+   ========================================================================== */
+.snav-group {
+  padding: 14px 8px 5px;
+  color: var(--text-dim);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+
+.set-body { flex: 1; overflow-y: auto; padding: 16px 18px 24px; scrollbar-width: thin; }
+.set-body::-webkit-scrollbar { width: 8px; }
+.set-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.09); border-radius: 4px; }
+.set-body h2 { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+.set-body .sub { color: var(--text-dim); font-size: 12.5px; margin-bottom: 18px; }
+.set-body h3 {
+  margin: 22px 0 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--text-dim);
+}
+
+/* SettingsGroup */
+.sgroup {
+  border-radius: var(--control-radius); overflow: hidden;
+  border: 1px solid rgba(255,255,255,.06);
+  background: rgba(0,0,0,.22);
+}
+.sgroup .sblock + .sblock { border-top: 1px solid rgba(255,255,255,.05); }
+
+/* SettingsBlock: ícone, rótulo, descrição, controle */
+.sblock {
+  display: flex; align-items: center; gap: 13px;
+  padding: 13px 15px;
+}
+.sblock .bic {
+  width: 24px; flex-shrink: 0;
+  color: var(--text-muted); font-size: 17px; text-align: center;
+}
+.sblock .bd { flex: 1; min-width: 0; }
+.sblock .bd b { display: block; font-size: 13.5px; font-weight: 600; }
+.sblock .bd small { display: block; margin-top: 2px; color: var(--text-dim); font-size: 12px; line-height: 1.45; }
+.sblock.click { cursor: pointer; }
+.sblock.click:hover { background: rgba(255,255,255,.03); }
+.sblock .chev { color: var(--text-dim); font-size: 15px; }
+
+/* Cartão de conta no topo */
+.acct {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px;
+  border-radius: var(--control-radius);
+  background: linear-gradient(100deg, rgba(122,162,255,.13), rgba(122,162,255,.03));
+  border: 1px solid rgba(122,162,255,.2);
+  margin-bottom: 8px;
+}
+.acct .bd { flex: 1; min-width: 0; }
+.acct .bd b { display: block; font-size: 16px; font-weight: 700; }
+.acct .bd small { display: block; color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+
+/* Editor de cores do tema */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(152px, 1fr)); gap: 8px; }
+.swatch {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: rgba(0,0,0,.24);
+  border: 1px solid rgba(255,255,255,.06);
+}
+.swatch input[type="color"] {
+  width: 30px; height: 30px; flex-shrink: 0; padding: 0;
+  border: 1px solid rgba(255,255,255,.16); border-radius: 8px;
+  background: transparent; cursor: pointer;
+}
+.swatch input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+.swatch input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
+.swatch .lb { min-width: 0; }
+.swatch .lb b { display: block; font-size: 12px; font-weight: 600; }
+.swatch .lb small { display: block; font-family: ui-monospace, monospace; font-size: 10px; color: var(--text-dim); }
+
+.preset-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.preset {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 13px; border-radius: 10px;
+  background: rgba(0,0,0,.24);
+  border: 1px solid rgba(255,255,255,.07);
+  cursor: pointer; font-size: 12.5px; font-weight: 600;
+}
+.preset:hover { border-color: rgba(122,162,255,.4); }
+.preset.on { border-color: var(--primary-color); background: rgba(122,162,255,.12); }
+.preset .dots { display: flex; gap: 3px; }
+.preset .dots i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+
+.slider { display: flex; align-items: center; gap: 10px; min-width: 168px; }
+.slider input[type="range"] { flex: 1; accent-color: var(--primary-color); }
+.slider .val { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 62px; text-align: right; }
+
+.warn-note {
+  margin-top: 10px; padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(240,178,50,.1);
+  border: 1px solid rgba(240,178,50,.26);
+  color: var(--warn-color);
+  font-size: 12px; line-height: 1.5;
+}
+
+/* ==========================================================================
+   PRÉVIA FLUTUANTE
+   Espelha o FloatingLivePreview do VoiceHeader.tsx: aparece quando você está
+   na chamada mas olhando outro canal, arrasta pela barra, clique sem arrastar
+   volta para a chamada, e o ✕ recolhe para um chip.
+   ========================================================================== */
+.float-live {
+  position: fixed; z-index: 60;
+  right: 16px; bottom: 64px;
+  width: 340px;
+  border-radius: var(--control-radius);
+  background: var(--pane-color);
+  border: 1px solid rgba(255,255,255,.1);
+  box-shadow: 0 18px 50px rgba(0,0,0,.66);
+  overflow: hidden;
+}
+.float-live.grabbing { cursor: grabbing; user-select: none; }
+
+.float-bar {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 9px;
+  background: rgba(0,0,0,.32);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  cursor: grab;
+  font-size: 12px;
+}
+.float-live.grabbing .float-bar { cursor: grabbing; }
+.float-bar .grip { color: var(--text-dim); font-size: 13px; }
+.float-bar .lbl {
+  flex: 1; min-width: 0; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.float-hide {
+  width: 22px; height: 22px; border: none; border-radius: 6px;
+  background: transparent; color: var(--text-muted);
+  display: grid; place-items: center; cursor: pointer; font-size: 12px;
+}
+.float-hide:hover { background: rgba(255,92,122,.18); color: var(--alert-color); }
+
+/* Mini palco: replica o que você selecionou para assistir */
+.float-stage {
+  display: grid; gap: 3px;
+  padding: 3px;
+  background: var(--call-bg);
+}
+.float-stage[data-n="1"] { grid-template-columns: 1fr; }
+.float-stage[data-n="2"] { grid-template-columns: 1fr 1fr; }
+.fs-tile {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 6px; overflow: hidden;
+  background:
+    radial-gradient(70% 60% at 30% 25%, #22406b, transparent 70%),
+    linear-gradient(150deg, #16233c 0%, #2a1838 55%, #0a0d16 100%);
+  display: grid; place-items: center;
+}
+.fs-tile .nm {
+  position: absolute; bottom: 3px; left: 5px; right: 5px;
+  font-size: 10px; font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0,0,0,.9);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.fs-tile .more {
+  position: absolute; top: 4px; right: 5px;
+  padding: 1px 5px; border-radius: 4px;
+  background: rgba(0,0,0,.6); font-size: 9px; font-weight: 700;
+}
+.fs-empty {
+  aspect-ratio: 16 / 9; border-radius: 6px;
+  background: rgba(255,255,255,.03);
+  display: grid; place-items: center;
+  color: var(--text-dim); font-size: 11px;
+}
+
+/* Controles compactos */
+.float-acts {
+  display: flex; align-items: center; gap: 5px;
+  padding: 7px 9px;
+}
+.fa {
+  width: 28px; height: 28px; border: none; border-radius: 8px;
+  background: rgba(255,255,255,.07); color: var(--text-color);
+  display: grid; place-items: center; cursor: pointer; font-size: 12px;
+}
+.fa:hover { background: rgba(255,255,255,.14); }
+.fa.muted { background: rgba(255,92,122,.18); color: var(--alert-color); }
+.fa.hang { background: rgba(255,92,122,.18); color: var(--alert-color); margin-left: auto; }
+.fa.hang:hover { background: var(--alert-color); color: #fff; }
+
+/* Estado recolhido */
+.float-chip {
+  position: fixed; z-index: 60;
+  right: 16px; bottom: 64px;
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 11px; border: none;
+  border-radius: 11px;
+  background: var(--pane-color);
+  border: 1px solid rgba(255,255,255,.1);
+  box-shadow: 0 12px 34px rgba(0,0,0,.6);
+  color: var(--text-color);
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  cursor: pointer; max-width: 240px;
+}
+.float-chip:hover { border-color: rgba(122,162,255,.4); }
+.float-chip .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.float-chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--alert-color); flex-shrink: 0; animation: pulse 1.8s infinite; }
+
+/* ---------- ALTERNADOR ---------- */
+.switch {
+  position: fixed; right: 16px; bottom: 16px; z-index: 99;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 14px;
+  background: var(--tooltip-background-color);
+  border: 1px solid rgba(255,255,255,.1);
+  box-shadow: 0 10px 34px rgba(0,0,0,.6);
+  font-size: 12px;
+}
+.switch button { padding: 6px 12px; border: none; border-radius: 9px; background: rgba(255,255,255,.07); color: var(--text-muted); font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.switch button.on { background: var(--primary-color); color: #08090f; }
+.switch .bar { width: 1px; height: 20px; background: rgba(255,255,255,.12); }
+
+@media (max-width: 1250px) { .live-chat { display: none; } }
+@media (max-width: 1100px) { .members { display: none; } }
+@media (max-width: 820px) { .side { display: none; } }
+</style>
+</head>
+<body class="skin-root">
+
+<div class="app">
+
+  <!-- ============ RAIL ============ -->
+  <nav class="rail panel">
+    <div class="rail-scroll">
+      <div class="server g1 active" title="Concord">CO</div>
+      <div class="rail-sep"></div>
+      <div class="server g2 unread" title="Monster Hunter">MH<span class="badge">7</span></div>
+      <div class="server g3" title="Dev">DV</div>
+      <div class="server g5 unread" title="Anime">AN</div>
+      <div class="server g6" title="Música">MU</div>
+      <div class="server g4" title="Estudos">ES</div>
+      <div class="rail-btn" title="Criar servidor">+</div>
+    </div>
+    <div class="rail-sep"></div>
+    <div class="av sm g4 bordered" data-st="on" title="Você">ET</div>
+  </nav>
+
+  <!-- ============ SIDE PANE ============ -->
+  <aside class="side panel">
+    <div class="side-head"><h2>Concord</h2><span class="chev">▾</span></div>
+    <div class="search"><span>⌕</span><span>Buscar</span><kbd>Ctrl K</kbd></div>
+    <div class="chan-scroll">
+      <div class="cat">▾ Texto</div>
+      <div class="chan" id="go-chat"><span class="ic">#</span><span class="nm">geral</span></div>
+      <div class="chan unread"><span class="ic">#</span><span class="nm">avisos</span><span class="pill">3</span></div>
+      <div class="chan"><span class="ic">#</span><span class="nm">clipes</span></div>
+      <div class="chan"><span class="ic">🔒</span><span class="nm">staff</span></div>
+
+      <div class="cat">▾ Voz</div>
+      <div class="chan" id="go-live"><span class="ic">🔊</span><span class="nm">Sala 1</span></div>
+      <div class="voice-members">
+        <div class="vm"><div class="av sm g2">JP</div><span>joao</span><span class="live">LIVE</span></div>
+        <div class="vm"><div class="av sm g3">MR</div><span>mari</span></div>
+      </div>
+      <div class="chan"><span class="ic">🔊</span><span class="nm">Sala 2</span></div>
+
+      <div class="cat">▾ Direto</div>
+      <div class="chan"><span class="ic">@</span><span class="nm">lucas</span></div>
+      <div class="chan"><span class="ic">@</span><span class="nm">bia</span></div>
+    </div>
+    <div class="me">
+      <div class="av sm g4 bordered" data-st="on">ET</div>
+      <div class="info"><b>ettym</b><small>Jogando Monster Hunter</small></div>
+      <div class="acts">
+        <button class="icon-btn" title="Microfone">🎙</button>
+        <button class="icon-btn" title="Fone">🎧</button>
+        <button class="icon-btn" title="Configurações">⚙</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MENU DE CONFIGURAÇÕES ============ -->
+  <aside class="side panel" id="set-nav" hidden>
+    <div class="side-head" id="set-back"><h2>← Configurações</h2></div>
+    <div class="search"><span>⌕</span><span>Buscar ajuste</span></div>
+    <div class="chan-scroll" id="set-list"></div>
+    <div class="me">
+      <div class="info"><b style="font-size:12px">Concord</b><small>636be899 · atualizado</small></div>
+    </div>
+  </aside>
+
+  <!-- ============ CONFIGURAÇÕES ============ -->
+  <main class="main panel" id="view-settings" hidden>
+    <header class="main-head">
+      <span class="hash">⚙</span>
+      <h1 id="set-title">Interface</h1>
+      <span class="spacer"></span>
+      <button class="icon-btn" id="set-close" title="Fechar">✕</button>
+    </header>
+    <div class="set-body" id="set-body"></div>
+  </main>
+
+  <!-- ============ CHAT ============ -->
+  <main class="main panel" id="view-chat">
+    <header class="main-head">
+      <span class="hash">#</span>
+      <h1>geral</h1>
+      <span class="topic">Bem-vindo ao Concord — leia os #avisos</span>
+      <span class="spacer"></span>
+      <button class="icon-btn" title="Fixadas">📌</button>
+      <button class="icon-btn" title="Membros">👥</button>
+      <button class="icon-btn" title="Buscar">⌕</button>
+    </header>
+
+    <div class="live-bar">
+      <span class="live-dot"></span>
+      <b>joao está em live</b>
+      <small>Monster Hunter Wilds · 720p60 · 2 assistindo</small>
+      <span style="flex:1"></span>
+      <button class="btn" id="go-live-2">Assistir</button>
+      <button class="btn ghost">Entrar na voz</button>
+    </div>
+
+    <div class="msgs">
+      <div class="day">Hoje</div>
+
+      <div class="msg">
+        <div class="av g2" data-st="on">JP</div>
+        <div class="body">
+          <div class="line1"><span class="who" style="color:#ff5c7a">joao</span><span class="chip owner">DONO</span><time>14:02</time></div>
+          <p>galera, subi a correção da live — agora o encoder só roda pra quem está assistindo de verdade</p>
+        </div>
+        <div class="float"><button class="icon-btn">🙂</button><button class="icon-btn">↩</button><button class="icon-btn danger">🗑</button></div>
+      </div>
+
+      <div class="msg grouped">
+        <div class="av"></div>
+        <div class="body">
+          <p>quem tava com lag no Wilds testa aí e me fala</p>
+          <div class="reacts"><div class="react mine">🔥 <span>4</span></div><div class="react">🎉 <span>2</span></div></div>
+        </div>
+        <div class="float"><button class="icon-btn">🙂</button><button class="icon-btn">↩</button></div>
+      </div>
+
+      <div class="msg">
+        <div class="av g3 bordered" data-st="on">MR</div>
+        <div class="body">
+          <div class="line1"><span class="who" style="color:#3dd68c">mari</span><span class="chip sup">APOIADORA</span><time>14:05</time></div>
+          <p>testei aqui, caiu de 99% de GPU pra 40% 👀</p>
+          <div class="embed">
+            <div class="thumb"><div class="play">▶</div></div>
+            <div class="meta"><b>clipe-wilds.mp4</b><small>4,2 MB · 00:18</small></div>
+          </div>
+        </div>
+        <div class="float"><button class="icon-btn">🙂</button><button class="icon-btn">↩</button></div>
+      </div>
+
+      <div class="msg">
+        <div class="av g1" data-st="on">CB</div>
+        <div class="body">
+          <div class="line1"><span class="who" style="color:#7aa2ff">concord</span><span class="chip bot">BOT</span><time>14:06</time></div>
+          <p>Deploy <b>636be899</b> concluído · CDN_UPSTREAM ativo</p>
+        </div>
+        <div class="float"><button class="icon-btn">🙂</button></div>
+      </div>
+    </div>
+
+    <div class="composer">
+      <div class="markup-bar">
+        <button class="icon-btn"><b>B</b></button>
+        <button class="icon-btn"><i>I</i></button>
+        <button class="icon-btn"><s>S</s></button>
+        <span class="sep"></span>
+        <button class="icon-btn">&lt;/&gt;</button>
+        <button class="icon-btn">👁</button>
+        <button class="icon-btn">🔗</button>
+      </div>
+      <div class="input-row">
+        <button class="icon-btn">＋</button>
+        <div class="ta" contenteditable="true" role="textbox"></div>
+        <button class="icon-btn">🙂</button>
+        <button class="icon-btn">GIF</button>
+        <button class="send">➤</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ MEMBROS ============ -->
+  <aside class="members panel" id="view-members">
+    <div class="members-head"><span>Membros</span><small>6 online</small></div>
+    <div class="members-scroll">
+      <div class="cat">Dono — 1</div>
+      <div class="mem"><div class="av sm g2" data-st="on">JP</div><div class="info"><b style="color:#ff5c7a">joao</b><small>🔴 Em live · Wilds</small></div></div>
+      <div class="cat">Moderação — 2</div>
+      <div class="mem"><div class="av sm g3 bordered" data-st="on">MR</div><div class="info"><b style="color:#3dd68c">mari</b><small>Jogando Wilds</small></div></div>
+      <div class="mem"><div class="av sm g5" data-st="dnd">LC</div><div class="info"><b style="color:#b66cff">lucas</b><small>Não perturbe</small></div></div>
+      <div class="cat">Online — 3</div>
+      <div class="mem"><div class="av sm g6" data-st="on">BI</div><div class="info"><b>bia</b><small>Ouvindo Spotify</small></div></div>
+      <div class="mem"><div class="av sm g4" data-st="afk">PD</div><div class="info"><b>pedro</b><small>Ausente</small></div></div>
+      <div class="mem"><div class="av sm g1" data-st="on">ET</div><div class="info"><b>ettym</b><small>Jogando Monster Hunter</small></div></div>
+      <div class="cat">Offline — 2</div>
+      <div class="mem off"><div class="av sm g2" data-st="off">RF</div><div class="info"><b>rafa</b></div></div>
+      <div class="mem off"><div class="av sm g3" data-st="off">TH</div><div class="info"><b>thiago</b></div></div>
+    </div>
+  </aside>
+
+  <!-- ============ LIVE ============ -->
+  <main class="live-view panel" id="view-live" hidden>
+    <header class="main-head">
+      <span class="hash">🔊</span>
+      <h1>Sala 1</h1>
+      <span class="topic" id="live-topic">joao está transmitindo · Monster Hunter Wilds</span>
+      <span class="spacer"></span>
+      <span class="cost" id="cost"></span>
+      <button class="icon-btn" id="t-layout" title="Assistir todas / nenhuma">▦</button>
+      <button class="icon-btn" id="t-info" title="Informações do stream">📊</button>
+      <button class="icon-btn on" id="t-chat" title="Chat da live">💬</button>
+      <button class="icon-btn" id="t-close" title="Voltar ao chat">✕</button>
+    </header>
+
+    <div class="call-row">
+      <div class="call">
+        <!-- Palco: só as lives que você selecionou -->
+        <div class="grid" id="grid"></div>
+
+        <div class="stage-empty" id="stage-empty" hidden>
+          <b>Nenhuma live selecionada</b>
+          <small>Escolha abaixo quem você quer assistir</small>
+        </div>
+
+        <!-- Bandeja: lives disponíveis e quem está só na voz -->
+        <div class="tray" id="tray"></div>
+
+        <div class="stream-info" id="info-box" hidden>
+          <b>Informações do stream</b>
+          <div class="r"><span>Codec</span><span class="ok">H.264 · hardware</span></div>
+          <div class="r"><span>Resolução</span><span>1280×720</span></div>
+          <div class="r"><span>Taxa</span><span>30 fps</span></div>
+          <div class="r"><span>Bitrate</span><span>1.940 kbps</span></div>
+          <div class="r"><span>Perda</span><span class="ok">0,2%</span></div>
+        </div>
+
+        <div class="quality" id="q-box" hidden>
+          <h4>Qualidade da transmissão</h4>
+          <div class="seg">
+            <button>720p</button>
+            <button class="on">Auto</button>
+            <button>1080p</button>
+          </div>
+          <div class="q-row on" id="hg-toggle">
+            <div>Modo jogo pesado<small>H.264 no encoder da placa, 30 fps</small></div>
+            <span class="sw"></span>
+          </div>
+        </div>
+
+        <!-- Barra flutuante, aparece ao passar o mouse -->
+        <div class="callbar">
+          <button class="cb" title="Atividade">🎮</button>
+          <button class="cb" title="Câmera">📷</button>
+          <button class="cb live" title="Parar transmissão">🖥</button>
+          <button class="cb" id="q-btn" title="Qualidade">⚙</button>
+          <span class="sep"></span>
+          <button class="cb" title="Microfone">🎙</button>
+          <button class="cb muted" title="Fone">🎧</button>
+          <span class="sep"></span>
+          <button class="cb hang" title="Sair da chamada">📴</button>
+        </div>
+      </div>
+
+      <aside class="live-chat" id="live-chat">
+        <div class="lc-head"><span>Chat da live</span><small>5 na sala</small></div>
+        <div class="lc-body">
+          <div class="lc-msg"><div class="av g3">MR</div><div><b style="color:#3dd68c">mari</b> <p>o frame ficou liso agora</p></div></div>
+          <div class="lc-msg"><div class="av g4">ET</div><div><b style="color:#f0b232">ettym</b> <p>é o H.264 no encoder da placa</p></div></div>
+          <div class="lc-msg"><div class="av g6">BI</div><div><b style="color:#4ad3e0">bia</b> <p>cuidado aí 👀</p></div></div>
+          <div class="lc-msg"><div class="av g2">JP</div><div><b style="color:#ff5c7a">joao</b> <p>a GPU caiu pra 40%, tá tranquilo</p></div></div>
+          <div class="lc-msg"><div class="av g5">LC</div><div><b style="color:#b66cff">lucas</b> <p>manda o clipe depois</p></div></div>
+        </div>
+        <div class="lc-foot">
+          <div class="lc-input"><div class="ta" contenteditable="true" role="textbox"></div><span>🙂</span></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+</div>
+
+<!-- ============ PRÉVIA FLUTUANTE ============ -->
+<div class="float-live" id="float" hidden>
+  <div class="float-bar" id="float-bar">
+    <span class="grip">⠿</span>
+    <span>📹</span>
+    <span class="lbl">Concord#Sala 1</span>
+    <button class="float-hide" id="float-hide" title="Recolher">✕</button>
+  </div>
+  <div class="float-stage" id="float-stage"></div>
+  <div class="float-acts">
+    <button class="fa" title="Microfone">🎙</button>
+    <button class="fa muted" title="Fone">🎧</button>
+    <button class="fa" title="Voltar para a chamada" id="float-back">↩</button>
+    <button class="fa hang" title="Sair da voz">📴</button>
+  </div>
+</div>
+
+<button class="float-chip" id="float-chip" hidden>
+  <span class="dot"></span>
+  <span>📹</span>
+  <span class="lbl">Concord#Sala 1</span>
+  <span>⤢</span>
+</button>
+
+<div class="switch">
+  <span style="color:var(--text-dim)">Tela:</span>
+  <button id="v-chat" class="on">Chat</button>
+  <button id="v-live">Live</button>
+  <button id="v-set">Config</button>
+  <span class="bar"></span>
+  <span style="color:var(--text-dim)">Na sala:</span>
+  <button class="n-btn" data-n="2">2</button>
+  <button class="n-btn on" data-n="5">5</button>
+  <button class="n-btn" data-n="9">9</button>
+  <button class="n-btn" data-n="12">12</button>
+  <span class="bar"></span>
+  <span style="color:var(--text-dim)">Skin:</span>
+  <button id="b-root" class="on">Nova</button>
+  <button id="b-classic">Clássica</button>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  function setSkin(name) {
+    document.body.className = "skin-" + name;
+    $("b-root").classList.toggle("on", name === "root");
+    $("b-classic").classList.toggle("on", name === "classic");
+  }
+  $("b-root").onclick = () => setSkin("root");
+  $("b-classic").onclick = () => setSkin("classic");
+
+  // As três telas são mutuamente exclusivas.
+  let view = "chat";
+  function setView(name) {
+    view = name;
+    const set = name === "settings";
+    $("view-chat").hidden = name !== "chat";
+    $("view-members").hidden = name !== "chat";
+    $("view-live").hidden = name !== "live";
+    $("view-settings").hidden = !set;
+    // Em configurações o drawer troca de conteúdo, como no app.
+    document.querySelector(".side").hidden = set;
+    $("set-nav").hidden = !set;
+    $("v-chat").classList.toggle("on", name === "chat");
+    $("v-live").classList.toggle("on", name === "live");
+    $("v-set").classList.toggle("on", set);
+    if (name !== "live") $("q-box").hidden = true;
+    syncFloat();
+  }
+  $("v-chat").onclick = () => setView("chat");
+  $("v-live").onclick = () => setView("live");
+  $("v-set").onclick = () => setView("settings");
+  $("go-live").onclick = () => setView("live");
+  $("go-live-2").onclick = () => setView("live");
+  $("go-chat").onclick = () => setView("chat");
+  $("t-close").onclick = () => setView("chat");
+  $("set-close").onclick = () => setView("chat");
+  $("set-back").onclick = () => setView("chat");
+
+  // showLiveChat, igual ao liveLayout.ts
+  $("t-chat").onclick = (e) => {
+    const hidden = !$("live-chat").hidden;
+    $("live-chat").hidden = hidden;
+    e.currentTarget.classList.toggle("on", !hidden);
+  };
+
+  $("t-info").onclick = (e) => {
+    $("info-box").hidden = !$("info-box").hidden;
+    e.currentTarget.classList.toggle("on", !$("info-box").hidden);
+  };
+
+  $("q-btn").onclick = () => { $("q-box").hidden = !$("q-box").hidden; };
+  $("hg-toggle").onclick = (e) => e.currentTarget.classList.toggle("on");
+
+  /* ----------------------------------------------------------------------
+     Sala: quem está dentro e quem transmite.
+     "live: true" é quem tem um stream ativo. Em mesh P2P cada um desses
+     custa um encoder por espectador, então a contagem importa.
+     ---------------------------------------------------------------------- */
+  const PEOPLE = [
+    { n: "joao",   g: "g2", live: true, watch: 2 },
+    { n: "mari",   g: "g3", live: true, watch: 1, speaking: true },
+    { n: "ettym",  g: "g4" },
+    { n: "lucas",  g: "g5", muted: true },
+    { n: "bia",    g: "g6" },
+    { n: "pedro",  g: "g1", live: true, watch: 3 },
+    { n: "rafa",   g: "g2" },
+    { n: "thiago", g: "g3", muted: true },
+    { n: "ana",    g: "g5", speaking: true },
+    { n: "caio",   g: "g6" },
+    { n: "duda",   g: "g4" },
+    { n: "igor",   g: "g1" }
+  ];
+
+  let count = 5;
+  const watching = new Set([0]);  // índices das lives que você escolheu
+
+  const ini = (name) => name.slice(0, 2).toUpperCase();
+  const room = () => PEOPLE.slice(0, count);
+  const lives = () => room().map((p, i) => ({ p, i })).filter((x) => x.p.live);
+
+  // Colunas e linhas para o palco, conforme quantas você assiste.
+  function shape(n) {
+    if (n <= 1) return { cols: 1, rows: 1 };
+    if (n === 2) return { cols: 2, rows: 1 };
+    if (n <= 4) return { cols: 2, rows: 2 };
+    return { cols: 3, rows: Math.ceil(n / 3) };
+  }
+
+  // PALCO: só quem você está assistindo.
+  function renderStage() {
+    const sel = room().map((p, i) => ({ p, i })).filter((x) => watching.has(x.i));
+    const g = $("grid");
+
+    $("grid").hidden = sel.length === 0;
+    $("stage-empty").hidden = sel.length > 0;
+    $("info-box").hidden = $("info-box").hidden || sel.length === 0;
+
+    const { cols, rows } = shape(sel.length);
+    g.dataset.cols = String(cols);
+    g.dataset.rows = String(rows);
+
+    g.innerHTML = sel.map(({ p, i }) => `
+      <div class="gtile watching ${p.speaking ? "speaking" : ""}">
+        <span class="fake-sm">stream do ${p.n}</span>
+        <span class="lv">● AO VIVO</span>
+        <span class="watch">👁 ${p.watch}</span>
+        <button class="stop" data-i="${i}">✕ Parar</button>
+        <span class="nm">${p.muted ? '<span class="mute">🎙</span>' : ""}${p.n}</span>
+      </div>`).join("");
+
+    // Parar de assistir devolve o tile para a bandeja.
+    g.querySelectorAll(".stop").forEach((el) => {
+      el.onclick = (e) => {
+        e.stopPropagation();
+        watching.delete(Number(el.dataset.i));
+        renderAll();
+      };
+    });
+  }
+
+  // BANDEJA: lives disponíveis primeiro, depois quem está só na voz.
+  function renderTray() {
+    const rest = room().map((p, i) => ({ p, i })).filter((x) => !watching.has(x.i));
+    const avail = rest.filter((x) => x.p.live);
+    const plain = rest.filter((x) => !x.p.live);
+
+    const label = avail.length
+      ? `<span class="tray-label">${avail.length} live${avail.length > 1 ? "s" : ""} disponível${avail.length > 1 ? "eis" : ""}</span>`
+      : `<span class="tray-label">Na voz</span>`;
+
+    $("tray").innerHTML = label + [...avail, ...plain].map(({ p, i }) => {
+      if (p.live) {
+        return `<div class="tcard live" data-i="${i}">
+          <div class="av ${p.g}">${ini(p.n)}</div>
+          <span class="lv">● AO VIVO</span>
+          <span class="add">Assistir</span>
+          <span class="nm">${p.muted ? '<span class="mute">🎙</span>' : ""}${p.n}</span>
+        </div>`;
+      }
+      return `<div class="tcard ${p.speaking ? "speaking" : ""}">
+        <div class="av ${p.g}">${ini(p.n)}</div>
+        <span class="nm">${p.muted ? '<span class="mute">🎙</span>' : ""}${p.n}</span>
+      </div>`;
+    }).join("");
+
+    // Clicar numa live disponível traz ela para o palco.
+    $("tray").querySelectorAll(".tcard.live").forEach((el) => {
+      el.onclick = () => { watching.add(Number(el.dataset.i)); renderAll(); };
+    });
+  }
+
+  function renderHeader() {
+    const list = room();
+    const lv = lives();
+    const watched = watching.size;
+    const names = list.filter((p, i) => watching.has(i)).map((p) => p.n);
+
+    $("live-topic").textContent = names.length
+      ? `Assistindo ${names.join(" e ")}`
+      : `${lv.length} transmitindo nesta sala`;
+
+    // O custo real: um encoder por live assistida, não por live existente.
+    const idle = Math.max(0, lv.length - watched);
+    const c = $("cost");
+    c.innerHTML = `<b>${watched}</b> de ${lv.length} lives${idle ? ` · ${idle} sem encoder` : ""}`;
+    c.classList.toggle("warn", watched >= 3);
+
+    document.querySelector(".lc-head small").textContent = `${list.length} na sala`;
+  }
+
+  function renderAll() { renderStage(); renderTray(); renderHeader(); syncFloat(); }
+
+  // Alterna o overlay de informações
+  $("t-layout").onclick = () => {
+    const all = lives();
+    if (watching.size === all.length) watching.clear();
+    else all.forEach((x) => watching.add(x.i));
+    renderAll();
+  };
+
+  document.querySelectorAll(".n-btn").forEach((b) => {
+    b.onclick = () => {
+      document.querySelectorAll(".n-btn").forEach((x) => x.classList.remove("on"));
+      b.classList.add("on");
+      count = Number(b.dataset.n);
+      [...watching].forEach((i) => { if (i >= count) watching.delete(i); });
+      renderAll();
+    };
+  });
+
+  /* ----------------------------------------------------------------------
+     PRÉVIA FLUTUANTE — mesma mecânica do FloatingLivePreview:
+     só aparece longe da chamada, arrasta pela barra, clique sem arrastar
+     volta para a chamada, ✕ recolhe para o chip.
+     ---------------------------------------------------------------------- */
+  let collapsed = false;
+  let pos = null;              // {left, top} depois do primeiro arrasto
+  let drag = false, didDrag = false;
+  let sx = 0, sy = 0, ox = 0, oy = 0;
+
+  function renderFloatStage() {
+    const sel = room().map((p, i) => ({ p, i })).filter((x) => watching.has(x.i));
+    const st = $("float-stage");
+    const show = sel.slice(0, 2);   // cabem dois; acima disso vira "+N"
+    st.dataset.n = String(Math.max(1, show.length));
+    if (!sel.length) {
+      st.innerHTML = '<div class="fs-empty">Só voz, sem live</div>';
+      return;
+    }
+    st.innerHTML = show.map(({ p }, k) => `
+      <div class="fs-tile">
+        <span style="color:rgba(255,255,255,.16);font-size:9px;font-weight:600">STREAM</span>
+        ${k === 1 && sel.length > 2 ? `<span class="more">+${sel.length - 2}</span>` : ""}
+        <span class="nm">${p.n}</span>
+      </div>`).join("");
+  }
+
+  // Longe da chamada = olhando o chat enquanto está na Sala 1.
+  function syncFloat() {
+    const away = !$("view-chat").hidden;
+    $("float").hidden = !away || collapsed;
+    $("float-chip").hidden = !away || !collapsed;
+    if (away && !collapsed) renderFloatStage();
+  }
+
+  function place(el) {
+    if (!pos) return;
+    el.style.left = pos.left + "px";
+    el.style.top = pos.top + "px";
+    el.style.right = "auto";
+    el.style.bottom = "auto";
+  }
+
+  // Mesma margem de 8px do clampPos original.
+  function clamp(left, top) {
+    const el = $("float");
+    const w = el.offsetWidth || 340;
+    const h = el.offsetHeight || 240;
+    return {
+      left: Math.max(8, Math.min(window.innerWidth - w - 8, left)),
+      top: Math.max(8, Math.min(window.innerHeight - h - 8, top))
+    };
+  }
+
+  const bar = $("float-bar");
+  bar.onpointerdown = (e) => {
+    if (e.button !== 0) return;
+    const r = $("float").getBoundingClientRect();
+    drag = true; didDrag = false;
+    sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top;
+    $("float").classList.add("grabbing");
+    bar.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  };
+  bar.onpointermove = (e) => {
+    if (!drag) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    // Mesmo limiar de 25px² do original: abaixo disso é clique, não arrasto.
+    if (!didDrag && dx * dx + dy * dy < 25) return;
+    didDrag = true;
+    pos = clamp(ox + dx, oy + dy);
+    place($("float"));
+  };
+  const endDrag = () => {
+    if (!drag) return;
+    drag = false;
+    $("float").classList.remove("grabbing");
+    if (!didDrag) setView("live");   // clique sem arrastar volta para a chamada
+  };
+  bar.onpointerup = endDrag;
+  bar.onpointercancel = endDrag;
+
+  $("float-hide").onpointerdown = (e) => e.stopPropagation();
+  $("float-hide").onclick = (e) => {
+    e.stopPropagation();
+    collapsed = true;
+    if (pos) place($("float-chip"));
+    syncFloat();
+  };
+  $("float-chip").onclick = () => { collapsed = false; syncFloat(); };
+  $("float-back").onclick = (e) => { e.stopPropagation(); setView("live"); };
+
+  window.addEventListener("resize", () => {
+    if (!pos) return;
+    pos = clamp(pos.left, pos.top);
+    place($("float"));
+    place($("float-chip"));
+  });
+
+  /* ----------------------------------------------------------------------
+     CONFIGURAÇÕES
+     Os itens são os de src/common/Settings.ts. Hoje a lista é plana; aqui
+     estão agrupados, que é a única mudança estrutural que eu proponho.
+     ---------------------------------------------------------------------- */
+  const SET_GROUPS = [
+    { g: "Conta", items: [
+      ["account", "👤", "Conta"], ["profile", "🪪", "Perfil"],
+      ["sessions", "🛡", "Sessões"], ["badges", "🎖", "Emblemas"],
+      ["privacy", "🔒", "Privacidade"], ["connections", "🔗", "Conexões"]
+    ]},
+    { g: "Aplicativo", items: [
+      ["interface", "🎨", "Interface"], ["notifications", "🔔", "Notificações"],
+      ["language", "🏳", "Idioma"], ["window", "🪟", "Janela"],
+      ["activity", "🎮", "Status de atividade"]
+    ]},
+    { g: "Voz e vídeo", items: [["call", "📞", "Chamadas e live"]] },
+    { g: "Avançado", items: [
+      ["developer", "💻", "Desenvolvedor"], ["experiments", "🧪", "Experimentos"],
+      ["tickets", "🎫", "Tickets"]
+    ]}
+  ];
+
+  // Tokens reais de themes.ts
+  const TOKENS = [
+    ["background-color", "Fundo"], ["pane-color", "Painel"],
+    ["side-pane-color", "Painel lateral"], ["primary-color", "Destaque"],
+    ["alert-color", "Alerta"], ["warn-color", "Aviso"],
+    ["success-color", "Sucesso"]
+  ];
+  const DEFAULTS = {
+    "background-color": "#07080d", "pane-color": "#12141c",
+    "side-pane-color": "#0e1016", "primary-color": "#7aa2ff",
+    "alert-color": "#ff5c7a", "warn-color": "#f0b232", "success-color": "#3dd68c"
+  };
+  const DISCORD = {
+    "background-color": "#1e1f22", "pane-color": "#313338",
+    "side-pane-color": "#2b2d31", "primary-color": "#5865f2",
+    "alert-color": "#da373c", "warn-color": "#f0b232", "success-color": "#23a55a"
+  };
+
+  let page = "interface";
+
+  function renderSetNav() {
+    $("set-list").innerHTML = SET_GROUPS.map((sec) =>
+      `<div class="snav-group">${sec.g}</div>` +
+      sec.items.map(([id, ic, nm]) =>
+        `<div class="chan ${id === page ? "active" : ""}" data-p="${id}">
+           <span class="ic">${ic}</span><span class="nm">${nm}</span>
+         </div>`).join("")
+    ).join("");
+
+    $("set-list").querySelectorAll(".chan").forEach((el) => {
+      el.onclick = () => { page = el.dataset.p; renderSetNav(); renderSetPage(); };
+    });
+  }
+
+  const swatchHtml = () => TOKENS.map(([k, nm]) => {
+    const v = getComputedStyle(document.body).getPropertyValue("--" + k).trim() || DEFAULTS[k];
+    return `<label class="swatch">
+      <input type="color" value="${v}" data-k="${k}">
+      <span class="lb"><b>${nm}</b><small>--${k}</small></span>
+    </label>`;
+  }).join("");
+
+  const PAGES = {
+    interface: () => `
+      <h2>Interface</h2>
+      <div class="sub">Aparência do app. Tudo aqui vale só para você.</div>
+
+      <h3>Tema</h3>
+      <div class="preset-row">
+        <div class="preset on" data-preset="default">
+          <span class="dots"><i style="background:#7aa2ff"></i><i style="background:#12141c"></i><i style="background:#07080d"></i></span>
+          Padrão
+        </div>
+        <div class="preset" data-preset="discord">
+          <span class="dots"><i style="background:#5865f2"></i><i style="background:#313338"></i><i style="background:#1e1f22"></i></span>
+          Clássico
+        </div>
+      </div>
+
+      <h3>Cores</h3>
+      <div class="swatches">${swatchHtml()}</div>
+      <div class="warn-note">
+        Mexa numa cor e vá para as telas de Chat ou Live pelo alternador.
+        A mudança aparece lá na hora, porque as duas usam os mesmos tokens.
+      </div>
+
+      <h3>Layout</h3>
+      <div class="sgroup">
+        <div class="sblock">
+          <span class="bic">▭</span>
+          <div class="bd"><b>Painéis flutuantes</b><small>Cantos arredondados e espaço entre os painéis.</small></div>
+          <span class="sw" data-tog="1"></span>
+        </div>
+        <div class="sblock">
+          <span class="bic">◍</span>
+          <div class="bd"><b>Desfoque nos cabeçalhos</b><small>Desligue se o app estiver pesado. Usa o valor sem blur do tema.</small></div>
+          <span class="sw on" data-tog="1"></span>
+        </div>
+        <div class="sblock click">
+          <span class="bic">&lt;/&gt;</span>
+          <div class="bd"><b>CSS personalizado</b><small>Só CSS. HTML e imagens externas não funcionam aqui.</small></div>
+          <span class="chev">›</span>
+        </div>
+      </div>`,
+
+    call: () => `
+      <h2>Chamadas e live</h2>
+      <div class="sub">Qualidade da transmissão e uso de recursos da máquina.</div>
+
+      <h3>Transmissão</h3>
+      <div class="sgroup">
+        <div class="sblock">
+          <span class="bic">📶</span>
+          <div class="bd"><b>Bitrate</b><small>Teto de banda. Vale por espectador, não no total.</small></div>
+          <div class="slider">
+            <input type="range" min="250" max="8000" step="250" value="2500" id="br">
+            <span class="val" id="br-v">2500 kbps</span>
+          </div>
+        </div>
+        <div class="sblock">
+          <span class="bic">🎮</span>
+          <div class="bd"><b>Modo jogo pesado</b><small>Usa o encoder da placa (H.264) e limita a 720p/30fps, para a live quase não roubar desempenho do jogo.</small></div>
+          <span class="sw on" data-tog="1"></span>
+        </div>
+        <div class="sblock">
+          <span class="bic">🖼</span>
+          <div class="bd"><b>Prévia na grade</b><small>Desligado, quem transmite só gasta encoder para quem abriu a live.</small></div>
+          <span class="sw" data-tog="1"></span>
+        </div>
+      </div>
+      <div class="warn-note">
+        Sem servidor de mídia, cada espectador custa um encoder na máquina de
+        quem transmite. É por isso que estes três ajustes existem.
+      </div>
+
+      <h3>Áudio</h3>
+      <div class="sgroup">
+        <div class="sblock">
+          <span class="bic">🎙</span>
+          <div class="bd"><b>Cancelamento de ruído</b></div>
+          <span class="sw on" data-tog="1"></span>
+        </div>
+        <div class="sblock">
+          <span class="bic">🔇</span>
+          <div class="bd"><b>Silenciar ao entrar</b></div>
+          <span class="sw" data-tog="1"></span>
+        </div>
+      </div>`,
+
+    account: () => `
+      <h2>Conta</h2>
+      <div class="sub">Dados de acesso e segurança.</div>
+      <div class="acct">
+        <div class="av lg g4 bordered" data-st="on">ET</div>
+        <div class="bd"><b>ettym</b><small>ettym@exemplo.com · entrou em 2025</small></div>
+        <button class="btn">Editar perfil</button>
+      </div>
+      <div class="sgroup">
+        <div class="sblock click"><span class="bic">✉</span><div class="bd"><b>E-mail</b><small>ettym@exemplo.com</small></div><span class="chev">›</span></div>
+        <div class="sblock click"><span class="bic">🔑</span><div class="bd"><b>Senha</b><small>Trocada há 3 meses</small></div><span class="chev">›</span></div>
+        <div class="sblock">
+          <span class="bic">🛡</span>
+          <div class="bd"><b>Verificação em duas etapas</b><small>Recomendado, ainda mais sendo dono do servidor.</small></div>
+          <span class="sw" data-tog="1"></span>
+        </div>
+      </div>`,
+
+    badges: () => `
+      <h2>Emblemas</h2>
+      <div class="sub">Todos livres. Escolha os que aparecem no seu perfil.</div>
+      <div class="sgroup">
+        <div class="sblock">
+          <span class="bic">🎖</span>
+          <div class="bd"><b>Apoiador</b><small>Moldura no avatar</small></div>
+          <span class="sw on" data-tog="1"></span>
+        </div>
+        <div class="sblock">
+          <span class="bic">🐱</span>
+          <div class="bd"><b>Orelhas de gato</b><small>Sobreposição no avatar</small></div>
+          <span class="sw" data-tog="1"></span>
+        </div>
+        <div class="sblock">
+          <span class="bic">⚡</span>
+          <div class="bd"><b>Goku</b><small>Sobreposição no avatar</small></div>
+          <span class="sw on" data-tog="1"></span>
+        </div>
+      </div>`
+  };
+
+  function renderSetPage() {
+    const all = SET_GROUPS.flatMap((s) => s.items);
+    const item = all.find(([id]) => id === page);
+    $("set-title").textContent = item ? item[2] : "Configurações";
+
+    const render = PAGES[page];
+    $("set-body").innerHTML = render
+      ? render()
+      : `<h2>${item ? item[2] : ""}</h2>
+         <div class="sub">Esta página existe no app; não desenhei ela nesta maquete.</div>`;
+
+    // Interruptores
+    $("set-body").querySelectorAll("[data-tog]").forEach((el) => {
+      el.onclick = () => el.classList.toggle("on");
+    });
+
+    // Editor de cores: mesma ideia do updateTheme(), escrevendo a variável
+    // direto no elemento. Aqui no body para valer nas duas skins.
+    $("set-body").querySelectorAll('input[type="color"]').forEach((el) => {
+      el.oninput = () => {
+        document.body.style.setProperty("--" + el.dataset.k, el.value);
+        renderAll();
+      };
+    });
+
+    $("set-body").querySelectorAll(".preset").forEach((el) => {
+      el.onclick = () => {
+        const map = el.dataset.preset === "discord" ? DISCORD : DEFAULTS;
+        for (const k in map) document.body.style.setProperty("--" + k, map[k]);
+        renderSetPage();
+        renderAll();
+      };
+    });
+
+    const br = $("set-body").querySelector("#br");
+    if (br) br.oninput = () => { $("br-v").textContent = br.value + " kbps"; };
+  }
+
+  renderSetNav();
+  renderSetPage();
+
+  renderAll();
+  syncFloat();
+</script>
+</body>
+</html>

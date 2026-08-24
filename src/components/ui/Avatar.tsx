@@ -268,18 +268,6 @@ function AvatarBorder(props: {
             serverOrUser={props.serverOrUser}
           />
         </Match>
-        <Match when={props.badge?.bit === USER_BADGES.PALESTINE.bit}>
-          <UniversalBorder
-            type="palestine"
-            size={props.size}
-            avatarUrl={props.url}
-            hovered={props.hovered}
-            badges={props.badges}
-            color={props.color}
-            children={props.children}
-            serverOrUser={props.serverOrUser}
-          />
-        </Match>
         <Match when={props.badge || props.serverOrUser?.verified}>
           <BasicBorder
             badges={props.badges}
@@ -419,8 +407,7 @@ type BorderType =
   | "emo-supporter"
   | "supporter"
   | "admin"
-  | "founder"
-  | "palestine";
+  | "founder";
 
 interface UniversalBorderProps {
   type: BorderType;

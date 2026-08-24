@@ -221,6 +221,13 @@ function MessagePane() {
     }
   });
 
+  onCleanup(() => {
+    // Evita channelId stale quando sai do canal (ex.: Configuracoes com live aberta).
+    if (header.details().id === "MessagePane") {
+      header.updateHeader({ title: "Nothing Selected" });
+    }
+  });
+
   const member = () =>
     serverMembers.get(channel()?.serverId!, account.user()?.id!);
   const isEmailNotConfirmed = () => !account.user()?.emailConfirmed;

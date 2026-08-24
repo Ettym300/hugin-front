@@ -2,12 +2,43 @@ import { lazy } from "solid-js";
 import { ExperimentIds } from "./experiments";
 import { t } from "@nerimity/i18lite";
 
+export const SettingGroup = {
+  Account: "account",
+  App: "app",
+  Voice: "voice",
+  Advanced: "advanced"
+} as const;
+
+export type SettingGroupId = (typeof SettingGroup)[keyof typeof SettingGroup];
+
+/**
+ * Ordem em que os grupos aparecem no drawer. Um ajuste visivel so precisa
+ * mexer aqui, sem tocar na lista de telas.
+ */
+export const settingGroups: { id: SettingGroupId; name: () => string }[] = [
+  {
+    id: SettingGroup.Account,
+    name: () => t("settings.drawer.groups.account")
+  },
+  { id: SettingGroup.App, name: () => t("settings.drawer.groups.app") },
+  { id: SettingGroup.Voice, name: () => t("settings.drawer.groups.voice") },
+  {
+    id: SettingGroup.Advanced,
+    name: () => t("settings.drawer.groups.advanced")
+  }
+];
+
 export interface Setting {
   path: string;
   routePath: string;
   name: () => string;
   icon: string;
   element: any;
+  /**
+   * Ausente nas telas escondidas. Uma tela visivel sem grupo continua sendo
+   * listada, so cai no fim sem cabecalho, para nunca desaparecer do drawer.
+   */
+  group?: SettingGroupId;
   hide?: boolean;
   hideHeader?: boolean;
   experimentId?: ExperimentIds;
@@ -28,6 +59,7 @@ const settings: Setting[] = [
     routePath: "/account",
     name: () => t("settings.drawer.account"),
     icon: "account_circle",
+    group: SettingGroup.Account,
     element: lazy(() => import("@/components/settings/AccountSettings"))
   },
 
@@ -36,6 +68,7 @@ const settings: Setting[] = [
     routePath: "/profile",
     name: () => t("settings.account.profile"),
     icon: "person",
+    group: SettingGroup.Account,
     element: lazy(() => import("@/components/settings/ProfileSettings"))
   },
   {
@@ -43,6 +76,7 @@ const settings: Setting[] = [
     routePath: "/sessions",
     name: () => t("settings.drawer.sessions"),
     icon: "data_loss_prevention",
+    group: SettingGroup.Account,
     element: lazy(() => import("@/components/settings/SessionSettings"))
   },
   {
@@ -50,6 +84,7 @@ const settings: Setting[] = [
     routePath: "/badges",
     name: () => t("settings.drawer.badges"),
     icon: "local_police",
+    group: SettingGroup.Account,
     element: lazy(() => import("@/components/settings/BadgeSettings"))
   },
   {
@@ -57,6 +92,7 @@ const settings: Setting[] = [
     routePath: "/interface",
     name: () => t("settings.drawer.interface"),
     icon: "brush",
+    group: SettingGroup.App,
     element: lazy(() => import("@/components/settings/InterfaceSettings"))
   },
   {
@@ -72,6 +108,7 @@ const settings: Setting[] = [
     routePath: "/notifications",
     name: () => t("settings.drawer.notifications"),
     icon: "notifications",
+    group: SettingGroup.App,
     element: lazy(() => import("@/components/settings/NotificationsSettings"))
   },
   {
@@ -79,6 +116,7 @@ const settings: Setting[] = [
     routePath: "/call-settings",
     name: () => t("settings.drawer.call-settings"),
     icon: "call",
+    group: SettingGroup.Voice,
     element: lazy(() => import("@/components/settings/CallSettings"))
   },
   {
@@ -86,6 +124,7 @@ const settings: Setting[] = [
     routePath: "/connections",
     name: () => t("settings.drawer.connections"),
     icon: "hub",
+    group: SettingGroup.Account,
     element: lazy(() => import("@/components/settings/ConnectionsSettings"))
   },
   {
@@ -93,6 +132,7 @@ const settings: Setting[] = [
     routePath: "/privacy",
     name: () => t("settings.drawer.privacy"),
     icon: "shield",
+    group: SettingGroup.Account,
     element: lazy(() => import("@/components/settings/PrivacySettings"))
   },
   {
@@ -100,6 +140,7 @@ const settings: Setting[] = [
     routePath: "/window-settings",
     name: () => t("settings.drawer.window-settings"),
     icon: "open_in_new",
+    group: SettingGroup.App,
     element: lazy(() => import("@/components/settings/WindowSettings"))
   },
   {
@@ -107,6 +148,7 @@ const settings: Setting[] = [
     routePath: "/activity-status",
     name: () => t("settings.drawer.activity-status"),
     icon: "gamepad",
+    group: SettingGroup.App,
     element: lazy(() => import("@/components/settings/ActivityStatus"))
   },
   {
@@ -114,6 +156,7 @@ const settings: Setting[] = [
     routePath: "/language",
     name: () => t("settings.drawer.language"),
     icon: "flag",
+    group: SettingGroup.App,
     element: lazy(() => import("@/components/settings/LanguageSettings"))
   },
   {
@@ -121,6 +164,7 @@ const settings: Setting[] = [
     routePath: "/developer",
     name: () => t("settings.drawer.developer"),
     icon: "code",
+    group: SettingGroup.Advanced,
     element: lazy(
       () => import("@/components/settings/developer/DeveloperSettings")
     )
@@ -199,6 +243,7 @@ const settings: Setting[] = [
     routePath: "/experiments",
     name: () => t("settings.drawer.experiments"),
     icon: "science",
+    group: SettingGroup.Advanced,
     element: lazy(() => import("@/components/settings/ExperimentSettings"))
   },
   {
@@ -206,6 +251,7 @@ const settings: Setting[] = [
     routePath: "/tickets/:id?",
     name: () => t("settings.drawer.tickets"),
     icon: "sell",
+    group: SettingGroup.Account,
     element: lazy(() => import("@/components/settings/TicketSettings"))
   }
 ];

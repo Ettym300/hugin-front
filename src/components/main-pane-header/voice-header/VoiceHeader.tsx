@@ -23,11 +23,21 @@ import { CustomLink } from "@/components/ui/CustomLink";
 import MemberContextMenu from "@/components/member-context-menu/MemberContextMenu";
 import RouterEndpoints from "@/common/RouterEndpoints";
 import { useMatch, useNavigate, useParams } from "solid-navigator";
-import { VoiceUser, cachedVolumes, setCachedVolumes } from "@/chat-api/store/useVoiceUsers";
+import { VoiceUser, cachedLiveVolumes, setCachedLiveVolumes } from "@/chat-api/store/useVoiceUsers";
 import { t } from "@nerimity/i18lite";
 import { StorageKeys, useLocalStorage } from "@/common/localStorage";
 
 const [showParticipants, setShowParticipants] = createSignal(true);
+
+/**
+ * No modo teatro o palco ocupa o painel inteiro e o chat vira uma coluna ao
+ * lado, em vez de o video ficar numa faixa acima das mensagens. Quem monta
+ * essa grade e o MainPane, porque o cabecalho, o palco e as mensagens sao
+ * irmaos no DOM.
+ */
+const [theaterMode, setTheaterMode] = createSignal(false);
+export { theaterMode, setTheaterMode };
+
 type VoiceViewMode = "gallery" | "focus";
 const [viewMode, setViewMode] = createSignal<VoiceViewMode>("gallery");
 const [floatingViewMode, setFloatingViewMode] =
@@ -39,10 +49,19 @@ const [floatPos, setFloatPos] = createSignal<{
 
 export function VoiceHeader(props: { channelId?: string; floating?: boolean }) {
   let headerRef: HTMLDivElement | undefined;
+  const { isMobileWidth } = useWindowProperties();
   const [stageHeight, setStageHeight] = useLocalStorage(
     StorageKeys.voiceStageHeight,
     320
   );
+
+  /**
+   * No teatro a grade do MainPane manda na altura, entao o palco nao aplica a
+   * altura fixa nem a alca de redimensionar. A condicao acompanha a do
+   * MainPane, que nao monta a grade em largura de celular.
+   */
+  const isTheaterStage = () =>
+    theaterMode() && !props.floating && !isMobileWidth();
 
   const clampStageHeight = (px: number) => {
     const min = 180;
@@ -143,30 +162,44 @@ export function VoiceHeader(props: { channelId?: string; floating?: boolean }) {
     return 4;
   };
 
+  const hideLiveFromStage = (userId: string) => {
+    if (userId === account.user()?.id) return;
+    voiceUsers.setLiveWatched(userId, false);
+    if (selectedUserId() === userId) {
+      const next = videoStreamingUsers().find(
+        (u) => u.userId !== userId && voiceUsers.isLiveWatched(u.userId)
+      );
+      setSelectedUserId(next?.userId ?? null);
+    }
+    if (displayMode() === "focus") setDisplayMode("gallery");
+  };
+
   const onTileClick = (userId: string) => {
     const isSelf = userId === account.user()?.id;
-    if (
-      voiceUsers.videoEnabled(userId) &&
-      !isSelf &&
-      !voiceUsers.isLiveWatched(userId)
-    ) {
+    const streaming = voiceUsers.videoEnabled(userId);
+
+    // Live oculta / ainda nao assistida: so mostra no palco (da pra clicar de novo depois).
+    if (streaming && !isSelf && !voiceUsers.isLiveWatched(userId)) {
       voiceUsers.setLiveWatched(userId, true);
       setSelectedUserId(userId);
       return;
     }
+
     if (
       displayMode() === "gallery" &&
-      voiceUsers.videoEnabled(userId) &&
+      streaming &&
       voiceUsers.isLiveWatched(userId)
     ) {
       setSelectedUserId(userId);
       setDisplayMode("focus");
       return;
     }
+
     if (displayMode() === "focus" && userId === selectedUserId()) {
       setDisplayMode("gallery");
       return;
     }
+
     setSelectedUserId(userId);
   };
 
@@ -190,7 +223,10 @@ export function VoiceHeader(props: { channelId?: string; floating?: boolean }) {
           conditionalClass(props.floating, style.floating)
         )}
         style={
-          !props.floating && isSomeoneVideoStreaming() && showParticipants()
+          !props.floating &&
+          !isTheaterStage() &&
+          isSomeoneVideoStreaming() &&
+          showParticipants()
             ? {
                 height: `${clampStageHeight(stageHeight())}px`,
                 "min-height": "180px"
@@ -209,22 +245,25 @@ export function VoiceHeader(props: { channelId?: string; floating?: boolean }) {
             </Show>
             <Show when={isSomeoneVideoStreaming() && displayMode() === "gallery"}>
               <div class={style.galleryLayout}>
-                <div
-                  class={style.videoGrid}
-                  style={{
-                    "grid-template-columns": `repeat(${gridColumns()}, minmax(0, 1fr))`
-                  }}
-                >
-                  <For each={visibleStageUsers()}>
-                    {(voiceUser) => (
-                      <VoiceTile
-                        voiceUser={voiceUser!}
-                        selected={voiceUser.userId === selectedUserId()}
-                        onClick={() => onTileClick(voiceUser.userId)}
-                      />
-                    )}
-                  </For>
-                </div>
+                <Show when={visibleStageUsers().length} fallback={<StageEmpty />}>
+                  <div
+                    class={style.videoGrid}
+                    style={{
+                      "grid-template-columns": `repeat(${gridColumns()}, minmax(0, 1fr))`
+                    }}
+                  >
+                    <For each={visibleStageUsers()}>
+                      {(voiceUser) => (
+                        <VoiceTile
+                          voiceUser={voiceUser!}
+                          selected={voiceUser.userId === selectedUserId()}
+                          onClick={() => onTileClick(voiceUser.userId)}
+                          onHide={() => hideLiveFromStage(voiceUser.userId)}
+                        />
+                      )}
+                    </For>
+                  </div>
+                </Show>
                 <HiddenLivesBar
                   users={hiddenLiveUsers()}
                   onWatch={onTileClick}
@@ -233,13 +272,16 @@ export function VoiceHeader(props: { channelId?: string; floating?: boolean }) {
             </Show>
             <Show when={isSomeoneVideoStreaming() && displayMode() === "focus"}>
               <div class={style.stageLayout}>
-                <Show when={selectedVoiceUser()}>
+                <Show when={selectedVoiceUser()} fallback={<StageEmpty />}>
                   <div class={style.stageMain}>
                     <VoiceTile
                       voiceUser={selectedVoiceUser()!}
                       selected
                       large
                       onClick={() => onTileClick(selectedVoiceUser()!.userId)}
+                      onHide={() =>
+                        hideLiveFromStage(selectedVoiceUser()!.userId)
+                      }
                     />
                   </div>
                 </Show>
@@ -251,6 +293,7 @@ export function VoiceHeader(props: { channelId?: string; floating?: boolean }) {
                         selected={voiceUser.userId === selectedUserId()}
                         filmstrip
                         onClick={() => onTileClick(voiceUser.userId)}
+                        onHide={() => hideLiveFromStage(voiceUser.userId)}
                       />
                     )}
                   </For>
@@ -263,7 +306,14 @@ export function VoiceHeader(props: { channelId?: string; floating?: boolean }) {
             </Show>
           </div>
         </Show>
-        <Show when={!props.floating && isSomeoneVideoStreaming() && showParticipants()}>
+        <Show
+          when={
+            !props.floating &&
+            !isTheaterStage() &&
+            isSomeoneVideoStreaming() &&
+            showParticipants()
+          }
+        >
           <button
             type="button"
             class={style.stageResizeHandle}
@@ -279,6 +329,19 @@ export function VoiceHeader(props: { channelId?: string; floating?: boolean }) {
         </Show>
       </div>
     </Show>
+  );
+}
+
+function StageEmpty() {
+  return (
+    <div class={style.stageEmpty}>
+      <div class={style.stageEmptyTitle}>
+        {t("mainPaneHeader.voice.noLiveSelected")}
+      </div>
+      <div class={style.stageEmptyHint}>
+        {t("mainPaneHeader.voice.noLiveSelectedHint")}
+      </div>
+    </div>
   );
 }
 
@@ -314,6 +377,7 @@ function VoiceTile(props: {
   large?: boolean;
   filmstrip?: boolean;
   onClick?: () => void;
+  onHide?: () => void;
   onDblClick?: () => void;
 }) {
   const { voiceUsers, account } = useStore();
@@ -405,7 +469,8 @@ function VoiceTile(props: {
           title={t("mainPaneHeader.voice.stopWatchingLive")}
           onClick={(event) => {
             event.stopPropagation();
-            voiceUsers.setLiveWatched(props.voiceUser.userId, false);
+            // So tira do palco; fica na barra de ocultas pra clicar e ver de novo.
+            props.onHide?.();
           }}
         >
           <Icon name="visibility_off" size={16} />
@@ -426,28 +491,19 @@ function VideoStream(props: {
   large?: boolean;
 }) {
   let videoEl: HTMLVideoElement | undefined;
-  const { voiceUsers } = useStore();
 
   const [playing, setPlaying] = createSignal(false);
 
-  const voiceUser = () => {
-    const channelId = voiceUsers.currentUser()?.channelId;
-    if (!channelId || !props.userId) return undefined;
-    return voiceUsers.getVoiceUser(channelId, props.userId);
-  };
-
-  const volume = () =>
-    props.userId ? (cachedVolumes[props.userId] ?? 1) : 1;
-  const isVolumeMuted = () => volume() === 0;
+  const liveVolume = () =>
+    props.userId ? (cachedLiveVolumes[props.userId] ?? 1) : 1;
+  const isVolumeMuted = () => liveVolume() === 0;
   const showVolumeControls = () => !props.mute && !!props.userId;
   const showFullscreen = () => !props.filmstrip;
 
   const applyVolume = (next: number) => {
     const clamped = Math.max(0, Math.min(1, next));
     if (!props.userId) return;
-    setCachedVolumes(props.userId, clamped);
-    const audio = voiceUser()?.audio;
-    if (audio) audio.volume = clamped;
+    setCachedLiveVolumes(props.userId, clamped);
     if (videoEl) videoEl.volume = clamped;
   };
 
@@ -458,18 +514,16 @@ function VideoStream(props: {
   createEffect(() => {
     const userId = props.userId;
     if (!userId) return;
-    const vol = cachedVolumes[userId] ?? 1;
-    const audio = voiceUser()?.audio;
-    if (audio && audio.volume !== vol) audio.volume = vol;
+    const vol = cachedLiveVolumes[userId] ?? 1;
     if (videoEl && videoEl.volume !== vol) videoEl.volume = vol;
   });
 
   createEffect(
     on(
-      () => voiceUser()?.audio,
-      (audio) => {
-        if (!audio || !props.userId) return;
-        audio.volume = cachedVolumes[props.userId] ?? 1;
+      () => props.mediaStream,
+      () => {
+        if (!videoEl || !playing()) return;
+        videoEl.volume = liveVolume();
       }
     )
   );
@@ -485,7 +539,7 @@ function VideoStream(props: {
       .then(() => {
         setPlaying(true);
         el.muted = props.mute || false;
-        el.volume = volume();
+        el.volume = liveVolume();
       })
       .catch(() => {});
   };
@@ -538,7 +592,7 @@ function VideoStream(props: {
       if (!el.paused && el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
         setPlaying(true);
         el.muted = !!props.mute;
-        el.volume = volume();
+        el.volume = liveVolume();
         window.clearInterval(interval);
         return;
       }
@@ -598,7 +652,7 @@ function VideoStream(props: {
                 min={0}
                 max={1}
                 step={0.01}
-                value={volume()}
+                value={liveVolume()}
                 onInput={(event) => {
                   applyVolume(Number(event.currentTarget.value));
                 }}

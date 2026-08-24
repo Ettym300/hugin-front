@@ -12,21 +12,6 @@ export interface ExploreRoute {
 
 const exploreRoutes: ExploreRoute[] = [
   {
-    path: "servers",
-    routePath: "/servers",
-    match: "/servers/*",
-    name: () => t("explore.drawer.servers"),
-    icon: "dns",
-    element: lazy(() => import("@/components/explore/ExploreServers"))
-  },
-  {
-    path: "bots",
-    routePath: "/bots",
-    name: () => t("explore.drawer.bots"),
-    icon: "smart_toy",
-    element: lazy(() => import("@/components/explore/ExploreBots"))
-  },
-  {
     path: "themes",
     routePath: "/themes",
     name: () => t("explore.drawer.themes"),

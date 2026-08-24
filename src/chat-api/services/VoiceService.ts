@@ -23,6 +23,22 @@ export const postLeaveVoice = async (channelId: string) => {
   return data;
 };
 
+export type LiveKitTokenResponse = {
+  url: string;
+  token: string;
+  room: string;
+};
+
+export const postLiveKitToken = async (channelId: string) => {
+  const data = await request<LiveKitTokenResponse>({
+    method: "POST",
+    url:
+      env.SERVER_URL + "/api" + Endpoints.channel(channelId) + "/voice/livekit",
+    useToken: true
+  });
+  return data;
+};
+
 const lastCredentials = {
   generatedAt: null as null | number,
   result: null as null | any

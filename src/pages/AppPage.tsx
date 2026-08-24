@@ -8,7 +8,10 @@ import {
   Show
 } from "solid-js";
 import MainPaneHeader from "../components/main-pane-header/MainPaneHeader";
-import { FloatingLivePreview } from "../components/main-pane-header/voice-header/VoiceHeader";
+import {
+  FloatingLivePreview,
+  theaterMode
+} from "../components/main-pane-header/voice-header/VoiceHeader";
 
 import {
   getStorageString,
@@ -94,6 +97,44 @@ const MainPaneContainer = styled("div")<MainPaneContainerProps>`
     }
 
     scrollbar-width: none; /* Firefox */
+  }
+
+  /*
+   * Modo teatro: o palco da live ocupa o painel e o chat vira a coluna ao
+   * lado, em vez de o video ficar numa faixa acima das mensagens.
+   *
+   * O cabecalho, o palco e o painel de mensagens sao irmaos aqui porque o
+   * MainPaneHeader devolve um fragmento e o ChannelPane usa Switch/Match, que
+   * nao criam elemento. E isso que permite a grade sem mexer nas rotas.
+   */
+  &[data-theater="true"] {
+    display: grid;
+    overflow: hidden;
+    grid-template-areas:
+      "head head"
+      "stage chat";
+    grid-template-columns: minmax(0, 1fr) clamp(260px, 26%, 360px);
+    grid-template-rows: auto minmax(0, 1fr);
+
+    /* Cabecalho e os popovers que ele abre ficam na faixa de cima. */
+    > * {
+      grid-area: head;
+    }
+
+    > .voice-stage {
+      position: relative;
+      top: auto;
+      z-index: 1;
+      grid-area: stage;
+      min-height: 0;
+      max-height: none;
+    }
+
+    > .messagePane {
+      grid-area: chat;
+      min-width: 0;
+      border-left: var(--panel-border);
+    }
   }
 `;
 
@@ -307,6 +348,7 @@ function LeftDrawer() {
 function MainPane() {
   const windowProperties = useWindowProperties();
   const { hasRightDrawer, hasLeftDrawer } = useDrawer();
+  const { header, voiceUsers } = useStore();
   const [outerPaneElement, setOuterPaneElement] = createSignal<
     HTMLDivElement | undefined
   >(undefined);
@@ -316,10 +358,30 @@ function MainPane() {
   );
 
   const { width } = useResizeObserver(outerPaneElement);
+  const onInbox = useMatch(() => "/app/inbox/:id");
+  const onServerChannel = useMatch(() => "/app/servers/:serverId/:channelId");
+  const onMessageRoute = () => !!onInbox() || !!onServerChannel();
 
   useServerRedirect();
   useUserNotices();
   applyCustomCss();
+
+  const isStreamingHere = () => {
+    const details = header.details();
+    // A grade posiciona o painel de mensagens pela classe, entao so vale
+    // quando ele e de fato o painel aberto. Nas outras telas o id nao vem, e
+    // colocar um painel qualquer na coluna do chat quebraria o layout.
+    if (details.id !== "MessagePane" || !details.channelId) return false;
+    // Teatro so no canal: em Configuracoes o stage nao pode montar a grade.
+    if (!onMessageRoute()) return false;
+    return voiceUsers
+      .getVoiceUsersByChannelId(details.channelId)
+      .some((voiceUser) => voiceUsers.videoEnabled(voiceUser.userId));
+  };
+
+  // Estreito demais para duas colunas: ali o palco continua acima do chat.
+  const isTheater = () =>
+    theaterMode() && isStreamingHere() && !windowProperties.isMobileWidth();
 
   createEffect(() => {
     windowProperties.setPaneWidth(width());
@@ -334,6 +396,7 @@ function MainPane() {
           style={{ background: windowProperties.paneBackgroundColor() }}
           hasLeftDrawer={hasLeftDrawer()}
           hasRightDrawer={hasRightDrawer()}
+          data-theater={isTheater()}
           class={classNames(
             "main-pane-container",
             conditionalClass(
@@ -344,7 +407,8 @@ function MainPane() {
         >
           <MainPaneHeader />
           <Outlet name="mainPane" />
-          <Show when={!windowProperties.isMobileAgent()}>
+          {/* No teatro o painel nao rola, so as colunas por dentro. */}
+          <Show when={!windowProperties.isMobileAgent() && !isTheater()}>
             <CustomScrollbar
               scrollElement={mainPaneEl()}
               class={css`

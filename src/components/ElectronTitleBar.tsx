@@ -1,6 +1,7 @@
 import style from "./ElectronTitleBar.module.css";
 import { electronWindowAPI } from "@/common/Electron";
 import { appLogoUrl } from "@/common/worldEvents";
+import { APP_NAME } from "@/common/appBrand";
 import Icon from "./ui/icon/Icon";
 import { cn } from "@/common/classNames";
 import { createSignal } from "solid-js";
@@ -8,8 +9,8 @@ import { createSignal } from "solid-js";
 export function ElectronTitleBar() {
   return (
     <div class={style.barContainer}>
-      <img class={style.nerimityLogo} src={appLogoUrl()} alt="Concord" />
-      <span class={style.nerimityTitle}>Concord</span>
+      <img class={style.nerimityLogo} src={appLogoUrl()} alt={APP_NAME} />
+      <span class={style.nerimityTitle}>{APP_NAME}</span>
       <div class={style.windowControlButtonsContainer}>
         <CopyLinkButton />
         <Icon

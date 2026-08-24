@@ -109,7 +109,7 @@ const Items = () => {
       <Item
         label={t("explore.drawer.title")}
         icon={inExplore() ? "keyboard_arrow_down" : "explore"}
-        href="/app/explore/servers"
+        href="/app/explore/themes"
         match="/app/explore"
         class={style.exploreHeader}
       />

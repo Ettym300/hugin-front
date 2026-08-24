@@ -8,7 +8,7 @@
     "homePage": {
         "slogan": "A supaw dupaw mega dluppaw so so kuul yap appu!!!!!! OwO",
         "viewGitHubButton": "Peek At Da Code",
-        "subslogan": "Nerimity has an pwettey & paked expwience dat makes it su su shiny~",
+        "subslogan": "HUGIN has an pwettey & paked expwience dat makes it su su shiny~",
         "getStarted": "Wet's Gooo~",
         "availableOn": "Avaiwabwe on",
         "browser": "Bwowsew",
@@ -331,7 +331,7 @@
             "pushToTalk": "Push2Tawk",
             "bindButton": "Bind",
             "stopButton": "Stap",
-            "downloadAppNotice": "Downwoad Nerimity app fow dis featuwe ✨"
+            "downloadAppNotice": "Downwoad HUGIN app fow dis featuwe ✨"
         },
         "interface": {
             "blurEffect": "Bwuwwy Effect",
@@ -356,11 +356,11 @@
             "contributors": "Pwetty Pewsons"
         },
         "window": {
-            "downloadAppNotice": "To modifwy dese settins, u must downwoad da awww-some Nerimity desktop app~",
+            "downloadAppNotice": "To modifwy dese settins, u must downwoad da awww-some HUGIN desktop app~",
             "startupOptions": "Stawtup Optsies",
-            "openOnStartup": "Open Nerimity on stawtup",
+            "openOnStartup": "Open HUGIN on stawtup",
             "startMinimized": "Stawt Smol",
-            "startMinimizedDescription": "Minimize Nerimity to da tway automaticawwy~",
+            "startMinimizedDescription": "Minimize HUGIN to da tway automaticawwy~",
             "disableHardwareAcceleration": "Disabwe Hawdwawe Accewewation",
             "disableCustomTitlebar": "Disabwe Custom Titwebaw",
             "reopenAppNotice": "U gotta weopen da app fow da change to take effect"

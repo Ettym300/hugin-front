@@ -84,5 +84,8 @@ export default {
   },
   get EMAIL_CONFIRMATION_ENABLED() {
     return str("VITE_EMAIL_CONFIRMATION_ENABLED") === "true";
+  },
+  get LIVEKIT_ENABLED() {
+    return str("VITE_LIVEKIT_ENABLED") === "true";
   }
 };

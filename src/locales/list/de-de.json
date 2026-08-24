@@ -35,7 +35,7 @@
     },
     "homePage": {
         "slogan": "Eine moderne und elegante Chat-App.",
-        "subslogan": "Nerimity bietet ein elegantes und funktionsreiches Erlebnis, das sich abhebt.",
+        "subslogan": "HUGIN bietet ein elegantes und funktionsreiches Erlebnis, das sich abhebt.",
         "viewGitHubButton": "Auf GitHub ansehen",
         "getStarted": "Loslegen",
         "availableOn": "Verfügbar auf",
@@ -171,7 +171,7 @@
         "bots": {
             "title": "Erkunden – Bots",
             "noticeMessage": "Ein Bot kann nur alle {{hours}} Stunden gebumpt werden. Alle Bumps werden jeweils am {{date}} zurückgesetzt.",
-            "moderationNotice": "Bots werden nicht von Nerimity moderiert. Bitte melde Bots, die bösartig sind oder gegen die Nutzungsbedingungen verstoßen.",
+            "moderationNotice": "Bots werden nicht von HUGIN moderiert. Bitte melde Bots, die bösartig sind oder gegen die Nutzungsbedingungen verstoßen.",
             "inviteButton": "Einladen",
             "serverCount": "In {{count}} Servern"
         },
@@ -185,7 +185,7 @@
         },
         "themes": {
             "title": "Erkunde - Themes",
-            "themesHeaderDescription": "Personalisiere Nerimity mit einem custom Theme.",
+            "themesHeaderDescription": "Personalisiere HUGIN mit einem custom Theme.",
             "officialThemes": "Offizielle Themes",
             "communityThemes": "Themes aus der Community",
             "noCommunityThemes": "Es wurden keine Community Themes gefunden.",
@@ -195,7 +195,7 @@
         "servers": {
             "title": "Erkunde - Server",
             "noticeMessage": "Ein Server kann alle {{hours}} einmal gebumpt werden. Alle bumps werden am {{date}} zurückgesetzt.",
-            "moderationNotice": "Server werden nicht von Nerimity moderiert. Bitte melde Server die nicht den TOS folgen.",
+            "moderationNotice": "Server werden nicht von HUGIN moderiert. Bitte melde Server die nicht den TOS folgen.",
             "sortMostBumps": "Meiste Bumps",
             "sortMostMembers": "Meiste Mitglieder",
             "sortRecentlyAdded": "Neu hinzugefügt",
@@ -490,7 +490,7 @@
             "reloadNotice": "Du musst die App neu laden, damit die neue Sprache vollständig angewendet wird.",
             "reloadButton": "Neu laden",
             "contributors": "Mitwirkende",
-            "searchNotice": "Übersetzungen werden von der Community gepflegt. Bitte melde Übersetzungen, die falsch oder unangemessen sind, an Nerimity."
+            "searchNotice": "Übersetzungen werden von der Community gepflegt. Bitte melde Übersetzungen, die falsch oder unangemessen sind, an HUGIN."
         },
         "header": {
             "servers": "Server",
@@ -524,7 +524,7 @@
             "deleteAccountDescription": "Das kann nicht rückgängig gemacht werden!",
             "deleteAccountNotice": "Du musst alle Server verlassen oder löschen, bevor du dein Konto löschen kannst.",
             "understoodButton": "Verstanden",
-            "deletionNotice": "Schade, dass du gehst :( Wenn dir etwas nicht gefallen hat, sag uns bitte im offiziellen Nerimity-Server Bescheid.",
+            "deletionNotice": "Schade, dass du gehst :( Wenn dir etwas nicht gefallen hat, sag uns bitte im offiziellen HUGIN-Server Bescheid.",
             "deletedInfo": {
                 "title": "Was wird gelöscht",
                 "email": "• E-Mail",
@@ -610,7 +610,7 @@
             "pushToTalk": "Push-to-Talk",
             "bindButton": "Belegen",
             "stopButton": "Stop",
-            "downloadAppNotice": "Lade die Nerimity-Desktop-App herunter, um diese Funktion ohne Fenster-/Tab-Fokus zu nutzen.",
+            "downloadAppNotice": "Lade die HUGIN-Desktop-App herunter, um diese Funktion ohne Fenster-/Tab-Fokus zu nutzen.",
             "leaveCall": "Du musst den Anruf zuerst verlassen",
             "inputConstraints": {
                 "echoCancelation": "Echounterdrückung",
@@ -660,18 +660,18 @@
             "reduceAnimationsDescription": "Verhindert, dass animierte GIFs und Emojis automatisch abspielen, bis sie gehovert oder abgetippt werden."
         },
         "window": {
-            "downloadAppNotice": "Um diese Einstellungen zu ändern, musst du die Nerimity-Desktop-App herunterladen.",
+            "downloadAppNotice": "Um diese Einstellungen zu ändern, musst du die HUGIN-Desktop-App herunterladen.",
             "startupOptions": "Startoptionen",
-            "openOnStartup": "Nerimity beim Systemstart öffnen",
+            "openOnStartup": "HUGIN beim Systemstart öffnen",
             "startMinimized": "Minimiert starten",
-            "startMinimizedDescription": "Nerimity automatisch in den Tray minimieren.",
+            "startMinimizedDescription": "HUGIN automatisch in den Tray minimieren.",
             "disableHardwareAcceleration": "Hardwarebeschleunigung deaktivieren",
             "disableCustomTitlebar": "Benutzerdefinierte Titelleiste deaktivieren",
             "reopenAppNotice": "Du musst die App neu öffnen, damit die Änderung wirksam wird."
         },
         "activity": {
             "extension": "Browser-Erweiterung",
-            "extensionDescription": "Unsere RPC-Erweiterung ermöglicht dir, deine Aktivität von Spotify und YouTube mit Nutzern auf Nerimity zu teilen!",
+            "extensionDescription": "Unsere RPC-Erweiterung ermöglicht dir, deine Aktivität von Spotify und YouTube mit Nutzern auf HUGIN zu teilen!",
             "visitButton": "{{store}} besuchen",
             "activityStatus": "Aktivitätsstatus",
             "activityStatusDescription": "Teile, was du gerade machst, mit allen",
@@ -683,7 +683,7 @@
                 "emoji": "Emoji"
             },
             "discordActivity": "Discord-Aktivität",
-            "discordActivityDescription": "Teile deine Discord-Aktivität mit Nutzern auf Nerimity",
+            "discordActivityDescription": "Teile deine Discord-Aktivität mit Nutzern auf HUGIN",
             "idPlaceholder": "Discord-Nutzer-ID",
             "serverModal": {
                 "text": "Bitte tritt dem Discord-Server bei, um Aktivitätsfreigabe zu aktivieren.",
@@ -707,7 +707,7 @@
                 "uri": "URI {{count}}",
                 "redirectUri": "Weiterleitung URI"
             },
-            "applicationsDescription": "Erstelle Nerimity Bots.",
+            "applicationsDescription": "Erstelle HUGIN Bots.",
             "apiDocumentation": "API Dokumentation (unvollständig)",
             "addButton": "App hinzufügen",
             "name": "Applikation Name",
@@ -774,13 +774,13 @@
                 "title": "Es wird nicht empfohlen, Ihr primäres Google-Konto zum Teilen oder Hosten von Anhängen zu verwenden.",
                 "message": "Aufgrund der Art und Weise, wie die Google Drive-API mit Dateimetadaten umgeht, sind Ihr Anzeigename und Ihre Google-E-Mail-Adresse oft in den Hintergrunddaten jeder Datei sichtbar, die Sie freigeben.\n\nVerwenden Sie ein Wegwerfkonto, wenn Sie Google Drive weiterhin nutzen möchten."
             },
-            "googleDriveDescription": "Wenn Sie Ihr Google-Konto verknüpfen, können Sie Dateien in Nerimity hochladen. Die Dateien werden in Ihrem Google Drive gespeichert."
+            "googleDriveDescription": "Wenn Sie Ihr Google-Konto verknüpfen, können Sie Dateien in HUGIN hochladen. Die Dateien werden in Ihrem Google Drive gespeichert."
         },
         "experiments": {
             "noExperiments": "Derzeit sind keine Experimente verfügbar.",
             "reloadRequired": {
                 "title": "Neuladen erforderlich",
-                "body": "Nerimity muss neu gestartet werden, damit die Änderungen wirksam werden.",
+                "body": "HUGIN muss neu gestartet werden, damit die Änderungen wirksam werden.",
                 "restartNow": "Jetzt neu starten",
                 "restartLater": "Später neu starten"
             }
@@ -1010,10 +1010,10 @@
             "videoModified": "Video wurde modifiziert.",
             "couldNotGetVideo": "Das Video konnte nicht abgerufen werden.",
             "modifiedOrDeleted": "Dieses Video wurde vom Ersteller in dessen Google Drive geändert/gelöscht.",
-            "googleDrivePolicy": "Aufgrund neuer Google Drive-Richtlinien können Videos nur noch über die Nerimity Desktop-App abgespielt werden."
+            "googleDrivePolicy": "Aufgrund neuer Google Drive-Richtlinien können Videos nur noch über die HUGIN Desktop-App abgespielt werden."
         },
         "audioEmbed": {
-            "googleDrivePolicy": "Aufgrund neuer Google Drive-Richtlinien kannst du Audio nur noch über die Nerimity Desktop-App abspielen."
+            "googleDrivePolicy": "Aufgrund neuer Google Drive-Richtlinien kannst du Audio nur noch über die HUGIN Desktop-App abspielen."
         }
     },
     "addFriendModal": {
@@ -1104,7 +1104,7 @@
         "by": "Von",
         "deletionNotice": "Dein Konto und deine Daten werden in 15 Tagen gelöscht",
         "ipBanned": "Deine IP-Adresse wurde gesperrt.",
-        "ipBanNotice": "Jemand mit der gleichen IP-Adresse wurde bei Nerimity gesperrt. Dein Konto ist davon nicht betroffen."
+        "ipBanNotice": "Jemand mit der gleichen IP-Adresse wurde bei HUGIN gesperrt. Dein Konto ist davon nicht betroffen."
     },
     "general": {
         "searchPlaceholder": "Suchen",
@@ -1228,7 +1228,7 @@
                 "header": "Sortieren nach",
                 "member": "Mitglied",
                 "joined": "Beigetreten",
-                "joinedNerimity": "Nerimity beigetreten"
+                "joinedHUGIN": "HUGIN beigetreten"
             },
             "order": {
                 "header": "Sortieren nach",
@@ -1263,15 +1263,15 @@
         },
         "founder": {
             "name": "Gründer",
-            "description": "Ersteller von Nerimity"
+            "description": "Ersteller von HUGIN"
         },
         "admin": {
             "name": "Admin",
-            "description": "Admin von Nerimity"
+            "description": "Admin von HUGIN"
         },
         "mod": {
             "name": "Moderator",
-            "description": "Moderator von Nerimity"
+            "description": "Moderator von HUGIN"
         },
         "supporter": {
             "name": "Supporter",
@@ -1323,11 +1323,11 @@
         }
     },
     "welcomePopup": {
-        "subtitle": "Danke, dass du Nerimity ausprobierst!",
-        "joinServer": "Tritt dem offiziellen Nerimity-Server bei",
+        "subtitle": "Danke, dass du HUGIN ausprobierst!",
+        "joinServer": "Tritt dem offiziellen HUGIN-Server bei",
         "editProfile": "Bearbeite mein Profil",
         "support": "Unterstützte mich auf {{platform}}",
-        "contribute": "Trage auf GitHub zu Nerimity bei"
+        "contribute": "Trage auf GitHub zu HUGIN bei"
     },
     "dropDown": {
         "selectItem": "Element auswählen",

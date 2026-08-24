@@ -145,7 +145,7 @@ export default function WindowSettings() {
                 name: "YouTube",
                 startedAt: Date.now() - 3000,
                 endsAt: Date.now() + 10000,
-                imgSrc: "https://nerimity.com/assets/logo.png",
+                imgSrc: "/assets/logo.png",
                 link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
                 title: "Why Nerimity is the best",
                 subtitle: "Good YouTuber"
@@ -160,7 +160,7 @@ export default function WindowSettings() {
                 name: "Spotify",
                 startedAt: Date.now() - 30000,
                 endsAt: Date.now() + 100000,
-                imgSrc: "https://nerimity.com/assets/logo.png",
+                imgSrc: "/assets/logo.png",
                 link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
                 title: "Ner Ner Nerimity!",
                 subtitle: "Nerimity"

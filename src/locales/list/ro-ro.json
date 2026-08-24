@@ -8,7 +8,7 @@
     "homePage": {
         "slogan": "O aplicație de chat modernă și elegantă.",
         "viewGitHubButton": "Vedeți pe GitHub",
-        "subslogan": "Nerimity îți oferă o experiență elegantă și plină de funcționalități, care o scoate în evidență.",
+        "subslogan": "HUGIN îți oferă o experiență elegantă și plină de funcționalități, care o scoate în evidență.",
         "getStarted": "începe",
         "availableOn": "Disponibil pentru",
         "browser": "Browser",
@@ -98,21 +98,21 @@
             "visitServerButton": "Visitează",
             "joinServerButton": "Alătură-te",
             "bumpButton": "Bump-uri : ({{count}})",
-            "moderationNotice": "Serverele nu sunt moderate de Nerimity. Te rugăm să raportezi serverele care încalcă TOS-ul.",
+            "moderationNotice": "Serverele nu sunt moderate de HUGIN. Te rugăm să raportezi serverele care încalcă TOS-ul.",
             "sortMostActive": "Cel mai activ (Beta)",
             "pinnedServers": "Servere Fixate",
             "recentlyBumped": "Servere Bump-uite Recent"
         },
         "bots": {
             "title": "Explorează - Bots",
-            "moderationNotice": "Bots nu sunt moderați de Nerimity. Raportați bots care sunt malițios sau încalcă Termenii și Condițiile.",
+            "moderationNotice": "Bots nu sunt moderați de HUGIN. Raportați bots care sunt malițios sau încalcă Termenii și Condițiile.",
             "inviteButton": "învită",
             "serverCount": "în {{count}} servere",
             "noticeMessage": "Un bot poate fi bumped o dată la fiecare {{hours}} ore. Toate bump-urile se resetează la fiecare {{date}}."
         },
         "themes": {
             "title": "Explorează - Tematice",
-            "themesHeaderDescription": "Personalisează Nerimity cu o tematica personalizată.",
+            "themesHeaderDescription": "Personalisează HUGIN cu o tematica personalizată.",
             "officialThemes": "Termatice Oficiale",
             "communityThemes": "Termatice din communitate",
             "noCommunityThemes": "Nici o Tematică din communitate nu a putut fi găsită.",
@@ -408,7 +408,7 @@
         "by": "De",
         "deletionNotice": "Contul și datele tale vor fi șterse în 15 zile",
         "ipBanned": "IP-ul tău este banat.",
-        "ipBanNotice": "Cineva cu același IP ca tine este suspendat pe Nerimity. Contul tău nu este afectat.",
+        "ipBanNotice": "Cineva cu același IP ca tine este suspendat pe HUGIN. Contul tău nu este afectat.",
         "noToken": "Nu a fost furnizat niciun token."
     },
     "resetPassword": {
@@ -423,11 +423,11 @@
         "resetting": "Resetare…"
     },
     "welcomePopup": {
-        "subtitle": "Vă mulțumim pentru că ați încercat Nerimity!",
+        "subtitle": "Vă mulțumim pentru că ați încercat HUGIN!",
         "editProfile": "Editează Profil-ul",
-        "joinServer": "Alătură-te comunității oficiale Nerimity",
+        "joinServer": "Alătură-te comunității oficiale HUGIN",
         "support": "Susține-mă pe {{platform}}",
-        "contribute": "Contribuie la Nerimity pe GitHub"
+        "contribute": "Contribuie la HUGIN pe GitHub"
     },
     "status": {
         "online": "Online",

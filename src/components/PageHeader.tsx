@@ -6,6 +6,7 @@ import { RawUser } from "@/chat-api/RawData";
 import { getStorageString, StorageKeys } from "@/common/localStorage";
 import Icon from "./ui/icon/Icon";
 import { appLogoUrl } from "@/common/worldEvents";
+import { APP_NAME } from "@/common/appBrand";
 import { useTransContext } from "@nerimity/solid-i18lite";
 
 import { Skeleton } from "./ui/skeleton/Skeleton";
@@ -159,8 +160,8 @@ export default function PageHeader(props: { hideAccountInfo?: boolean }) {
   return (
     <HeaderContainer class="header-container">
       <A href="/" class={titleContainerStyle}>
-        <Logo src={appLogoUrl()} alt="Concord" />
-        <Title>Concord</Title>
+        <Logo src={appLogoUrl()} alt={APP_NAME} />
+        <Title>{APP_NAME}</Title>
       </A>
       {/* Use navigation container here, saves repeating code.. AHEM....*/}
       <NavigationContainer>

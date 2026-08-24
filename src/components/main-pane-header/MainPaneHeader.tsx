@@ -28,7 +28,11 @@ import RouterEndpoints from "@/common/RouterEndpoints";
 import { CHANNEL_PERMISSIONS, ROLE_PERMISSIONS } from "@/chat-api/Bitwise";
 import { fetchPinnedMessages } from "@/chat-api/services/MessageService";
 import { t } from "@nerimity/i18lite";
-import { VoiceHeader } from "./voice-header/VoiceHeader";
+import {
+  VoiceHeader,
+  setTheaterMode,
+  theaterMode
+} from "./voice-header/VoiceHeader";
 
 export default function MainPaneHeader() {
   const {
@@ -119,6 +123,14 @@ export default function MainPaneHeader() {
     return isAdmin;
   };
 
+  const isStreamingHere = () => {
+    const channelId = header.details().channelId;
+    if (!channelId) return false;
+    return voiceUsers
+      .getVoiceUsersByChannelId(channelId)
+      .some((voiceUser) => voiceUsers.videoEnabled(voiceUser.userId));
+  };
+
   const notificationCount = createMemo(() => {
     const friendRequestCount = friends
       .array()
@@ -186,6 +198,22 @@ export default function MainPaneHeader() {
           )}
         </div>
         <div class={styles.rightIcons}>
+          {/*
+            Fica no cabecalho, e nao na barra do palco, porque aquela barra so
+            aparece no hover: um modo que muda o painel inteiro precisa de um
+            controle que da para achar sem descobrir por acidente.
+          */}
+          <Show when={isStreamingHere()}>
+            <Button
+              type="hover_border"
+              iconSize={24}
+              margin={3}
+              iconName={theaterMode() ? "fullscreen_exit" : "fullscreen"}
+              color={theaterMode() ? "var(--primary-color)" : undefined}
+              hoverText={t("mainPaneHeader.voice.theaterMode")}
+              onClick={() => setTheaterMode(!theaterMode())}
+            />
+          </Show>
           <Show when={canCall()}>
             <Button
               type="hover_border"
@@ -230,7 +258,13 @@ export default function MainPaneHeader() {
       <Show when={showPinsList()}>
         <PinsListPopup close={() => setShowPinsList(false)} />
       </Show>
-      <VoiceHeader channelId={header.details().channelId} />
+      {/*
+        So monta o palco na rota do canal. Em Configuracoes/outras telas o
+        channelId pode ficar stale no header e o stage (z-index alto) cobre tudo.
+      */}
+      <Show when={isMessages() && header.details().channelId}>
+        <VoiceHeader channelId={header.details().channelId} />
+      </Show>
     </>
   );
 }
