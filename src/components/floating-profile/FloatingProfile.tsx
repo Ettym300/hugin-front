@@ -54,6 +54,7 @@ import { Fonts } from "@/common/fonts";
 import { LogoutModal } from "../settings/LogoutModal";
 import { ClanTag } from "../clan-tag/ClanTag";
 import { generateUrl } from "@/common/image";
+import { UserCallVolumeSlider } from "../voice/UserCallVolumeSlider";
 
 interface Props {
   dmPane?: boolean;
@@ -489,6 +490,7 @@ const DesktopProfileFlyout = (props: {
                   </CustomLink>
                 </Show>
               </Text>
+              <UserCallVolumeSlider userId={props.userId} />
               <Show when={!props.showProfileSettings}>
                 <div class={styles.buttonsContainer}>
                   <Button
