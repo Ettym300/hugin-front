@@ -66,7 +66,7 @@ function ReactionItem(props: ReactionItemProps) {
     const e = props.reaction;
     const ext = e.gif && !e.webp ? "gif" : "webp";
     const url = new URL(
-      `${env.NERIMITY_CDN}emojis/${props.reaction.emojiId}.${ext}`
+      `${env.HUGIN_CDN}emojis/${props.reaction.emojiId}.${ext}`
     );
     url.searchParams.set("size", "60");
     if (shouldBeStatic()) {

@@ -14,7 +14,7 @@ interface IconProps {
   onClick?: JSX.EventHandlerUnion<HTMLSpanElement, MouseEvent>;
 }
 
-const url = "https://nerimity.com/msr/";
+const url = "https://hugin.app/msr/";
 const iconCache: Record<string, string> = {};
 
 const fetchWithCache = async (url: string) => {

@@ -115,7 +115,7 @@ function ImagePreviewModal(props: {
 
   const openOriginalLink = () => {
     const url = props.origUrl || props.url;
-    if (url.startsWith(env.NERIMITY_CDN)) {
+    if (url.startsWith(env.HUGIN_CDN)) {
       window.open(url, "_blank");
       return;
     }

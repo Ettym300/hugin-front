@@ -12,7 +12,7 @@ import {
   getModerationTicket,
   updateModerationTicket
 } from "@/chat-api/services/ModerationService";
-import { uploadAttachment } from "@/chat-api/services/nerimityCDNService";
+import { uploadAttachment } from "@/chat-api/services/huginCDNService";
 import { getTicket, updateTicket } from "@/chat-api/services/TicketService.ts";
 import useStore from "@/chat-api/store/useStore";
 import { formatTimestamp } from "@/common/date";
@@ -379,7 +379,7 @@ const MessageInputArea = (props: {
 
     const message = await postMessage({
       content: formattedValue,
-      nerimityCdnFileId: fileId,
+      cdnFileId: fileId,
       channelId: props.channelId
     }).catch((err) => {
       toast(err.message);

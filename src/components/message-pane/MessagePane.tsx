@@ -1355,7 +1355,7 @@ function FloatingAttachment(props: {}) {
     return [
       ...(isMoreThan50MB()
         ? []
-        : [{ id: "nerimity_cdn", label: "Nerimity CDN" }]),
+        : [{ id: "hugin_cdn", label: "HUGIN CDN" }]),
       { id: "google_drive", label: "Google Drive" }
     ] satisfies DropDownItem[];
   };
@@ -2012,7 +2012,7 @@ function FloatingEmojiSuggestions(props: {
       keys: ["short_names.*", "name"],
       baseSort: (a, b) => {
         const recentlyUsed: string[] = JSON.parse(
-          localStorage["nerimity-solid-emoji-pane"] || "[]"
+          localStorage["hugin-solid-emoji-pane"] || "[]"
         );
 
         const getName = (e: any): string => {
@@ -2267,7 +2267,7 @@ function EmojiSuggestionItem(props: {
     if ((props.emoji as RawCustomEmoji).id) {
       const emoji = props.emoji as RawCustomEmoji;
       const extName = (emoji.gif && !emoji.webp) ? ".gif" : ".webp";
-      return `${env.NERIMITY_CDN}emojis/${emoji.id}${extName}`;
+      return `${env.HUGIN_CDN}emojis/${emoji.id}${extName}`;
     }
     return unicodeToTwemojiUrl((props.emoji as Emoji).emoji);
   };

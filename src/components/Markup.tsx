@@ -176,7 +176,7 @@ function transformCustomEntity(entity: CustomEntity, ctx: RenderContext) {
             id,
             animated: animated || webpAnimated,
             name,
-            url: `${env.NERIMITY_CDN}emojis/${id}${
+            url: `${env.HUGIN_CDN}emojis/${id}${
               animated && !webpAnimated ? ".gif" : ".webp"
             }${shouldAnimate}`
           }}

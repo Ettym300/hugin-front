@@ -1,4 +1,4 @@
-.nerimityLogo {
+.appLogo {
   height: 22px;
   width: 22px;
   margin-left: 10px;
@@ -7,7 +7,7 @@
   pointer-events: none;
 }
 
-.nerimityTitle {
+.appTitle {
   margin-left: 8px;
   opacity: 0.8;
   font-size: 14px;

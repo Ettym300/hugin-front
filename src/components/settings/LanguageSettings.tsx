@@ -21,7 +21,6 @@ import { Notice } from "../ui/Notice/Notice";
 
 import en from "@/locales/list/en-gb.json?raw";
 
-import { useCustomPortal } from "../ui/custom-portal/CustomPortal";
 import { Rerun } from "@solid-primitives/keyed";
 import Input from "../ui/input/Input";
 
@@ -178,7 +177,6 @@ function LanguageItem(props: {
   onClick: () => void;
   percentTranslated?: number;
 }) {
-  const { createPortal } = useCustomPortal();
   const language = (languages as any)[props.key] as Language;
 
   const onClick = (event: any) => {
@@ -189,12 +187,9 @@ function LanguageItem(props: {
 
   const handlePercentClick = async () => {
     window.open(
-      "https://hosted.weblate.org/projects/nerimity/-/" + props.key,
+      "https://hosted.weblate.org/-/" + props.key,
       "_blank"
     );
-    // createPortal((close) => (
-    //   <TranslateModal close={close} language={props.key} />
-    // ));
   };
 
   return (
@@ -295,57 +290,3 @@ function lastPath(url: string) {
   const split = url.split("/");
   return split[split.length - 1];
 }
-
-// let rawEn: Record<string, string> | null = null;
-// let translatedLang: Record<string, string> | null = null;
-
-// const TranslateModal = (props: { language: string; close: () => void }) => {
-//   let iframe: HTMLIFrameElement | undefined;
-
-//   const fetchLocaleFromGithub = async (language: string) => {
-//     return await fetch(
-//       `https://raw.githubusercontent.com/Nerimity/nerimity-web/refs/heads/main/src/locales/list/${language}.json`,
-//     ).then((res) => res.json());
-//   };
-
-//   const handleIframeLoad = async () => {
-//     rawEn = rawEn || (await fetchLocaleFromGithub("en-gb"));
-//     translatedLang = await fetchLocaleFromGithub(props.language);
-
-//     iframe?.contentWindow?.postMessage(
-//       { default: rawEn, translated: translatedLang },
-//       "https://supertigerdev.github.io/i18n-tool/",
-//     );
-//   };
-
-//   return (
-//     <Modal.Root
-//       close={props.close}
-//       doNotCloseOnBackgroundClick
-//       desktopMaxWidth={860}
-//       class={css`
-//         width: 90vw;
-//       `}
-//     >
-//       <Modal.Header
-//         title={tt("settings.language.translateModal.title")}
-//         icon="translate"
-//       />
-//       <Modal.Body
-//         class={css`
-//           height: 90vh;
-//         `}
-//       >
-//         <iframe
-//           src="https://supertigerdev.github.io/i18n-tool/"
-//           height="100%"
-//           width="100%"
-//           ref={iframe}
-//           onLoad={() => handleIframeLoad()}
-//           frameBorder="0"
-//           id="iframe"
-//         />
-//       </Modal.Body>
-//     </Modal.Root>
-//   );
-// };

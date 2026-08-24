@@ -61,8 +61,8 @@ export default {
   get EMOJI_URL() {
     return str("VITE_EMOJI_URL");
   },
-  get NERIMITY_CDN() {
-    const configured = withSlash(str("VITE_NERIMITY_CDN"));
+  get HUGIN_CDN() {
+    const configured = withSlash(str("VITE_HUGIN_CDN"));
     if (configured) return configured;
     if (typeof window !== "undefined") return withSlash(window.location.origin);
     return configured;

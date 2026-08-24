@@ -41,7 +41,7 @@ export const LocalAudioEmbed = (props: { attachment: RawAttachment }) => {
         duration: props.attachment.duration,
         name: fileName,
         size: props.attachment.filesize!,
-        url: env.NERIMITY_CDN + props.attachment.path!,
+        url: env.HUGIN_CDN + props.attachment.path!,
         expireAt: props.attachment.expireAt,
         provider: "local"
       }}

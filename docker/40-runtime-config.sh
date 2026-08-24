@@ -13,7 +13,7 @@ window.__CONCORD_ENV__ = {
   VITE_SERVER_URL: "$(json_quote "${VITE_SERVER_URL:-}")",
   VITE_WS_URL: "$(json_quote "${VITE_WS_URL:-}")",
   VITE_APP_URL: "$(json_quote "${VITE_APP_URL:-}")",
-  VITE_NERIMITY_CDN: "$(json_quote "${VITE_NERIMITY_CDN:-}")",
+  VITE_HUGIN_CDN: "$(json_quote "${VITE_HUGIN_CDN:-}")",
   VITE_DEV_MODE: "$(json_quote "${VITE_DEV_MODE:-false}")",
   VITE_MOBILE_WIDTH: "$(json_quote "${VITE_MOBILE_WIDTH:-850}")",
   VITE_MESSAGE_LIMIT: "$(json_quote "${VITE_MESSAGE_LIMIT:-50}")",
@@ -40,10 +40,10 @@ if [ -n "$API_URL" ]; then
   }"
 fi
 
-CDN_URL="${VITE_NERIMITY_CDN%/}"
+CDN_URL="${VITE_HUGIN_CDN%/}"
 # CDN_UPSTREAM lets nginx reach the CDN on a private address while the browser
-# keeps using same-origin paths (VITE_NERIMITY_CDN empty). Falls back to
-# VITE_NERIMITY_CDN so existing deployments behave exactly as before.
+# keeps using same-origin paths (VITE_HUGIN_CDN empty). Falls back to
+# VITE_HUGIN_CDN so existing deployments behave exactly as before.
 CDN_UPSTREAM_URL="${CDN_UPSTREAM:-$CDN_URL}"
 CDN_UPSTREAM_URL="${CDN_UPSTREAM_URL%/}"
 CDN_PROXY=""

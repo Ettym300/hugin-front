@@ -12,7 +12,7 @@ export type ChannelProperties = {
 
   attachment?: {
     file: File;
-    uploadTo: "google_drive" | "nerimity_cdn";
+    uploadTo: "google_drive" | "hugin_cdn";
   };
 
   scrollTop?: number;
@@ -121,7 +121,7 @@ const setEditMessage = (channelId: string, message?: Message) => {
 const setAttachment = (
   channelId: string,
   file?: File,
-  uploadTo?: "google_drive" | "nerimity_cdn"
+  uploadTo?: "google_drive" | "hugin_cdn"
 ) => {
   initIfMissing(channelId);
   if (!file && !uploadTo) {
@@ -132,7 +132,7 @@ const setAttachment = (
   const isMoreThan50MB = file && file.size > 50 * 1024 * 1024;
 
   const _uploadTo =
-    uploadTo || (isMoreThan50MB ? "google_drive" : "nerimity_cdn");
+    uploadTo || (isMoreThan50MB ? "google_drive" : "hugin_cdn");
 
   setChannelProperties(channelId, "attachment", {
     ...(file ? { file } : undefined),

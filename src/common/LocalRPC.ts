@@ -21,7 +21,7 @@ export class LocalRPC {
     );
   }
   start() {
-    window.parent.postMessage({ name: "NERIMITY_READY" }, "*");
+    window.parent.postMessage({ name: "HUGIN_READY" }, "*");
   }
   emitEvent() {
     const RPCs = this.RPCs.map((rpc) => rpc.data);

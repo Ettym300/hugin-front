@@ -29,8 +29,8 @@ export default function DeveloperSettings() {
 
   const handleToggleCookie = (checked: boolean) => {
     setUseLatest(checked);
-    const domain = window.location.hostname.includes("nerimity.com")
-      ? "domain=.nerimity.com;"
+    const domain = window.location.hostname.includes("hugin.app")
+      ? "domain=.hugin.app;"
       : "";
     document.cookie = `useLatestURL=${checked}; path=/; max-age=315360000; ${domain}`;
   };
@@ -80,17 +80,17 @@ export default function DeveloperSettings() {
         children={<Icon name="keyboard_arrow_right" />}
       />
       <SettingsBlock
-        href="https://docs.nerimity.com"
+        href="https://docs.hugin.app"
         hrefBlank
         icon="menu_book"
         label={t("settings.developer.apiDocumentation")}
         children={<Icon name="open_in_new" style={{ "margin-right": "6px" }} />}
       />
       <SettingsBlock
-        href="https://github.com/nerimity/nerimity.js"
+        href="https://https://hugin.app"
         hrefBlank
         icon="code_blocks"
-        label="nerimity.js"
+        label="HUGIN API"
         children={<Icon name="open_in_new" style={{ "margin-right": "6px" }} />}
       />
     </Container>

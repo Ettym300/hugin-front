@@ -6,8 +6,8 @@ export const generateUrl = (
 ): string | null => {
   const path = item?.[type];
   if (!path) return null;
-  const base = env.NERIMITY_CDN.endsWith("/")
-    ? env.NERIMITY_CDN
-    : `${env.NERIMITY_CDN}/`;
+  const base = env.HUGIN_CDN.endsWith("/")
+    ? env.HUGIN_CDN
+    : `${env.HUGIN_CDN}/`;
   return `${base}${path.replace(/^\//, "")}`;
 };

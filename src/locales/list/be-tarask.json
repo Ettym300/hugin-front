@@ -741,7 +741,7 @@
                 "botDescription": "Апісаньне бота ({{current}}/{{max}})"
             },
             "useLatestUrl": "Нестабільная вэрсыя",
-            "useLatestUrlDescription": "Загружаць latest.nerimity.com пры наступным запуске. Гэта перазагрузіць аплікацыю.",
+            "useLatestUrlDescription": "Загружаць app.hugin пры наступным запуске. Гэта перазагрузіць аплікацыю.",
             "useLatestUrlWarning": "Можа выклікаць нестабільнасьць альбо праблемы."
         },
         "badges": {

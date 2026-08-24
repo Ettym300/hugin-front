@@ -741,7 +741,7 @@
                 "botDescription": "Bot Beschreibung ({{current}}/{{max}})"
             },
             "useLatestUrl": "Verwende die Latest URL",
-            "useLatestUrlDescription": "Die neueste Version (latest.nerimity.com) wird beim nächsten Neustart der App geladen. Die App wird neu gestartet.",
+            "useLatestUrlDescription": "Die neueste Version (app.hugin) wird beim nächsten Neustart der App geladen. Die App wird neu gestartet.",
             "useLatestUrlWarning": "Es könnte instabil oder fehlerhaft sein."
         },
         "badges": {

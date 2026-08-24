@@ -112,7 +112,7 @@ export default function Avatar(props: Props) {
       );
 
       const proxyUrl = new URL(
-        `${env.NERIMITY_CDN}proxy/${encodeURIComponent(
+        `${env.HUGIN_CDN}proxy/${encodeURIComponent(
           baseUrl.href
         )}/avatar.webp`
       );

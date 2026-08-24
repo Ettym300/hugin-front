@@ -1332,7 +1332,7 @@
             "sort": {
                 "member": "Membro",
                 "header": "Classificar por",
-                "joinedNerimity": "Entrou no Concord em",
+                "joinedHUGIN": "Entrou no Concord em",
                 "joined": "Entrou em"
             },
             "filter": {

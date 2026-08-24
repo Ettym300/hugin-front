@@ -674,7 +674,7 @@
                 "botDescription": "Описание бота ({{current}}/{{max}})"
             },
             "useLatestUrl": "Использовать последний URL",
-            "useLatestUrlDescription": "Загружайте latest.nerimity.com после ближайшего перезапуска приложения. Приложение перезапустится.",
+            "useLatestUrlDescription": "Загружайте app.hugin после ближайшего перезапуска приложения. Приложение перезапустится.",
             "useLatestUrlWarning": "Приложение может быть нестабильно или содержать ошибки."
         },
         "experiments": {

@@ -211,7 +211,7 @@ function EmojiItem(props: {
         <Emoji
           name={props.emoji.name}
           animated={props.emoji.gif}
-          url={`${env.NERIMITY_CDN}emojis/${props.emoji.id}${
+          url={`${env.HUGIN_CDN}emojis/${props.emoji.id}${
             props.emoji.gif && !props.emoji.webp ? ".gif" : ".webp"
           }`}
         />

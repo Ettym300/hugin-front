@@ -48,11 +48,11 @@ export default function PrivacyPage() {
       <Content class="content">
         <CenterContainer>
           <InformationContainer>
-            <Title>Nerimity Privacy Policy</Title>
+            <Title>HUGIN Privacy Policy</Title>
             <Text opacity={0.8} size={14}>
               Last updated: 20 February 2026{" "}
               <a
-                href="https://github.com/Nerimity/nerimity-web/commits/main/src/pages/PrivacyPage.tsx"
+                href="https://github.com/Ettym300/hugin-front/commits/main/src/pages/PrivacyPage.tsx"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -62,12 +62,12 @@ export default function PrivacyPage() {
             <Text opacity={0.6} size={14}>
               If you have questions or notice something missing, you may email
               us at{" "}
-              <a href="mailto:nerimityapp@gmail.com">nerimityapp@gmail.com</a>.
+              <a href="mailto:contact@hugin.app">contact@hugin.app</a>.
             </Text>
           </InformationContainer>
 
           <Block title="Data We Store Automatically" icon="storage">
-            When registering an account on Nerimity and using its services, we
+            When registering an account on HUGIN and using its services, we
             store some information. The information we store may include but not
             be limited to email address, username, messages, images or other
             content.
@@ -79,11 +79,11 @@ export default function PrivacyPage() {
             refuse.
           </Block>
           <Block title="Data We Collect Automatically" icon="data_usage">
-            While using Nerimity and its services, we store certain information
+            While using HUGIN and its services, we store certain information
             such as your IP Address, your account creation date, and your online
             status. We store this information in service providers' databases.
             We collect and store IP addresses to limit or ban users attacking
-            Nerimity.
+            HUGIN.
           </Block>
           <Block title="Third-party services" icon="integration_instructions">
             You may permit us to connect your account with third party services
@@ -95,7 +95,7 @@ export default function PrivacyPage() {
             Messaging to send push notifications to mobile devices.
           </Block>
           <Block title="Voice Calling" icon="call">
-            Voice calls on Nerimity are peer-to-peer, meaning your voice data is
+            Voice calls on HUGIN are peer-to-peer, meaning your voice data is
             sent directly between participants without routing through our
             servers. However, if a direct connection cannot be established due
             to firewall or network restrictions, calls will use Cloudflare's
@@ -111,7 +111,7 @@ export default function PrivacyPage() {
             reports of abuse or policy violations.
           </Block>
           <Block title="Data Retention and Deletion" icon="delete">
-            You can delete your Nerimity account at any time through your
+            You can delete your HUGIN account at any time through your
             account settings. When you delete your account, you have the option
             to delete all of your messages or keep them archived. Deleted
             messages and accounts cannot be recovered. If you choose to keep
@@ -121,7 +121,7 @@ export default function PrivacyPage() {
           <Block title="Your Data Privacy" icon="lock">
             We do not sell, trade, or share your personal data with third
             parties for marketing, advertising, or any other commercial
-            purposes. Your data is only used to operate and improve Nerimity's
+            purposes. Your data is only used to operate and improve HUGIN's
             services.
           </Block>
           <Block title="Cookies" icon="cookie">

@@ -741,7 +741,7 @@
                 "botDescription": "Descripción del bot ({{current}}/{{max}})"
             },
             "useLatestUrl": "Utilizar URL más reciente",
-            "useLatestUrlDescription": "Cargar latest.nerimity.com la siguente vez que reinicies la aplicación. Se reiniciará la aplicación.",
+            "useLatestUrlDescription": "Cargar app.hugin la siguente vez que reinicies la aplicación. Se reiniciará la aplicación.",
             "useLatestUrlWarning": "Podría ser inestable o tener errores."
         },
         "badges": {

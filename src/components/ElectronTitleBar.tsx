@@ -9,8 +9,8 @@ import { createSignal } from "solid-js";
 export function ElectronTitleBar() {
   return (
     <div class={style.barContainer}>
-      <img class={style.nerimityLogo} src={appLogoUrl()} alt={APP_NAME} />
-      <span class={style.nerimityTitle}>{APP_NAME}</span>
+      <img class={style.appLogo} src={appLogoUrl()} alt={APP_NAME} />
+      <span class={style.appTitle}>{APP_NAME}</span>
       <div class={style.windowControlButtonsContainer}>
         <CopyLinkButton />
         <Icon

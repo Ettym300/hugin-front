@@ -35,7 +35,7 @@ export function ImageEmbed(props: ImageEmbedProps) {
     if (props.attachment.origSrc?.startsWith("http")) {
       return props.attachment.origSrc;
     }
-    const url = new URL(`${env.NERIMITY_CDN}${props.attachment.path}`);
+    const url = new URL(`${env.HUGIN_CDN}${props.attachment.path}`);
     if (ignoreFocus) return url.href;
     if (!isGif()) return url.href;
 

@@ -620,7 +620,7 @@
                 "deleteAppButton": "Supprimer cette application"
             },
             "useLatestUrl": "Utiliser l'URL la plus récente",
-            "useLatestUrlDescription": "Chargez latest.nerimity.com au prochain redémarrage de l'application. L'application sera relancée.",
+            "useLatestUrlDescription": "Chargez app.hugin au prochain redémarrage de l'application. L'application sera relancée.",
             "useLatestUrlWarning": "Il peut être instable ou comporter des bugs."
         },
         "experiments": {

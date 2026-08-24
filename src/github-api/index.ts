@@ -1,14 +1,14 @@
 const repos = {
-  nerimityWeb: {
-    owner: "Ettym200",
-    repo: "concord-front"
+  huginFront: {
+    owner: "Ettym300",
+    repo: "hugin-front"
   },
-  nerimityDesktop: {
-    owner: "Ettym200",
-    repo: "concord-desktop"
+  huginDesktop: {
+    owner: "Ettym300",
+    repo: "hugin-desktop"
   },
-  nerimityReactNative: {
-    owner: "Ettym200",
+  huginMobile: {
+    owner: "Ettym300",
     repo: "concord-mobile"
   }
 };
@@ -32,12 +32,12 @@ async function fetchJson<T>(url: string): Promise<T> {
   return json;
 }
 
-export function getLatestRelease({ owner, repo } = repos.nerimityWeb) {
+export function getLatestRelease({ owner, repo } = repos.huginFront) {
   const url = `https://api.github.com/repos/${owner}/${repo}/releases/latest`;
   return fetchJson<Release>(url);
 }
 
-export function getLatestSha({ owner, repo } = repos.nerimityWeb) {
+export function getLatestSha({ owner, repo } = repos.huginFront) {
   const url = `https://api.github.com/repos/${owner}/${repo}/commits/main`;
 
   const res = fetchJson<{ sha: string }>(url);
@@ -61,8 +61,8 @@ export async function getPlatformDownloadLinks() {
   }
   const platforms: Platform[] = [];
 
-  const release = await getLatestRelease(repos.nerimityDesktop);
-  const mobileRelease = await getLatestRelease(repos.nerimityReactNative);
+  const release = await getLatestRelease(repos.huginDesktop);
+  const mobileRelease = await getLatestRelease(repos.huginMobile);
 
   const assets = [...release.assets, ...mobileRelease.assets];
 

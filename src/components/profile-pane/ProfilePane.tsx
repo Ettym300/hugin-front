@@ -809,7 +809,7 @@ function SideBar(props: {
         <SidePaneItem
           paneBgColor={props.paneBgColor}
           icon="event"
-          label={t("channelDrawer.members.sort.joinedNerimity")}
+          label={t("channelDrawer.members.sort.joinedHUGIN")}
           color={props.user?.profile?.primaryColor}
           value={joinedAt()}
           onClick={() => setToggleJoinedDateType(!toggleJoinedDateType())}
@@ -905,7 +905,7 @@ const UserActivityItem = (props: {
       return emojiToUrl(activity()?.emoji!, false);
     }
     if (!activity()?.imgSrc) return;
-    return `${env.NERIMITY_CDN}proxy/${encodeURIComponent(
+    return `${env.HUGIN_CDN}proxy/${encodeURIComponent(
       activity()?.imgSrc!
     )}/a`;
   });

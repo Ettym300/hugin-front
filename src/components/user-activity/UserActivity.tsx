@@ -100,7 +100,7 @@ function UserActivityItem(props: {
       return emojiToUrl(activity()?.emoji!, false);
     }
     if (!activity()?.imgSrc) return;
-    return `${env.NERIMITY_CDN}proxy/${encodeURIComponent(
+    return `${env.HUGIN_CDN}proxy/${encodeURIComponent(
       activity()?.imgSrc!
     )}/a`;
   });

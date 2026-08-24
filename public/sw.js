@@ -1,4 +1,4 @@
-const CACHE_NAME = "nerimity-assets";
+const CACHE_NAME = "hugin-assets";
 
 self.addEventListener("install", () => {
   console.log("Service Worker installing...");

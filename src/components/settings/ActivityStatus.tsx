@@ -147,7 +147,7 @@ export default function WindowSettings() {
                 endsAt: Date.now() + 10000,
                 imgSrc: "/assets/logo.png",
                 link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                title: "Why Nerimity is the best",
+                title: "Why HUGIN is the best",
                 subtitle: "Good YouTuber"
               }}
             />
@@ -162,8 +162,8 @@ export default function WindowSettings() {
                 endsAt: Date.now() + 100000,
                 imgSrc: "/assets/logo.png",
                 link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                title: "Ner Ner Nerimity!",
-                subtitle: "Nerimity"
+                title: "HUGIN!",
+                subtitle: "HUGIN"
               }}
             />
           </ExampleActivityContainer>
@@ -179,7 +179,7 @@ export default function WindowSettings() {
           <CustomLink
             target="_blank"
             rel="noopener noreferrer"
-            href="https://addons.mozilla.org/firefox/addon/nerimity-rpc"
+            href="https://addons.mozilla.org/firefox/addon/hugin-rpc"
           >
             <Button
               margin={[10, 0, 0, 0]}
@@ -193,7 +193,7 @@ export default function WindowSettings() {
           <CustomLink
             target="_blank"
             rel="noopener noreferrer"
-            href="https://chromewebstore.google.com/detail/nerimity-rpc/lgboikjogeocndkamelapkbngmfjfgaf"
+            href="https://chromewebstore.google.com/detail/hugin-rpc/lgboikjogeocndkamelapkbngmfjfgaf"
           >
             <Button
               margin={[10, 0, 0, 0]}

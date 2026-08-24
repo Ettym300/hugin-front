@@ -43,7 +43,7 @@ export const Emoji = (props: {
           : !shouldAnimate(props.hovered);
       };
 
-      const url = new URL(`${env.NERIMITY_CDN}emojis/${props.icon}`);
+      const url = new URL(`${env.HUGIN_CDN}emojis/${props.icon}`);
       if (props.resize) {
         url.searchParams.set("size", props.resize.toString());
       }

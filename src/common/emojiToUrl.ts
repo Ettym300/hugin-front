@@ -4,7 +4,7 @@ import env from "./env";
 export const emojiToUrl = (emoji: string, hovered: boolean, size?: number) => {
   if (emoji.includes(".")) {
     const url = new URL(
-      `${env.NERIMITY_CDN}emojis/${emoji}${
+      `${env.HUGIN_CDN}emojis/${emoji}${
         !hovered && emoji?.endsWith(".gif") ? "?type=webp" : ""
       }`
     );

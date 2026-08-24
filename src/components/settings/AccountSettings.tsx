@@ -47,7 +47,7 @@ import Checkbox from "../ui/Checkbox";
 import {
   uploadAvatar,
   uploadBanner
-} from "@/chat-api/services/nerimityCDNService";
+} from "@/chat-api/services/huginCDNService";
 import { FloatingSaveChanges } from "../ui/FloatingSaveChanges";
 import ImageSelector from "../ui/ImageSelector";
 

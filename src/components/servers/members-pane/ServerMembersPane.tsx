@@ -74,7 +74,7 @@ export default function Pane() {
           if (sort().mode === "desc") return b?.joinedAt - a?.joinedAt;
           if (sort().mode === "asc") return a?.joinedAt - b?.joinedAt;
         }
-        if (sort().headerId === "joinedNerimity") {
+        if (sort().headerId === "joinedHUGIN") {
           const userA = users.get(a?.userId!)!;
           const userB = users.get(b?.userId!)!;
           if (sort().mode === "desc") return userB.joinedAt! - userA.joinedAt!;
@@ -219,12 +219,12 @@ export default function Pane() {
             { title: t("channelDrawer.members.sort.member"), id: "member" },
             { title: t("channelDrawer.members.sort.joined"), id: "joined" },
             {
-              title: t("channelDrawer.members.sort.joinedNerimity"),
-              id: "joinedNerimity"
+              title: t("channelDrawer.members.sort.joinedHUGIN"),
+              id: "joinedHUGIN"
             },
             { title: t("servers.settings.drawer.roles"), id: "roles" }
           ]}
-          sortableHeaderIds={["member", "joined", "joinedNerimity"]}
+          sortableHeaderIds={["member", "joined", "joinedHUGIN"]}
           onHeaderClick={(s) => setSort(s)}
           sort={sort()}
         >
@@ -252,7 +252,7 @@ export default function Pane() {
                     {formatTimestamp(member?.joinedAt!)}
                   </Table.Field>
                   <Table.Field
-                    mobileTitle={t("channelDrawer.members.sort.joinedNerimity")}
+                    mobileTitle={t("channelDrawer.members.sort.joinedHUGIN")}
                   >
                     {formatTimestamp(users.get(member?.userId!)?.joinedAt!)}
                   </Table.Field>
@@ -264,7 +264,7 @@ export default function Pane() {
                           const [hovered, setHovered] = createSignal(false);
                           return (
                             <div
-                              class={style.nerimityRoleBadge}
+                              class={style.roleBadge}
                               onMouseEnter={() => setHovered(true)}
                               onMouseLeave={() => setHovered(false)}
                             >
@@ -294,7 +294,7 @@ export default function Pane() {
 
                       <Show when={roles().length > 3}>
                         <div
-                          class={style.nerimityRoleBadge}
+                          class={style.roleBadge}
                           style={{ opacity: 0.6 }}
                         >
                           +{roles().length - 3}

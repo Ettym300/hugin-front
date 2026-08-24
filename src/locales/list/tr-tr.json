@@ -715,7 +715,7 @@
             "appClientId": "Uygulama/İstemci Kimliği",
             "useLatestUrl": "Güncel URL'yi Kullan",
             "useLatestUrlWarning": "Dengesiz veya hatalı olabilir.",
-            "useLatestUrlDescription": "Sonraki uygulama yeniden başlatmasında latest.nerimity.com yüklenecek. Uygulama yeniden başlatılacak."
+            "useLatestUrlDescription": "Sonraki uygulama yeniden başlatmasında app.hugin yüklenecek. Uygulama yeniden başlatılacak."
         },
         "experiments": {
             "noExperiments": "Şu anda mevcut deney yoktur.",

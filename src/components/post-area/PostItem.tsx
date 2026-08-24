@@ -402,7 +402,7 @@ const Actions = (props: {
         ticket={{
           id: "ABUSE",
           userId: props.post.createdBy.id,
-          messageId: `https://nerimity.com/p/${props.post.id}`
+          messageId: `https://hugin.app/p/${props.post.id}`
         }}
       />
     ));

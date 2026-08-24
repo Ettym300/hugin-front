@@ -23,7 +23,7 @@
 
 //   div.innerHTML = `
 //           <div style="font-weight: bold; font-size: 18px; margin-bottom: 10px; color: #ff7675;">
-//             ⚠️ Nerimity Has Crashed
+//             ⚠️ HUGIN Has Crashed
 //           </div>
 //           <div style="font-size: 14px; color: #dfe6e9; line-height: 1.4; margin-bottom: 20px; word-break: break-word;">
 //             ${message}
@@ -52,7 +52,7 @@
 // };
 
 // Sentry.init({
-//   dsn: "https://0@nerimity.com/0",
+//   dsn: "https://0@hugin.app/0",
 //   async beforeSend(event) {
 //     const exception = event.exception?.values?.[0];
 //     const msg = exception?.value || "Unknown Error";

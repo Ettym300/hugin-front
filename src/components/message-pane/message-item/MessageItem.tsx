@@ -1029,12 +1029,12 @@ const LocalVideoEmbed = (props: { attachment: RawAttachment }) => {
       error={isExpired() ? t("fileEmbed.fileExpired") : undefined}
       file={{
         thumbnailLink:
-          env.NERIMITY_CDN + props.attachment.path! + "/thumb.webp",
+          env.HUGIN_CDN + props.attachment.path! + "/thumb.webp",
         name: safeDecodeURIComponent(
           props.attachment.path?.split("/").reverse()[0]!
         ),
         size: props.attachment.filesize!,
-        url: env.NERIMITY_CDN + props.attachment.path!,
+        url: env.HUGIN_CDN + props.attachment.path!,
         expireAt: props.attachment.expireAt,
         provider: "local"
       }}
@@ -1056,8 +1056,8 @@ const LocalFileEmbed = (props: { attachment: RawAttachment }) => {
         ),
         mime: props.attachment.mime!,
         size: props.attachment.filesize!,
-        url: env.NERIMITY_CDN + props.attachment.path!,
-        previewUrl: env.NERIMITY_CDN + props.attachment.path!,
+        url: env.HUGIN_CDN + props.attachment.path!,
+        previewUrl: env.HUGIN_CDN + props.attachment.path!,
         expireAt: props.attachment.expireAt
       }}
     />
@@ -1788,7 +1788,7 @@ const NormalEmbed = (props: {
   };
 
   const imageUrl = () =>
-    `${env.NERIMITY_CDN}proxy/${encodeURIComponent(origSrc()!)}/embed.${
+    `${env.HUGIN_CDN}proxy/${encodeURIComponent(origSrc()!)}/embed.${
       embed().imageMime?.split("/")[1]
     }`;
   const isGif = () => imageUrl().endsWith(".gif");
@@ -1889,7 +1889,7 @@ const replaceImageUrl = (val: string, shouldAnimate: boolean) => {
       url = url.slice(1, -1);
     }
     return `url("${
-      env.NERIMITY_CDN +
+      env.HUGIN_CDN +
       "proxy/" +
       encodeURIComponent(url) +
       "/b" +
@@ -1983,7 +1983,7 @@ function HTMLEmbedItem(props: {
     }
     if (attributes.src) {
       attributes.src =
-        env.NERIMITY_CDN +
+        env.HUGIN_CDN +
         "proxy/" +
         encodeURIComponent(attributes.src) +
         "/b" +

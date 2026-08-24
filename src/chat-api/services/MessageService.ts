@@ -122,7 +122,7 @@ interface PostMessageOpts {
   replyToMessageIds?: string[];
   mentionReplies?: boolean;
   silent?: boolean;
-  nerimityCdnFileId?: string;
+  cdnFileId?: string;
   googleDriveAttachment?: {
     id: string;
     mime: string;
@@ -143,8 +143,8 @@ export const postMessage = async (opts: PostMessageOpts) => {
         }
       : {}),
 
-    ...(opts.nerimityCdnFileId
-      ? { nerimityCdnFileId: opts.nerimityCdnFileId }
+    ...(opts.cdnFileId
+      ? { cdnFileId: opts.cdnFileId }
       : {}),
 
     ...(opts.googleDriveAttachment

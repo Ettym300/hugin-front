@@ -827,7 +827,7 @@
         },
         "developer": {
             "useLatestUrl": "Usa l'URL più recente",
-            "useLatestUrlDescription": "Carica latest.nerimity.com al prossimo riavvio dell'app. Riavvierà l'app.",
+            "useLatestUrlDescription": "Carica app.hugin al prossimo riavvio dell'app. Riavvierà l'app.",
             "useLatestUrlWarning": "Potrebbe essere instabile o avere dei bug.",
             "applicationsDescription": "Crea bot di HUGIN.",
             "apiDocumentation": "Documentazione API (incompleta)",

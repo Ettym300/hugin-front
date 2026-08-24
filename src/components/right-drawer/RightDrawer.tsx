@@ -214,10 +214,10 @@ const MemberItem = (props: {
             anchor="left"
           >
             <Show when={isCreator()}>
-              <img src="https://nerimity.com/twemojis/1f451.svg" />
+              <img src="https://hugin.app/twemojis/1f451.svg" />
             </Show>
             <Show when={!isCreator()}>
-              <img src="https://nerimity.com/twemojis/1f6e1.svg" />
+              <img src="https://hugin.app/twemojis/1f6e1.svg" />
             </Show>
           </Tooltip>
         </Show>
@@ -396,7 +396,7 @@ const AttachmentImage = (props: { attachment: RawAttachment }) => {
   const isGif = () => props.attachment.path?.endsWith(".gif");
 
   const url = (ignoreFocus?: boolean) => {
-    let url = `${env.NERIMITY_CDN}${props.attachment.path}`;
+    let url = `${env.HUGIN_CDN}${props.attachment.path}`;
     if (ignoreFocus) return url;
     if (isGif()) return (url += "?type=webp");
     return url;

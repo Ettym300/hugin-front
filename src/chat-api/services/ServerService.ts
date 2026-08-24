@@ -13,7 +13,7 @@ import {
   RawServerFolder
 } from "../RawData";
 import env from "../../common/env";
-import { uploadEmoji } from "./nerimityCDNService";
+import { uploadEmoji } from "./huginCDNService";
 
 export async function deleteClan(serverId: string): Promise<any> {
   return request({

@@ -58,14 +58,14 @@ export default function TermsAndConditionsPage() {
       <Content class="content">
         <CenterContainer>
           <InformationContainer>
-            <Title>Nerimity Terms and Conditions of Use</Title>
+            <Title>HUGIN Terms and Conditions of Use</Title>
             <Text opacity={0.8} size={14}>
               Last updated: 11 December 2025
             </Text>
             <Text opacity={0.6} size={14}>
               If you have questions or notice something missing, you may email
               us at{" "}
-              <a href="mailto:nerimityapp@gmail.com">nerimityapp@gmail.com</a>.
+              <a href="mailto:contact@hugin.app">contact@hugin.app</a>.
             </Text>
           </InformationContainer>
 
@@ -80,14 +80,14 @@ export default function TermsAndConditionsPage() {
           </Block>
 
           <Block title="1. Terms" icon="contract">
-            By accessing or using this website (https://nerimity.com), you
+            By accessing or using this website (https://hugin.app), you
             acknowledge and agree to be bound by these Terms and Conditions of
             Use. You further agree that you are solely responsible for ensuring
             compliance with all applicable local laws. If you do not agree to
             any provision of these terms, you must not access or use this
             website.{" "}
             <strong>
-              Continued access to or use of Nerimity following the publication
+              Continued access to or use of HUGIN following the publication
               of any amendments to these Terms and Conditions shall be deemed to
               constitute your acceptance of those amendments.
             </strong>{" "}
@@ -95,7 +95,7 @@ export default function TermsAndConditionsPage() {
             remain informed of any updates or changes.
           </Block>
           <Block title="2. Age Requirements" icon="cake">
-            To use Nerimity or any associated services, you must be at least{" "}
+            To use HUGIN or any associated services, you must be at least{" "}
             <strong>14 years old</strong>, and meet the minimum age required by
             the laws in your country or region. Accounts reasonably believed to
             belong to users below the required minimum age may be suspended
@@ -115,7 +115,7 @@ export default function TermsAndConditionsPage() {
 
           <Block title="3. Behaviour" icon="sports">
             Racism, sexism, homophobia, targeted harassment, serious bullying or
-            doxxing <strong>are prohibited</strong> on Nerimity. However, if
+            doxxing <strong>are prohibited</strong> on HUGIN. However, if
             someone has a different opinion from yours that isn't harming
             anyone, we advise you to simply block them instead. We would like
             everyone to feel safe when using this platform. We want to keep
@@ -125,7 +125,7 @@ export default function TermsAndConditionsPage() {
               <strong>
                 Any images, links, or videos depicting bodily gore, self-harm,
                 disturbing imagery, triggering material, or illegal topics are
-                absolutely prohibited on Nerimity.
+                absolutely prohibited on HUGIN.
               </strong>
             </div>
             <div style={{ "margin-top": "15px" }}>
@@ -136,16 +136,16 @@ export default function TermsAndConditionsPage() {
           </Block>
 
           <Block title="4. Servers" icon="storage">
-            Creating a server on Nerimity that involves exploitation of any game
+            Creating a server on HUGIN that involves exploitation of any game
             or creating an NSFW-based server will cause your account to be
             suspended and the server deleted. This is to ensure our members have
             a comfortable environment to learn and have fun in.
           </Block>
 
           <Block title="5. Links" icon="link">
-            Nerimity has not reviewed all sites connected to its Website and is
+            HUGIN has not reviewed all sites connected to its Website and is
             not responsible for their contents. The presence of any link does
-            not imply endorsement by Nerimity of the site. Any linked website is
+            not imply endorsement by HUGIN of the site. Any linked website is
             used at the user's own risk.
           </Block>
 
@@ -153,7 +153,7 @@ export default function TermsAndConditionsPage() {
             For details on usage rights, please refer to the licenses provided
             in each repository on our{" "}
             <a
-              href="https://github.com/orgs/Nerimity/repositories"
+              href="https://github.com/orgs/HUGIN/repositories"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -164,17 +164,17 @@ export default function TermsAndConditionsPage() {
           </Block>
 
           <Block title="7. Disclaimer" icon="warning">
-            All Nerimity's Website materials are provided "as is". Nerimity
+            All HUGIN's Website materials are provided "as is". HUGIN
             makes no promises, expressly or impliedly, therefore negates all
-            other warranties. Furthermore, Nerimity does not represent the
+            other warranties. Furthermore, HUGIN does not represent the
             accuracy or reliability of the use of the materials on its Website.
             It does not represent any sites linked to this Website.
           </Block>
 
           <Block title="8. Limitations" icon="lock">
-            Nerimity or its suppliers will not be held accountable for any
+            HUGIN or its suppliers will not be held accountable for any
             damages that arise from the use or inability to use the materials on
-            Nerimity's Website. This is even if Nerimity or an authorised
+            HUGIN's Website. This is even if HUGIN or an authorised
             representative of this Website has been notified, orally or in
             writing, of the possibility of such damage. Some jurisdictions do
             not allow limitations on implied warranties or liability for
@@ -182,10 +182,10 @@ export default function TermsAndConditionsPage() {
           </Block>
 
           <Block title="9. Revisions and Errata" icon="edit_document">
-            Nerimity's Website may contain technical, typographical, or
-            photographic errors. Nerimity does not promise that the materials on
-            this Website are accurate, complete, or current. Nerimity may change
-            its Website materials at any time without notice. Nerimity does not
+            HUGIN's Website may contain technical, typographical, or
+            photographic errors. HUGIN does not promise that the materials on
+            this Website are accurate, complete, or current. HUGIN may change
+            its Website materials at any time without notice. HUGIN does not
             guarantee any updates.
           </Block>
 
@@ -197,7 +197,7 @@ export default function TermsAndConditionsPage() {
           </Block>
 
           <Block title="11. Governing Law" icon="globe_uk">
-            Any claim relating to Nerimity's Website shall be governed by the
+            Any claim relating to HUGIN's Website shall be governed by the
             laws of GB without regard to its conflict of law provisions.
           </Block>
         </CenterContainer>

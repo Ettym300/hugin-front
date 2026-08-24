@@ -49,14 +49,14 @@ export async function unlinkAccountWithGoogle(): Promise<{
 
 export async function linkAccountWithGoogle(
   code: string,
-  nerimityUserToken: string
+  huginUserToken: string
 ): Promise<{ connection: RawUserConnection }> {
   return request({
     url: env.SERVER_URL + "/api/connections/google/link-account",
     method: "POST",
     body: {
       code,
-      nerimityToken: nerimityUserToken
+      huginToken: huginUserToken
     },
     useToken: false
   });
@@ -82,14 +82,14 @@ export async function fetchInventory() {
 
 export async function linkAccountWithGoogleDrive(
   code: string,
-  nerimityUserToken: string
+  huginUserToken: string
 ): Promise<{ connection: RawUserConnection }> {
   return request({
     url: env.SERVER_URL + "/api/connections/google-drive/link-account",
     method: "POST",
     body: {
       code,
-      nerimityToken: nerimityUserToken
+      huginToken: huginUserToken
     },
     useToken: false
   });
