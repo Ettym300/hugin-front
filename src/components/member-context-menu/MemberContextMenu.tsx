@@ -426,10 +426,12 @@ function Header(props: { userId: string }) {
   const applyVoiceVolume = (volume: number) => {
     setCachedVolumes(props.userId, volume);
     if (isLiveKitSfuMode()) {
+      // Acima de 100% quem aplica é o GainNode; o elemento fica mudo lá.
       setLiveKitRemoteVolume(props.userId, volume, Track.Source.Microphone);
+      return;
     }
     const el = audio();
-    if (el) el.volume = volume;
+    if (el) el.volume = Math.min(1, volume);
   };
 
   const applyLiveVolume = (volume: number) => {
@@ -438,8 +440,8 @@ function Header(props: { userId: string }) {
 
   createEffect(
     on(audio, (el) => {
-      if (!el) return;
-      el.volume = cachedVolumes[props.userId] ?? 1;
+      if (!el || isLiveKitSfuMode()) return;
+      el.volume = Math.min(1, cachedVolumes[props.userId] ?? 1);
     })
   );
 
@@ -470,7 +472,7 @@ function Header(props: { userId: string }) {
           <input
             type="range"
             min={0}
-            max={1}
+            max={4}
             step={0.01}
             value={voiceVolume()}
             onPointerDown={(event) => event.stopPropagation()}

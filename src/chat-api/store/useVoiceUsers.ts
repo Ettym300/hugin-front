@@ -43,8 +43,13 @@ import {
   setLiveKitRemoteVolume,
   setLiveKitScreenShareSubscribed,
   setLiveKitAudioOutput,
+  setLiveKitOutputGain,
   unpublishLiveKitScreenShare
 } from "@/chat-api/livekit/livekitRoom";
+import {
+  MAX_OUTPUT_GAIN_PERCENT,
+  getOutputGainLinear
+} from "@/common/outputGain";
 import { postLiveKitToken } from "../services/VoiceService";
 import { ConnectionState, Track } from "livekit-client";
 
@@ -370,9 +375,10 @@ async function connectLiveKitToChannel(channelId: string) {
           setLiveKitRemoteVolume(userId, volume, Track.Source.Microphone);
 
           const audio = audioElement ?? voiceUser.audio ?? new Audio();
-          audio.volume = volume;
-          audio.muted = deafened.enabled;
           if (!audioElement) {
+            // Elemento próprio (sem LiveKit): volume aqui satura em 1.0.
+            audio.volume = Math.min(1, volume * getOutputGainLinear());
+            audio.muted = deafened.enabled;
             const deviceId = getStorageString(
               StorageKeys.outputDeviceId,
               undefined
@@ -743,7 +749,7 @@ const createPeer = (voiceUser: VoiceUser, signal?: SimplePeer.SignalData) => {
 
     const audio = newVoiceUser.audio || new Audio();
     const volume = cachedVolumes[userId] ?? 1;
-    audio.volume = volume;
+    audio.volume = Math.min(1, volume * getOutputGainLinear());
     audio.muted = deafened.enabled;
     const deviceId = getStorageString(StorageKeys.outputDeviceId, undefined);
     if (deviceId) {
@@ -1154,6 +1160,24 @@ const setMicGain = (percent: number) => {
   currentVoiceUser()?.micSetGain?.(linear);
 };
 
+const setOutputGain = (percent: number) => {
+  const clamped = Math.max(0, Math.min(MAX_OUTPUT_GAIN_PERCENT, percent));
+  const linear = clamped / 100;
+
+  if (isLiveKitEnabled()) {
+    setLiveKitOutputGain(linear);
+    return;
+  }
+
+  const current = currentVoiceUser();
+  if (!current) return;
+  getVoiceUsersByChannelId(current.channelId).forEach((voiceUser) => {
+    if (!voiceUser.audio) return;
+    const base = cachedVolumes[voiceUser.userId] ?? 1;
+    voiceUser.audio.volume = Math.min(1, base * linear);
+  });
+};
+
 const toggleMic = async () => {
   const current = currentVoiceUser();
   if (!current) return;
@@ -1391,6 +1415,7 @@ export default function useVoiceUsers() {
     applyOutputDevice,
     restartMic,
     setMicGain,
+    setOutputGain,
     updateLocalVadSensitivity,
     setVideoStream,
     setLiveBitrate,

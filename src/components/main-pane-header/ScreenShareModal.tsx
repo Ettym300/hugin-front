@@ -27,7 +27,18 @@ import { Modal } from "../ui/modal";
 import Checkbox from "../ui/Checkbox";
 import style from "./ScreenShareModal.module.scss";
 
-const isWindows = navigator?.userAgentData?.platform === "Windows";
+const isWindows =
+  navigator?.userAgentData?.platform === "Windows" ||
+  /Windows/i.test(navigator.userAgent);
+
+/** Linux/Wayland: sem lista interna — getSources abre o portal do KDE. */
+function useSystemScreenPicker() {
+  const api = electronWindowAPI();
+  if (!api?.isElectron) return false;
+  if (api.platform === "linux") return true;
+  if (api.platform === "win32" || api.platform === "darwin") return false;
+  return !isWindows && /Linux/i.test(navigator.userAgent);
+}
 
 let audioGenerator: any | null = null;
 let writer: any | null = null;
@@ -219,7 +230,8 @@ export function ScreenShareModal(props: { close: () => void }) {
 
   const startSharing = async () => {
     if (starting()) return;
-    if (isElectron() && !electronSourceId()) return;
+    // No Linux o portal do sistema escolhe a fonte; no Windows precisa da lista.
+    if (isElectron() && !useSystemScreenPicker() && !electronSourceId()) return;
 
     setStarting(true);
     try {
@@ -228,8 +240,10 @@ export function ScreenShareModal(props: { close: () => void }) {
         framerate(),
         voiceUsers.setLiveBitrate
       );
-      const includeAudio =
-        isElectron() && isWindows ? shareSystemAudio() : shareSystemAudio();
+      // Áudio de sistema via loopback só existe no Electron Windows.
+      const includeAudio = isElectron()
+        ? isWindows && shareSystemAudio()
+        : shareSystemAudio();
 
       const constraints = buildDisplayMediaConstraints(
         applied.quality,
@@ -239,7 +253,7 @@ export function ScreenShareModal(props: { close: () => void }) {
 
       let appTrack: MediaStreamTrack | undefined;
 
-      if (isElectron()) {
+      if (isElectron() && !useSystemScreenPicker()) {
         const sourceId = electronSourceId()!;
         await electronWindowAPI()?.setDesktopCaptureSourceId(sourceId);
 
@@ -304,17 +318,19 @@ export function ScreenShareModal(props: { close: () => void }) {
       <Modal.Body>
         <LiveShareSettingsPicker />
 
-        <div class={style.toggleRow}>
-          <span class={style.toggleLabel}>{shareAudioLabel()}</span>
-          <button
-            type="button"
-            class={style.toggle}
-            data-on={shareSystemAudio()}
-            aria-pressed={shareSystemAudio()}
-            aria-label={shareAudioLabel()}
-            onClick={() => setShareSystemAudio((v) => !v)}
-          />
-        </div>
+        <Show when={!useSystemScreenPicker()}>
+          <div class={style.toggleRow}>
+            <span class={style.toggleLabel}>{shareAudioLabel()}</span>
+            <button
+              type="button"
+              class={style.toggle}
+              data-on={shareSystemAudio()}
+              aria-pressed={shareSystemAudio()}
+              aria-label={shareAudioLabel()}
+              onClick={() => setShareSystemAudio((v) => !v)}
+            />
+          </div>
+        </Show>
 
         <Show
           when={
@@ -338,7 +354,7 @@ export function ScreenShareModal(props: { close: () => void }) {
           </div>
         </Show>
 
-        <Show when={isElectron()}>
+        <Show when={isElectron() && !useSystemScreenPicker()}>
           <ElectronCaptureSourceList ref={setElectronSourceId} />
         </Show>
       </Modal.Body>
@@ -351,7 +367,10 @@ export function ScreenShareModal(props: { close: () => void }) {
         <Modal.Button
           label={t("mainPaneHeader.voice.screenShareModal.startSharing")}
           primary
-          disabled={starting() || (isElectron() && !electronSourceId())}
+          disabled={
+            starting() ||
+            (isElectron() && !useSystemScreenPicker() && !electronSourceId())
+          }
           onClick={() => void startSharing()}
         />
       </Modal.Footer>
@@ -404,6 +423,10 @@ function ElectronCaptureSourceList(props: { ref: (id: () => string | undefined) 
 
   onMount(() => {
     void fetchSources();
+    // Polling no Linux abre o portal XDG a cada 3s — só atualiza no Windows.
+    if (!isWindows) {
+      return;
+    }
     const timeoutId = window.setInterval(() => void fetchSources(), 3000);
     onCleanup(() => clearInterval(timeoutId));
   });

@@ -28,6 +28,7 @@ export const StorageKeys = {
   voiceMicConstraints: "voiceMicConstraints",
   voiceInputSensitivity: "voiceInputSensitivity",
   voiceInputGain: "voiceInputGain",
+  voiceOutputGain: "voiceOutputGain",
   voiceLiveBitrate: "voiceLiveBitrate",
   voiceLiveQuality: "voiceLiveQuality",
   voiceLiveFramerate: "voiceLiveFramerate",

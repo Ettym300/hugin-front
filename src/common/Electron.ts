@@ -56,6 +56,8 @@ type LoopbackOpts = {
 
 interface WindowAPI {
   isElectron: boolean;
+  /** Electron process.platform: win32 | linux | darwin */
+  platform?: string;
   minimize(): void;
   toggleMaximize(): void;
   close(): void;

@@ -511,7 +511,9 @@
   &.videoStream:not(.miniView) .voiceActions {
     position: absolute;
     z-index: 5;
-    bottom: 14px;
+    /* Topo do palco: longe do handle de resize e da barra do chat/sistema. */
+    top: 12px;
+    bottom: auto;
     left: 50%;
     padding: 6px;
     border: 1px solid var(--panel-border-color);
@@ -523,9 +525,9 @@
     pointer-events: auto;
   }
 
-  /* Abre espaco para a barra flutuante nao cobrir os tiles da bandeja. */
+  /* Espaco no topo para a barra nao cobrir os tiles. */
   &.videoStream:not(.miniView) .hiddenLives {
-    padding-bottom: 68px;
+    padding-top: 56px;
   }
 }
 

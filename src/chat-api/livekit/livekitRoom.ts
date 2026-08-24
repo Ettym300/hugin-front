@@ -15,6 +15,7 @@ import {
   LIVEKIT_SCREEN_AUDIO_PUBLISH_OPTIONS,
   LIVEKIT_VOICE_AUDIO_PRESET
 } from "./livekitAudio";
+import { getOutputAudioContext, getOutputGainLinear } from "@/common/outputGain";
 
 export type LiveKitAuth = {
   url: string;
@@ -52,6 +53,8 @@ const remoteAudioTracks = new Map<string, RemoteAudioTrack>();
 const remoteAudioElements = new Map<string, HTMLMediaElement>();
 const remoteVolumes = new Map<string, number>();
 let deafened = false;
+let outputGain = getOutputGainLinear();
+let currentSinkId: string | undefined;
 
 function audioKey(userId: string, source: Track.Source) {
   return `${userId}:${source}`;
@@ -59,7 +62,49 @@ function audioKey(userId: string, source: Track.Source) {
 
 function volumeFor(userId: string, source: Track.Source) {
   if (deafened && source === Track.Source.Microphone) return 0;
-  return remoteVolumes.get(audioKey(userId, source)) ?? 1;
+  const base = remoteVolumes.get(audioKey(userId, source)) ?? 1;
+  return base * outputGain;
+}
+
+/**
+ * `element.volume` satura em 1.0. Acima disso trocamos para o GainNode do
+ * LiveKit, que soma sem limite. O elemento precisa ficar mudo nesse modo,
+ * senão o áudio toca duas vezes (elemento + AudioContext).
+ */
+function applyVolume(userId: string, source: Track.Source) {
+  const key = audioKey(userId, source);
+  const track = remoteAudioTracks.get(key);
+  if (!track) return;
+
+  const volume = volumeFor(userId, source);
+  const element = remoteAudioElements.get(key);
+  const context = volume > 1 ? getOutputAudioContext() : null;
+
+  if (context) {
+    track.setAudioContext(context);
+    if (element) element.muted = true;
+    if (currentSinkId) {
+      void (context as any).setSinkId?.(currentSinkId)?.catch?.(() => {});
+    }
+  } else {
+    track.setAudioContext(undefined);
+    if (element) {
+      element.muted = false;
+      if (currentSinkId && "setSinkId" in element) {
+        void (element as HTMLAudioElement).setSinkId(currentSinkId).catch(() => {});
+      }
+    }
+  }
+
+  track.setVolume(volume);
+}
+
+export function setLiveKitOutputGain(linear: number) {
+  outputGain = Math.max(0, linear);
+  for (const key of remoteAudioTracks.keys()) {
+    const sep = key.lastIndexOf(":");
+    applyVolume(key.slice(0, sep), Number(key.slice(sep + 1)) as Track.Source);
+  }
 }
 
 function ensureRemoteStream(userId: string, kind: "audio" | "video") {
@@ -113,15 +158,19 @@ function attachRemoteAudio(
     document.body.appendChild(element);
   }
 
-  remoteTrack.setVolume(volumeFor(userId, source));
-  if (sinkId && "setSinkId" in element) {
-    void (element as HTMLAudioElement).setSinkId(sinkId).catch(() => {});
+  if (sinkId) {
+    currentSinkId = sinkId;
+    if ("setSinkId" in element) {
+      void (element as HTMLAudioElement).setSinkId(sinkId).catch(() => {});
+    }
   }
-
-  void element.play().catch(() => {});
 
   remoteAudioTracks.set(key, remoteTrack);
   remoteAudioElements.set(key, element);
+  applyVolume(userId, source);
+
+  void element.play().catch(() => {});
+
   return element;
 }
 
@@ -141,10 +190,13 @@ export function setLiveKitRemoteVolume(
   source: Track.Source = Track.Source.Microphone
 ) {
   remoteVolumes.set(audioKey(userId, source), volume);
-  remoteAudioTracks.get(audioKey(userId, source))?.setVolume(volumeFor(userId, source));
+  applyVolume(userId, source);
 }
 
 export function setLiveKitAudioOutput(deviceId: string) {
+  currentSinkId = deviceId;
+  const context = getOutputAudioContext();
+  void (context as any)?.setSinkId?.(deviceId)?.catch?.(() => {});
   for (const [key, track] of remoteAudioTracks) {
     track.setSinkId(deviceId).catch(() => {});
     const el = remoteAudioElements.get(key);
@@ -425,12 +477,11 @@ export function setLiveKitScreenShareSubscribed(
 
 export function setLiveKitDeafened(nextDeafened: boolean) {
   deafened = nextDeafened;
-  for (const [key, track] of remoteAudioTracks) {
+  for (const key of remoteAudioTracks.keys()) {
     const sep = key.lastIndexOf(":");
-    const userId = key.slice(0, sep);
     const source = Number(key.slice(sep + 1)) as Track.Source;
     if (source === Track.Source.Microphone) {
-      track.setVolume(volumeFor(userId, source));
+      applyVolume(key.slice(0, sep), source);
     }
   }
 }

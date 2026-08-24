@@ -29,6 +29,9 @@ import {
   VoiceMicConstraints,
   resolveNoiseSuppressionMode
 } from "@/common/voiceAudioSettings";
+import { MAX_OUTPUT_GAIN_PERCENT } from "@/common/outputGain";
+import Slider from "../ui/Slider";
+import Text from "../ui/Text";
 
 const Container = styled("div")`
   display: flex;
@@ -41,6 +44,18 @@ const NoiseModeSettingsBlock = styled(SettingsBlock)`
   flex-direction: column;
   align-items: stretch;
   gap: 8px;
+`;
+
+const VolumeSettingsBlock = styled(SettingsBlock)`
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+`;
+
+const VolumeRow = styled("div")`
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `;
 
 export default function CallSettings() {
@@ -63,6 +78,7 @@ export default function CallSettings() {
       <Notice type="info" description={t("settings.call.nextCallNotice")} />
       <InputDevices />
       <OutputDevices />
+      <OutputVolume />
       <InputMode />
       <PushToTalk />
       <TurnServers />
@@ -277,6 +293,39 @@ export function OutputDevices() {
         }}
       />
     </SettingsBlock>
+  );
+}
+
+export function OutputVolume() {
+  const { voiceUsers } = useStore();
+  const [outputGain, setOutputGain] = useLocalStorage(
+    StorageKeys.voiceOutputGain,
+    100
+  );
+
+  return (
+    <VolumeSettingsBlock
+      icon="volume_up"
+      label={t("settings.call.outputVolume")}
+      description={t("settings.call.outputVolumeDescription")}
+    >
+      <VolumeRow>
+        <Slider
+          min={0}
+          max={MAX_OUTPUT_GAIN_PERCENT}
+          value={outputGain()}
+          onChange={(value) => {
+            const percent = Number(value);
+            if (Number.isNaN(percent)) return;
+            setOutputGain(percent);
+            voiceUsers.setOutputGain(percent);
+          }}
+        />
+        <Text style={{ width: "56px", "text-align": "center" }}>
+          {outputGain()}%
+        </Text>
+      </VolumeRow>
+    </VolumeSettingsBlock>
   );
 }
 

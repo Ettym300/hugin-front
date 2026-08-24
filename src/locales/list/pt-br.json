@@ -8,7 +8,7 @@
     "homePage": {
         "slogan": "Um aplicativo de conversa elegante e moderno.",
         "viewGitHubButton": "Ver GitHub",
-        "subslogan": "HUGIN oferece uma experiência elegante e rica de recursos que o diferencia.",
+        "subslogan": "Concord oferece uma experiência elegante e rica de recursos que o diferencia.",
         "getStarted": "Iniciar",
         "availableOn": "Disponível em",
         "browser": "Navegador",
@@ -33,7 +33,7 @@
         "loggingIn": "Entrando…"
     },
     "registerPage": {
-        "title": "Bem-vindo ao HUGIN",
+        "title": "Bem-vindo ao Concord",
         "email": "Email",
         "username": "Nome de usuário",
         "password": "Senha",
@@ -103,7 +103,7 @@
             "joinServerButton": "Juntar-se",
             "bumpButton": "Impulsionar ({{count}})",
             "pinnedServers": "Servidores fixados",
-            "moderationNotice": "Servidores não são moderados pelo HUGIN. Por favor denuncie servidores que quebrem os termos de serviço.",
+            "moderationNotice": "Servidores não são moderados pelo Concord. Por favor denuncie servidores que quebrem os termos de serviço.",
             "recentlyBumped": "Servidores recentemente impulsionados",
             "sortMostActive": "Mais ativo (beta)",
             "filterClans": "Clãs"
@@ -111,7 +111,7 @@
         "bots": {
             "title": "Explorar - Robôs",
             "noticeMessage": "Um robô pode ser impulsionado uma vez a cada {{hours}} horas. Todos impulsos são redefinidos a cada {{date}}.",
-            "moderationNotice": "Robôs não são moderados pelo HUGIN. Por favor denuncie robôs que são maliciosos ou quebram os termos de serviço.",
+            "moderationNotice": "Robôs não são moderados pelo Concord. Por favor denuncie robôs que são maliciosos ou quebram os termos de serviço.",
             "serverCount": "Em {{count}} servidores",
             "inviteButton": "Convidar"
         },
@@ -122,7 +122,7 @@
             "title": "Explorar - Temas",
             "fetchThemesError": "Falha ao buscar temas. Por favor tente novamente mais tarde.",
             "unlockDescription": "Clique para explorar todos os temas da comunidade",
-            "themesHeaderDescription": "Personalize o HUGIN com um tema customizado."
+            "themesHeaderDescription": "Personalize o Concord com um tema customizado."
         },
         "sort": "Classificar",
         "filter": "Filtrar",
@@ -467,7 +467,7 @@
             },
             "postsAndMessagesNotice": "Suas postagens e mensagens podem demorar semanas para serem excluídas.",
             "deleteCheckbox": "Excluir minhas postagens e mensagens",
-            "deletionNotice": "Estamos tristes de ver você sair :( Se você não gostou de algo, por favor nos informe no servidor oficial HUGIN.",
+            "deletionNotice": "Estamos tristes de ver você sair :( Se você não gostou de algo, por favor nos informe no servidor oficial Concord.",
             "profileDescription": "Editar sua biografia ou cores",
             "palestineBorder": "Adicionar borda palestina ao seu avatar.",
             "bioDescription": "Suporte a multilinha e marcação",
@@ -486,12 +486,12 @@
         },
         "window": {
             "startMinimized": "Iniciar minimizado",
-            "startMinimizedDescription": "Minimizar HUGIN para a bandeja automaticamente.",
+            "startMinimizedDescription": "Minimizar Concord para a bandeja automaticamente.",
             "disableCustomTitlebar": "Desativar barra de título customizada",
             "reopenAppNotice": "Você deve reabrir o aplicativo para as mudanças terem efeito.",
-            "openOnStartup": "Abrir HUGIN ao iniciar",
+            "openOnStartup": "Abrir Concord ao iniciar",
             "startupOptions": "Opções de inicialização",
-            "downloadAppNotice": "Para modificar estas configurações, você deve baixar o aplicativo HUGIN externo.",
+            "downloadAppNotice": "Para modificar estas configurações, você deve baixar o aplicativo Concord externo.",
             "disableHardwareAcceleration": "Desativar aceleração gráfica"
         },
         "interface": {
@@ -552,6 +552,8 @@
             "inputSensitivityClosed": "Abaixo do limite",
             "inputVolume": "Volume de entrada",
             "inputVolumeDescription": "Aumenta ou diminui o microfone enviado nas chamadas. 100% é o nível original. Se o volume parecer travado, desative o controle automático de ganho.",
+            "outputVolume": "Volume de saída",
+            "outputVolumeDescription": "Aumenta ou diminui o áudio que você ouve nas chamadas. 100% é o nível original. Acima de 100% pode distorcer.",
             "bindButton": "Configurar",
             "leaveCall": "Você deve sair da chamada primeiro",
             "inputConstraints": {
@@ -569,7 +571,7 @@
             },
             "useTurn": "Use os servidores TURN da Cloudflare",
             "useTurnDescription": "Use servidores TURN para obter uma melhor conectividade",
-            "downloadAppNotice": "Baixe o aplicativo para desktop do HUGIN para usar esse recurso sem que a janela fique em foco."
+            "downloadAppNotice": "Baixe o aplicativo para desktop do Concord para usar esse recurso sem que a janela fique em foco."
         },
         "notifications": {
             "inAppPreviewModes": {
@@ -603,11 +605,11 @@
             "reloadNotice": "Você deve recarregar o aplicativo para aplicar o novo idioma completamente.",
             "reloadButton": "Recarregar",
             "contributors": "Contribuidores",
-            "searchNotice": "Traduções são mantidas pela comunidade. Por favor denuncie quaisquer traduções que estão incorretas ou inapropriadas para o HUGIN."
+            "searchNotice": "Traduções são mantidas pela comunidade. Por favor denuncie quaisquer traduções que estão incorretas ou inapropriadas para o Concord."
         },
         "activity": {
             "extension": "Extensão de navegador",
-            "extensionDescription": "Nossa extensão RPC lhe permite compartilhar sua atividade do Spotify e YouTube com usuários no HUGIN!",
+            "extensionDescription": "Nossa extensão RPC lhe permite compartilhar sua atividade do Spotify e YouTube com usuários no Concord!",
             "visitButton": "Visitar {{store}}",
             "activityStatus": "Status de atividade",
             "activityStatusDescription": "Compartilhar o que está fazendo com todos",
@@ -619,7 +621,7 @@
                 "emoji": "Emoji"
             },
             "discordActivity": "Atividade do Discord",
-            "discordActivityDescription": "Compartilhe sua atividade do Discord com usuários no HUGIN",
+            "discordActivityDescription": "Compartilhe sua atividade do Discord com usuários no Concord",
             "idPlaceholder": "ID de usuário do Discord",
             "serverModal": {
                 "text": "Por favor entre no servidor do Discord para ativar compartilhamento de atividade.",
@@ -644,9 +646,9 @@
                 "redirectUri": "URI de redirecionamento"
             },
             "useLatestUrl": "Use o URL mais recente",
-            "useLatestUrlDescription": "Carregue a URL mais recente do HUGIN na próxima reinicialização. O aplicativo será reiniciado.",
+            "useLatestUrlDescription": "Carregue a URL mais recente do Concord na próxima reinicialização. O aplicativo será reiniciado.",
             "useLatestUrlWarning": "Pode ser instável ou apresentar erros.",
-            "applicationsDescription": "Crie bots do HUGIN.",
+            "applicationsDescription": "Crie bots do Concord.",
             "apiDocumentation": "Documentação da API (incompleta)",
             "addButton": "Adicionar aplicativo",
             "name": "Nome do aplicativo",
@@ -690,7 +692,7 @@
             },
             "linkButton": "Conectar",
             "unlinkButton": "Desconenctar",
-            "googleDriveDescription": "Ao vincular sua conta do Google, você poderá enviar arquivos no HUGIN. Os arquivos serão armazenados no seu Google Drive.",
+            "googleDriveDescription": "Ao vincular sua conta do Google, você poderá enviar arquivos no Concord. Os arquivos serão armazenados no seu Google Drive.",
             "driveWarning": {
                 "title": "Não é recomendável usar sua conta principal do Google para compartilhar ou hospedar anexos.",
                 "message": "Devido à forma como a API do Google Drive lida com os metadados dos arquivos, seu nome de exibição e endereço de e-mail do Google costumam ficar visíveis nos dados de fundo de qualquer arquivo que você compartilhar. Use uma conta descartável se decidir continuar usando o Google Drive."
@@ -718,7 +720,7 @@
                 "title": "Recarregamento necessário",
                 "restartNow": "Reiniciar agora",
                 "restartLater": "Reiniciar depois",
-                "body": "HUGIN precisa ser reiniciado para mudanças terem efeito."
+                "body": "Concord precisa ser reiniciado para mudanças terem efeito."
             }
         }
     },
@@ -969,10 +971,10 @@
             "videoModified": "O vídeo foi modificado.",
             "couldNotGetVideo": "Não foi possível carregar o vídeo.",
             "modifiedOrDeleted": "Este vídeo foi alterado/excluído pelo criador no Google Drive.",
-            "googleDrivePolicy": "Devido à nova política do Google Drive, você só pode reproduzir vídeos a partir do aplicativo HUGIN para desktop."
+            "googleDrivePolicy": "Devido à nova política do Google Drive, você só pode reproduzir vídeos a partir do aplicativo Concord para desktop."
         },
         "audioEmbed": {
-            "googleDrivePolicy": "Devido à nova política do Google Drive, só é possível reproduzir áudio a partir do aplicativo HUGIN para desktop."
+            "googleDrivePolicy": "Devido à nova política do Google Drive, só é possível reproduzir áudio a partir do aplicativo Concord para desktop."
         }
     },
     "invite": {
@@ -1031,7 +1033,7 @@
         "authenticating": "Autenticando…",
         "inQueue": "Em fila: {{count}} usuário(s) em sua frente",
         "statusPage": "Página de status",
-        "updateAvailable": "Uma atualização do HUGIN está pronta.",
+        "updateAvailable": "Uma atualização do Concord está pronta.",
         "reloadNow": "Atualizar agora"
     },
     "dangerousLinkModal": {
@@ -1144,15 +1146,15 @@
         },
         "admin": {
             "name": "Administrador(a)",
-            "description": "Administrador(a) do HUGIN"
+            "description": "Administrador(a) do Concord"
         },
         "founder": {
             "name": "Fundador(a)",
-            "description": "Criador(a) do HUGIN"
+            "description": "Criador(a) do Concord"
         },
         "mod": {
             "name": "Moderador(a)",
-            "description": "Moderador(a) do HUGIN"
+            "description": "Moderador(a) do Concord"
         },
         "palestine": {
             "name": "Palestina"
@@ -1214,7 +1216,7 @@
     },
     "connectionErrorModal": {
         "deletionNotice": "Sua conta e dados serão excluídos em 15 dias",
-        "ipBanNotice": "Alguém com o mesmo IP foi suspendido do HUGIN. Sua conta não é afetada.",
+        "ipBanNotice": "Alguém com o mesmo IP foi suspendido do Concord. Sua conta não é afetada.",
         "ok": "OK",
         "reason": "Motivo",
         "until": "Até",
@@ -1330,7 +1332,7 @@
             "sort": {
                 "member": "Membro",
                 "header": "Classificar por",
-                "joinedHUGIN": "Entrou no HUGIN em",
+                "joinedNerimity": "Entrou no Concord em",
                 "joined": "Entrou em"
             },
             "filter": {
@@ -1414,11 +1416,11 @@
         "description": "Isto irá transferir propriedade para um(a) novo(a) dono(a)."
     },
     "welcomePopup": {
-        "subtitle": "Obrigado por experimentar o HUGIN!",
-        "joinServer": "Entre no servidor oficial do HUGIN",
+        "subtitle": "Obrigado por experimentar o Concord!",
+        "joinServer": "Entre no servidor oficial do Concord",
         "editProfile": "Editar meu perfil",
         "support": "Apoie-me na {{platform}}",
-        "contribute": "Contribua com o HUGIN no GitHub"
+        "contribute": "Contribua com o Concord no GitHub"
     },
     "dropDown": {
         "selectItem": "Selecionar item",
