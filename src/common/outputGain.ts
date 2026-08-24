@@ -1,6 +1,6 @@
 import { getStorageObject, StorageKeys } from "@/common/localStorage";
 
-export const MAX_OUTPUT_GAIN_PERCENT = 400;
+export const MAX_OUTPUT_GAIN_PERCENT = 500;
 
 /**
  * Ganho aplicado ao áudio recebido em chamadas.

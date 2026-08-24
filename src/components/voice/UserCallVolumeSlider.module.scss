@@ -1,0 +1,29 @@
+.voiceVolume {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 8px 10px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .label {
+    font-size: 12px;
+    opacity: 0.75;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    height: 6px;
+    margin: 0;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+  }
+}

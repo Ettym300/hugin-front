@@ -3,7 +3,7 @@ import { copyToClipboard } from "@/common/clipboard";
 import ContextMenu, {
   ContextMenuProps
 } from "@/components/ui/context-menu/ContextMenu";
-import { createEffect, createSignal, For, on, Show } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import useStore from "@/chat-api/store/useStore";
 import LegacyModal from "@/components/ui/legacy-modal/LegacyModal";
 import { ServerRole } from "@/chat-api/store/useServerRoles";
@@ -40,15 +40,7 @@ import { FlexColumn } from "../ui/Flexbox";
 import { Modal } from "../ui/modal";
 import { User } from "@/chat-api/store/useUsers";
 import { Server } from "@/chat-api/store/useServers";
-import {
-  cachedLiveVolumes,
-  cachedVolumes,
-  setCachedLiveVolumes,
-  setCachedVolumes
-} from "@/chat-api/store/useVoiceUsers";
-import { setLiveKitRemoteVolume } from "@/chat-api/livekit/livekitRoom";
-import { isLiveKitSfuMode } from "@/common/liveStreamEncoding";
-import { Track } from "livekit-client";
+import { cachedVolumes } from "@/chat-api/store/useVoiceUsers";
 import { addFriend } from "@/chat-api/services/FriendService";
 import { blockUser, unblockUser } from "@/chat-api/services/UserService";
 
@@ -56,7 +48,7 @@ import {
   SteppedSlider,
   SteppedSliderStep
 } from "../ui/stepped-slider/SteppedSlider";
-import DeleteConfirmModal from "../ui/delete-confirm-modal/DeleteConfirmModal";
+import { UserCallVolumeSlider } from "../voice/UserCallVolumeSlider";
 type Props = Omit<ContextMenuProps, "items"> & {
   serverId?: string;
   userId: string;
@@ -410,52 +402,6 @@ export default function MemberContextMenu(props: Props) {
 function Header(props: { userId: string }) {
   const store = useStore();
   const user = () => store.users.get(props.userId);
-  const isMe = () => user()?.id === store.account.user()?.id;
-
-  const voiceUser = () =>
-    store.voiceUsers.getVoiceUser(
-      store.voiceUsers.currentUser()?.channelId!,
-      props.userId
-    );
-  const audio = () => voiceUser()?.audio;
-  const inSameCall = () => !!voiceUser() && !isMe();
-  const isStreaming = () => store.voiceUsers.videoEnabled(props.userId);
-  const voiceVolume = () => cachedVolumes[props.userId] ?? 1;
-  const liveVolume = () => cachedLiveVolumes[props.userId] ?? 1;
-
-  const applyVoiceVolume = (volume: number) => {
-    setCachedVolumes(props.userId, volume);
-    if (isLiveKitSfuMode()) {
-      // Acima de 100% quem aplica é o GainNode; o elemento fica mudo lá.
-      setLiveKitRemoteVolume(props.userId, volume, Track.Source.Microphone);
-      return;
-    }
-    const el = audio();
-    if (el) el.volume = Math.min(1, volume);
-  };
-
-  const applyLiveVolume = (volume: number) => {
-    setCachedLiveVolumes(props.userId, volume);
-  };
-
-  createEffect(
-    on(audio, (el) => {
-      if (!el || isLiveKitSfuMode()) return;
-      el.volume = Math.min(1, cachedVolumes[props.userId] ?? 1);
-    })
-  );
-
-  const onVoiceVolumeChange = (
-    e: InputEvent & { currentTarget: HTMLInputElement }
-  ) => {
-    applyVoiceVolume(Number(e.currentTarget.value));
-  };
-
-  const onLiveVolumeChange = (
-    e: InputEvent & { currentTarget: HTMLInputElement }
-  ) => {
-    applyLiveVolume(Number(e.currentTarget.value));
-  };
 
   return (
     <Show when={user()}>
@@ -465,37 +411,7 @@ function Header(props: { userId: string }) {
           <div class={styles.username}>{user()!.username}</div>
         </div>
       </div>
-
-      <Show when={inSameCall()}>
-        <div class={styles.voiceVolume}>
-          <div class={styles.label}>{t("userContextMenu.userVolume")}</div>
-          <input
-            type="range"
-            min={0}
-            max={4}
-            step={0.01}
-            value={voiceVolume()}
-            onPointerDown={(event) => event.stopPropagation()}
-            onClick={(event) => event.stopPropagation()}
-            onInput={onVoiceVolumeChange}
-          />
-        </div>
-        <Show when={isStreaming()}>
-          <div class={styles.voiceVolume}>
-            <div class={styles.label}>{t("userContextMenu.liveVolume")}</div>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.01}
-              value={liveVolume()}
-              onPointerDown={(event) => event.stopPropagation()}
-              onClick={(event) => event.stopPropagation()}
-              onInput={onLiveVolumeChange}
-            />
-          </div>
-        </Show>
-      </Show>
+      <UserCallVolumeSlider userId={props.userId} />
     </Show>
   );
 }
