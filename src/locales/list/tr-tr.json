@@ -22,7 +22,7 @@
             "feature9": "Çerçevelerle kendinizi ifade edin"
         },
         "availableOn": "Şu platformlarda mevcut",
-        "subslogan": "Nerimity, onu diğerlerinden ayıran zarif ve özellik açısından zengin bir deneyim sunar."
+        "subslogan": "Rugin, onu diğerlerinden ayıran zarif ve özellik açısından zengin bir deneyim sunar."
     },
     "loginPage": {
         "title": "Devam etmek için giriş yapın",
@@ -130,7 +130,7 @@
             "visitServerButton": "Ziyaret Et",
             "joinServerButton": "Katıl",
             "bumpButton": "Öne Çıkar ({{count}})",
-            "moderationNotice": "Sunucular Nerimity tarafından denetlenmez. Hizmet Şartlarını ihlal eden sunucuları lütfen bildirin.",
+            "moderationNotice": "Sunucular Rugin tarafından denetlenmez. Hizmet Şartlarını ihlal eden sunucuları lütfen bildirin.",
             "sortMostActive": "En Aktif (Beta)",
             "pinnedServers": "Sabitlenmiş Sunucular",
             "recentlyBumped": "Son Zamanlarda Öne Çıkarılan Sunucular",
@@ -139,13 +139,13 @@
         "bots": {
             "title": "Keşfet - Botlar",
             "noticeMessage": "Botlar her {{hours}} saatte bir öne çıkarılabilir! Öne çıkarmalar her {{date}} tarihinde sıfırlanır.",
-            "moderationNotice": "Botlar Nerimity tarafından denetlenmez. Zararlı veya Hizmet Şartlarını ihlal eden botları lütfen bildirin.",
+            "moderationNotice": "Botlar Rugin tarafından denetlenmez. Zararlı veya Hizmet Şartlarını ihlal eden botları lütfen bildirin.",
             "inviteButton": "Davet Et",
             "serverCount": "{{count}} sunucuda"
         },
         "themes": {
             "title": "Keşfet - Temalar",
-            "themesHeaderDescription": "Nerimity’i özel bir tema ile kişiselleştirin.",
+            "themesHeaderDescription": "Rugin’i özel bir tema ile kişiselleştirin.",
             "officialThemes": "Resmi Temalar",
             "communityThemes": "Topluluk Temaları",
             "noCommunityThemes": "Topluluk teması bulunamadı.",
@@ -462,7 +462,7 @@
             },
             "postsAndMessagesNotice": "Gönderilerin ve mesajlarının silinmesi haftalar alabilir.",
             "deleteCheckbox": "Gönderilerimi ve mesajlarımı sil",
-            "deletionNotice": "Gittiğine çok üzgünüz :( Eğer ki bir şeyi beğenmediyseniz, lütfen bize Nerimity'nin resmî sunucusu üzerinden bildirin.",
+            "deletionNotice": "Gittiğine çok üzgünüz :( Eğer ki bir şeyi beğenmediyseniz, lütfen bize Rugin'nin resmî sunucusu üzerinden bildirin.",
             "botID": "Bot ID",
             "palestineBorder": "Avatarına Filistin çerçevesi ekle.",
             "gradientColor1": "Gradyan Renk 1",
@@ -545,7 +545,7 @@
             "pushToTalk": "Bas-Konuş",
             "bindButton": "Tuş Ata",
             "stopButton": "Dur",
-            "downloadAppNotice": "Bu özelliği tarayıcı sekmesine odaklanmak zorunda kalmadan kullanmak için Nerimity masaüstü uygulamasını indirin.",
+            "downloadAppNotice": "Bu özelliği tarayıcı sekmesine odaklanmak zorunda kalmadan kullanmak için Rugin masaüstü uygulamasını indirin.",
             "leaveCall": "Önce aramadan ayrılmalısın",
             "inputConstraints": {
                 "echoCancelation": "Yankı Giderme",
@@ -595,18 +595,18 @@
             "headerTapToOpenDescription": "Başlığa tıklayarak sağdaki çekmeceyi açın. Bu, kaydırarak yanıt vermeyi etkinleştirecektir."
         },
         "window": {
-            "openOnStartup": "Başlangıçta Nerimity'i aç",
+            "openOnStartup": "Başlangıçta Rugin'i aç",
             "startupOptions": "Başlangıç Ayarları",
-            "downloadAppNotice": "Bu ayarları değiştirmek için Nerimity'nin masaüstü uygulamasını indirmeniz gerekmektedir.",
+            "downloadAppNotice": "Bu ayarları değiştirmek için Rugin'nin masaüstü uygulamasını indirmeniz gerekmektedir.",
             "startMinimized": "Simge durumuna küçülmüş olarak başlat",
             "reopenAppNotice": "Bu ayarların geçerli olması için uygulamayı yeniden başlatmanız gerekmektedir.",
-            "startMinimizedDescription": "Nerimity'i sistem tepsisine otomatik olarak küçült.",
+            "startMinimizedDescription": "Rugin'i sistem tepsisine otomatik olarak küçült.",
             "disableHardwareAcceleration": "Donanım İvmesi'ni kapat",
             "disableCustomTitlebar": "Özel Başlık Çubuğunu Devre Dışı Bırak"
         },
         "language": {
             "reloadNotice": "Yeni dili tamamen uygulamak için uygulamayı yeniden başlatmalısınız.",
-            "searchNotice": "Çeviriler topluluk tarafından sağlanır. Hatalı veya uygunsuz herhangi bir çeviriyi lütfen Nerimity'ye bildirin.",
+            "searchNotice": "Çeviriler topluluk tarafından sağlanır. Hatalı veya uygunsuz herhangi bir çeviriyi lütfen Rugin'ye bildirin.",
             "reloadButton": "Yeniden yükle",
             "contributors": "Katkıda Bulunanlar"
         },
@@ -633,18 +633,18 @@
                 "unauthorizeButton": "Yetkiyi Kaldır",
                 "unauthorizing": "Yetki Kaldırılıyor…"
             },
-            "googleDescription": "Google hesabınızı bağlamak, Nerimity'ye Google'ı kullanarak hızlı ve kolay giriş yapmanızı sağlar.",
+            "googleDescription": "Google hesabınızı bağlamak, Rugin'ye Google'ı kullanarak hızlı ve kolay giriş yapmanızı sağlar.",
             "linkButton": "Link",
             "unlinkButton": "Bağlantıyı Kaldır",
             "driveWarning": {
                 "title": "Ekleri paylaşmak veya barındırmak için birincil Google hesabınızı kullanmanız önerilmez.",
                 "message": "Google Drive API'sinin dosya meta verilerini işleme biçimi nedeniyle; paylaştığınız herhangi bir dosyanın arka plan verilerinde, görünen adınız ve Google e-posta adresiniz sıklıkla görüntülenebilir.\n\nGoogle Drive'ı kullanmaya devam etmeyi seçerseniz geçici (yedek) bir hesap kullanın."
             },
-            "googleDriveDescription": "Google hesabınızı bağlamak, Nerimity'ye dosya yüklemenize olanak tanır. Dosyalar Google Drive'ınızda saklanacaktır."
+            "googleDriveDescription": "Google hesabınızı bağlamak, Rugin'ye dosya yüklemenize olanak tanır. Dosyalar Google Drive'ınızda saklanacaktır."
         },
         "activity": {
             "extension": "Tarayıcı Eklentisi",
-            "extensionDescription": "RPC uzantımız, Spotify ve YouTube'daki etkinliğinizi Nerimity'deki kullanıcılarla paylaşmanıza olanak tanır!",
+            "extensionDescription": "RPC uzantımız, Spotify ve YouTube'daki etkinliğinizi Rugin'deki kullanıcılarla paylaşmanıza olanak tanır!",
             "visitButton": "{{store}}'u Ziyaret Et",
             "activityStatus": "Etkinlik Durumu",
             "activityStatusDescription": "Ne yaptığını herkesle paylaş",
@@ -656,7 +656,7 @@
                 "emoji": "Emoji"
             },
             "discordActivity": "Discord Aktiviteleri",
-            "discordActivityDescription": "Discord etkinliğini Nerimity'deki kullanıcılarla paylaş",
+            "discordActivityDescription": "Discord etkinliğini Rugin'deki kullanıcılarla paylaş",
             "idPlaceholder": "Discord Kulanıcı ID'si",
             "serverModal": {
                 "text": "Etkinlik Paylaşımını etkinleştirmek için lütfen Discord sunucusuna katılın.",
@@ -680,7 +680,7 @@
                 "redirectUris": "Yönlendirme URI'leri",
                 "redirectUri": "Yönlendirme URI'si"
             },
-            "applicationsDescription": "Nerimity Botları Oluştur.",
+            "applicationsDescription": "Rugin Botları Oluştur.",
             "apiDocumentation": "API Dökümantasyonu (tamamlanmadı)",
             "addButton": "Uygulama ekle",
             "name": "Uygulama İsmi",
@@ -715,13 +715,13 @@
             "appClientId": "Uygulama/İstemci Kimliği",
             "useLatestUrl": "Güncel URL'yi Kullan",
             "useLatestUrlWarning": "Dengesiz veya hatalı olabilir.",
-            "useLatestUrlDescription": "Sonraki uygulama yeniden başlatmasında latest.nerimity.com yüklenecek. Uygulama yeniden başlatılacak."
+            "useLatestUrlDescription": "Sonraki uygulama yeniden başlatmasında latest.rugin.com yüklenecek. Uygulama yeniden başlatılacak."
         },
         "experiments": {
             "noExperiments": "Şu anda mevcut deney yoktur.",
             "reloadRequired": {
                 "title": "Yeniden Yükleme Gerekli",
-                "body": "Değişikliklerin etkili olması için Nerimity'nin yeniden başlatılması gerekir.",
+                "body": "Değişikliklerin etkili olması için Rugin'nin yeniden başlatılması gerekir.",
                 "restartNow": "Şimdi Yeniden Başlat",
                 "restartLater": "Daha Sonra Yeniden Başlat"
             }
@@ -935,11 +935,11 @@
             "videoExpired": "Videonun süresi doldu.",
             "videoModified": "Video değiştirildi.",
             "couldNotGetVideo": "Video alınamıyor.",
-            "googleDrivePolicy": "Google Drive'ın yeni politikaları nedeniyle, videoları sadece Nerimity Masaüstü Uygulamasından oynatabilirsiniz.",
+            "googleDrivePolicy": "Google Drive'ın yeni politikaları nedeniyle, videoları sadece Rugin Masaüstü Uygulamasından oynatabilirsiniz.",
             "modifiedOrDeleted": "Bu video, sahibi tarafından Google Drive üzerinden değiştirildi veya silindi."
         },
         "audioEmbed": {
-            "googleDrivePolicy": "Google Drive'ın yeni politikaları nedeniyle, sesleri sadece Nerimity Masaüstü Uygulamasından oynatabilirsiniz."
+            "googleDrivePolicy": "Google Drive'ın yeni politikaları nedeniyle, sesleri sadece Rugin Masaüstü Uygulamasından oynatabilirsiniz."
         }
     },
     "message": {
@@ -1007,7 +1007,7 @@
         "by": "Tarafından",
         "deletionNotice": "Hesabınız ve verileriniz 15 gün içinde silinecektir",
         "ipBanned": "IP adresiniz yasaklandı.",
-        "ipBanNotice": "Aynı IP adresini kullanan bir kişi Nerimity’den askıya alındı. Hesabınız etkilenmemiştir."
+        "ipBanNotice": "Aynı IP adresini kullanan bir kişi Rugin’den askıya alındı. Hesabınız etkilenmemiştir."
     },
     "status": {
         "online": "Çevrimiçi",
@@ -1135,15 +1135,15 @@
         },
         "founder": {
             "name": "Kurucu",
-            "description": "Nerimity'nin yaratıcısı"
+            "description": "Rugin'nin yaratıcısı"
         },
         "admin": {
             "name": "Yönetici",
-            "description": "Nerimity'nin yöneticisi"
+            "description": "Rugin'nin yöneticisi"
         },
         "mod": {
             "name": "Moderatör",
-            "description": "Nerimity Moderatörü"
+            "description": "Rugin Moderatörü"
         },
         "supporter": {
             "name": "Destekçi",
@@ -1256,7 +1256,7 @@
             "sort": {
                 "member": "Üye",
                 "joined": "Katıldı",
-                "joinedNerimity": "Nerimity'e Katıldı",
+                "joinedRugin": "Rugin'e Katıldı",
                 "header": "Sırala"
             },
             "order": {
@@ -1320,11 +1320,11 @@
         "removing": "Kaldırılıyor…"
     },
     "welcomePopup": {
-        "subtitle": "Nerimity'i denediğiniz için teşekkürler!",
-        "joinServer": "Resmi Nerimity sunucusuna katıl",
+        "subtitle": "Rugin'i denediğiniz için teşekkürler!",
+        "joinServer": "Resmi Rugin sunucusuna katıl",
         "editProfile": "Profilimi düzenle",
         "support": "Beni {{platform}} üzerinden destekle",
-        "contribute": "GitHub'da Nerimity'ye katkıda bulunun"
+        "contribute": "GitHub'da Rugin'ye katkıda bulunun"
     },
     "logoutModal": {
         "title": "Çıkış Yap?",

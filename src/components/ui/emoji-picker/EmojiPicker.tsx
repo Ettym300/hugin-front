@@ -121,7 +121,7 @@ export function EmojiPicker(props: {
                   Avatar({ size, server: { ...server, verified: false } })
           },
           name: e.name,
-          url: `${env.NERIMITY_CDN}emojis/${e.id}.${
+          url: `${env.RUGIN_CDN}emojis/${e.id}.${
             e.gif && !e.webp ? "gif" : "webp"
           }?size=60`
         };

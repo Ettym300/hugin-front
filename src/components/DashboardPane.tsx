@@ -380,7 +380,7 @@ const PresenceItem = (props: {
       return emojiToUrl(activity()?.emoji!, false);
     }
     if (!activity()?.imgSrc) return;
-    return `${env.NERIMITY_CDN}proxy/${encodeURIComponent(
+    return `${env.RUGIN_CDN}proxy/${encodeURIComponent(
       activity()?.imgSrc!
     )}/a`;
   });

@@ -145,9 +145,9 @@ export default function WindowSettings() {
                 name: "YouTube",
                 startedAt: Date.now() - 3000,
                 endsAt: Date.now() + 10000,
-                imgSrc: "https://nerimity.com/assets/logo.png",
+                imgSrc: "https://rugin.com/assets/logo.png",
                 link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                title: "Why Nerimity is the best",
+                title: "Why Rugin is the best",
                 subtitle: "Good YouTuber"
               }}
             />
@@ -160,10 +160,10 @@ export default function WindowSettings() {
                 name: "Spotify",
                 startedAt: Date.now() - 30000,
                 endsAt: Date.now() + 100000,
-                imgSrc: "https://nerimity.com/assets/logo.png",
+                imgSrc: "https://rugin.com/assets/logo.png",
                 link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                title: "Ner Ner Nerimity!",
-                subtitle: "Nerimity"
+                title: "Ner Ner Rugin!",
+                subtitle: "Rugin"
               }}
             />
           </ExampleActivityContainer>
@@ -179,7 +179,7 @@ export default function WindowSettings() {
           <CustomLink
             target="_blank"
             rel="noopener noreferrer"
-            href="https://addons.mozilla.org/firefox/addon/nerimity-rpc"
+            href="https://addons.mozilla.org/firefox/addon/rugin-rpc"
           >
             <Button
               margin={[10, 0, 0, 0]}
@@ -193,7 +193,7 @@ export default function WindowSettings() {
           <CustomLink
             target="_blank"
             rel="noopener noreferrer"
-            href="https://chromewebstore.google.com/detail/nerimity-rpc/lgboikjogeocndkamelapkbngmfjfgaf"
+            href="https://chromewebstore.google.com/detail/rugin-rpc/lgboikjogeocndkamelapkbngmfjfgaf"
           >
             <Button
               margin={[10, 0, 0, 0]}

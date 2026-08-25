@@ -12,7 +12,7 @@
             "feature9": "Express yourself with borders"
         },
         "slogan": "A modern and sleek chat app.",
-        "subslogan": "Nerimity offers an elegant and feature-rich experience that sets it apart.",
+        "subslogan": "Rugin offers an elegant and feature-rich experience that sets it apart.",
         "viewGitHubButton": "View on GitHub",
         "getStarted": "Get Started",
         "availableOn": "Available on",
@@ -32,7 +32,7 @@
     },
     "explore": {
         "themes": {
-            "themesHeaderDescription": "Personalize Nerimity with a custom theme."
+            "themesHeaderDescription": "Personalize Rugin with a custom theme."
         }
     },
     "servers": {
@@ -72,7 +72,7 @@
         },
         "window": {
             "startMinimized": "Start Minimized",
-            "startMinimizedDescription": "Minimize Nerimity to the tray automatically."
+            "startMinimizedDescription": "Minimize Rugin to the tray automatically."
         }
     },
     "channelDrawer": {
@@ -162,7 +162,7 @@
         "by": "By",
         "deletionNotice": "Your account and data will be deleted in 15 days",
         "ipBanned": "Your IP is banned.",
-        "ipBanNotice": "Someone with the same IP has been suspended from Nerimity. Your account is not affected."
+        "ipBanNotice": "Someone with the same IP has been suspended from Rugin. Your account is not affected."
     },
     "loginPage": {
         "title": "Login to continue",

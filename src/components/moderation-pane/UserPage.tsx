@@ -576,7 +576,7 @@ function SuspendOrUnsuspendBlock(props: {
         <SettingsBlock
           icon="block"
           label="Suspend"
-          description={"Deny this user to access Nerimity"}
+          description={"Deny this user to access Rugin"}
         >
           <Button
             onClick={showSuspendModal}

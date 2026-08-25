@@ -88,7 +88,7 @@
             "visitServerButton": "Meglátogatás",
             "joinServerButton": "Csatlakozás",
             "bumpButton": "Bumpok ({{count}})",
-            "moderationNotice": "A szervereket a Nerimity nem moderálja. Kérünk jeletsd azon szervereket melyek megszegik a TOS-t.",
+            "moderationNotice": "A szervereket a Rugin nem moderálja. Kérünk jeletsd azon szervereket melyek megszegik a TOS-t.",
             "sortMostActive": "Legaktívabb (Beta)",
             "pinnedServers": "Kitűzött szerverek",
             "recentlyBumped": "Nem rég bump-olt szerverek"
@@ -96,13 +96,13 @@
         "bots": {
             "title": "Felfedezés - Botok",
             "noticeMessage": "Egy botot minden {{hours}} órában lehet bump-olni. Az összes bump visszaállítódik minden {{date}}-kor.",
-            "moderationNotice": "A botokat a Nerimity nem moderálja. Kérjük jelentsd azon botokat melyek megszegik a TOS-t.",
+            "moderationNotice": "A botokat a Rugin nem moderálja. Kérjük jelentsd azon botokat melyek megszegik a TOS-t.",
             "inviteButton": "Meghívás",
             "serverCount": "{{count}} szerverben"
         },
         "themes": {
             "title": "Felfedezés - Témák",
-            "themesHeaderDescription": "Sajátosítsd a Nerimity-t egy személyesített témával.",
+            "themesHeaderDescription": "Sajátosítsd a Rugin-t egy személyesített témával.",
             "officialThemes": "Hivatalos témák",
             "communityThemes": "Közösségi témák",
             "noCommunityThemes": "Közösségí téma nincs találva.",
@@ -352,7 +352,7 @@
         "by": "Addig",
         "deletionNotice": "A fiókod és adatod 15 napon belül törölve lesz",
         "ipBanned": "Az IP-d ki van tiltva.",
-        "ipBanNotice": "Valaki a te IP-ddel ki lett tiltva a Nerimity-röl. Ennek nincs hatása a te fiókodra."
+        "ipBanNotice": "Valaki a te IP-ddel ki lett tiltva a Rugin-röl. Ennek nincs hatása a te fiókodra."
     },
     "resetPassword": {
         "title": "Jelszó visszaállítása",
@@ -366,11 +366,11 @@
         "sending": "Email küldése…"
     },
     "welcomePopup": {
-        "subtitle": "Köszönjük hogy kipróbálod a Nerimity-t!",
-        "joinServer": "Csatlakozz a hivatalos Nerimity szerverbe",
+        "subtitle": "Köszönjük hogy kipróbálod a Rugin-t!",
+        "joinServer": "Csatlakozz a hivatalos Rugin szerverbe",
         "editProfile": "Profil szerkesztése",
         "support": "Támogass {{platform}}-on",
-        "contribute": "Segítsd a Nerimity-t GitHub-on"
+        "contribute": "Segítsd a Rugin-t GitHub-on"
     },
     "dashboard": {
         "title": "Kezelőpanel",

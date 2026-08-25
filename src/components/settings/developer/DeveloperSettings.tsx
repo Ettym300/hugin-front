@@ -29,8 +29,8 @@ export default function DeveloperSettings() {
 
   const handleToggleCookie = (checked: boolean) => {
     setUseLatest(checked);
-    const domain = window.location.hostname.includes("nerimity.com")
-      ? "domain=.nerimity.com;"
+    const domain = window.location.hostname.includes("rugin.com")
+      ? "domain=.rugin.com;"
       : "";
     document.cookie = `useLatestURL=${checked}; path=/; max-age=315360000; ${domain}`;
   };
@@ -80,17 +80,17 @@ export default function DeveloperSettings() {
         children={<Icon name="keyboard_arrow_right" />}
       />
       <SettingsBlock
-        href="https://docs.nerimity.com"
+        href="https://docs.rugin.com"
         hrefBlank
         icon="menu_book"
         label={t("settings.developer.apiDocumentation")}
         children={<Icon name="open_in_new" style={{ "margin-right": "6px" }} />}
       />
       <SettingsBlock
-        href="https://github.com/nerimity/nerimity.js"
+        href="https://github.com/rugin/rugin.js"
         hrefBlank
         icon="code_blocks"
-        label="nerimity.js"
+        label="rugin.js"
         children={<Icon name="open_in_new" style={{ "margin-right": "6px" }} />}
       />
     </Container>

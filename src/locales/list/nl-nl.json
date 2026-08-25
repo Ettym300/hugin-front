@@ -8,7 +8,7 @@
     "homePage": {
         "slogan": "Een moderne en strakke chat app.",
         "viewGitHubButton": "Github bekijken",
-        "subslogan": "Nerimity geeft een elegant en functie-rijke ervaring dat het apart zet.",
+        "subslogan": "Rugin geeft een elegant en functie-rijke ervaring dat het apart zet.",
         "getStarted": "Beginnen",
         "availableOn": "Bereikbaar om",
         "browser": "Browser",
@@ -88,21 +88,21 @@
             "visitServerButton": "Bezoek",
             "joinServerButton": "Meedoen",
             "bumpButton": "Bump ({{count}})",
-            "moderationNotice": "Servers worden niet gemodereerd door Nerimity. Report alle servers die de Algemene Voorwaarden breken.",
+            "moderationNotice": "Servers worden niet gemodereerd door Rugin. Report alle servers die de Algemene Voorwaarden breken.",
             "sortMostActive": "Meeste activiteit (Beta)",
             "pinnedServers": "Vastgezette Servers",
             "recentlyBumped": "Recentelijk Gebumpte Servers"
         },
         "bots": {
             "noticeMessage": "Een bot kan worden gebumpt een keer per {{hours}} uren. Alle bumps resetten elke dag om {{date}}.",
-            "moderationNotice": "Bots worden niet bijgehouden door Nerimity. Rapporteer alle bots die kwaadwillig zijn of de Algemene Voorwaarden breken.",
+            "moderationNotice": "Bots worden niet bijgehouden door Rugin. Rapporteer alle bots die kwaadwillig zijn of de Algemene Voorwaarden breken.",
             "inviteButton": "Uitnodigen",
             "serverCount": "In {{count}} servers",
             "title": "Ontdekken - Bots"
         },
         "themes": {
             "title": "Ontdekken - Thema's",
-            "themesHeaderDescription": "Personaliseer Nerimity met een aangepaste thema.",
+            "themesHeaderDescription": "Personaliseer Rugin met een aangepaste thema.",
             "officialThemes": "Officiële Thema's",
             "communityThemes": "Gemeenschappelijke Thema's",
             "noCommunityThemes": "Geen gemeenschappelijke thema's gevonden.",
@@ -368,7 +368,7 @@
         "language": {
             "reloadNotice": "Je moet de app opnieuw opstarten om de nieuwe taal compleet toe te passen.",
             "reloadButton": "Opnieuw laden",
-            "searchNotice": "Vertalingen worden onderhoudt door de community. Rapport alle vertalingen die verkeerd of vulgair zijn naar Nerimity.",
+            "searchNotice": "Vertalingen worden onderhoudt door de community. Rapport alle vertalingen die verkeerd of vulgair zijn naar Rugin.",
             "contributors": "Bijdragers"
         },
         "header": {
@@ -406,7 +406,7 @@
             "deleteAccountDescription": "Dit kan niet ongedaan worden gemaakt!",
             "deleteAccountNotice": "Je moet alle servers verlaten/verwijderen voordat je uw account kan verwijderen.",
             "understoodButton": "Begrepen",
-            "deletionNotice": "We zijn verdrietig om te zien dat je weggaat :( Als je iets niet leuk vond, laat ons weten in de officiële Nerimity server.",
+            "deletionNotice": "We zijn verdrietig om te zien dat je weggaat :( Als je iets niet leuk vond, laat ons weten in de officiële Rugin server.",
             "deletedInfo": {
                 "title": "Wat wordt verwijderd",
                 "email": "• E-mail",
@@ -492,7 +492,7 @@
             "pushToTalk": "Push-to-Talk",
             "bindButton": "Binden",
             "stopButton": "Stop",
-            "downloadAppNotice": "Download de Nerimity desktop app om deze functie te gebruiken zonder Venster/Tab focus."
+            "downloadAppNotice": "Download de Rugin desktop app om deze functie te gebruiken zonder Venster/Tab focus."
         },
         "connections": {
             "thirdParty": {
@@ -501,7 +501,7 @@
                 "unauthorizeButton": "Ongeautoriseerd",
                 "unauthorizing": "Ongeautoriseren…"
             },
-            "googleDescription": "Je Google account linken laat je bestanden uploaden in Nerimity. Bestanden worden opgeslagen in je Google Drive.",
+            "googleDescription": "Je Google account linken laat je bestanden uploaden in Rugin. Bestanden worden opgeslagen in je Google Drive.",
             "linkButton": "Link",
             "unlinkButton": "Ontkoppelen"
         },
@@ -540,18 +540,18 @@
             "24HourFormatDescription": "Tijd weergeven in de 24-uur formaat."
         },
         "window": {
-            "downloadAppNotice": "Om deze instellingen te bewerken, moet je de Nerimity desktop app downloaden.",
+            "downloadAppNotice": "Om deze instellingen te bewerken, moet je de Rugin desktop app downloaden.",
             "startupOptions": "Startup-opties",
-            "openOnStartup": "Open Nerimity op startup",
+            "openOnStartup": "Open Rugin op startup",
             "startMinimized": "Start Geminimaliseerd",
-            "startMinimizedDescription": "Minimaliseer Nerimity naar het dienblad automatisch.",
+            "startMinimizedDescription": "Minimaliseer Rugin naar het dienblad automatisch.",
             "disableHardwareAcceleration": "Zet hardware-acceleratie uit",
             "disableCustomTitlebar": "Zet aangepaste titelbalk uit",
             "reopenAppNotice": "Je moet de app opnieuw openen voordat de verandering werken."
         },
         "activity": {
             "extension": "Browser-uitbreiding",
-            "extensionDescription": "Onze RPC-uitbreiding laat je uw activiteit van Spotify en YouTube met gebruikers op Nerimity!",
+            "extensionDescription": "Onze RPC-uitbreiding laat je uw activiteit van Spotify en YouTube met gebruikers op Rugin!",
             "visitButton": "{{store}} bezoeken",
             "activityStatus": "Activiteits-status",
             "activityStatusDescription": "Deel wat je doet met iedereen",
@@ -563,7 +563,7 @@
                 "emoji": "Emoji"
             },
             "discordActivity": "Discord Activiteit",
-            "discordActivityDescription": "Deel je Discord activiteit met gebruikers op Nerimity",
+            "discordActivityDescription": "Deel je Discord activiteit met gebruikers op Rugin",
             "idPlaceholder": "Discord Gebruikers-ID",
             "serverModal": {
                 "text": "Neem deel aan de Discord server om Activiteits-deling aan te doen.",
@@ -571,7 +571,7 @@
             }
         },
         "developer": {
-            "applicationsDescription": "Maak Nerimity Bots.",
+            "applicationsDescription": "Maak Rugin Bots.",
             "apiDocumentation": "API Documentatie (incompleet)",
             "addButton": "App bijvoegen",
             "name": "Applicatie Naam",
@@ -621,7 +621,7 @@
             "noExperiments": "Er zijn nu geen experimenten beschikbaar.",
             "reloadRequired": {
                 "title": "Herladen is nodig",
-                "body": "Nerimity moet opnieuw worden gestart voordat veranderingen kunnen worden gemaakt.",
+                "body": "Rugin moet opnieuw worden gestart voordat veranderingen kunnen worden gemaakt.",
                 "restartNow": "Nu Opnieuw Opstarten",
                 "restartLater": "Later Opnieuw Opstarten"
             }
@@ -816,7 +816,7 @@
         "by": "Voor",
         "deletionNotice": "Jouw account en data worden verwijderd in 15 dagen",
         "ipBanned": "Jouw IP-Adres is verbannen.",
-        "ipBanNotice": "Iemand met de zelfde IP-adres werd verbannen van Nerimity. Jouw account is niet betroffen."
+        "ipBanNotice": "Iemand met de zelfde IP-adres werd verbannen van Rugin. Jouw account is niet betroffen."
     },
     "resetPassword": {
         "title": "Wachtwoord resetten",
@@ -830,11 +830,11 @@
         "sending": "E=mail wordt gestuurd…"
     },
     "welcomePopup": {
-        "subtitle": "Dankjewel voor Nerimity uitproberen!",
-        "joinServer": "Neem deel aan de officiële Nerimity server",
+        "subtitle": "Dankjewel voor Rugin uitproberen!",
+        "joinServer": "Neem deel aan de officiële Rugin server",
         "editProfile": "Verander mijn profiel",
         "support": "Ondersteun mij op {{platform}}",
-        "contribute": "Draag bij aan Nerimity op GitHub"
+        "contribute": "Draag bij aan Rugin op GitHub"
     },
     "dashboard": {
         "title": "Overzicht",
@@ -1033,7 +1033,7 @@
                 "header": "Sorteer door",
                 "member": "Lid",
                 "joined": "Deelgenomen",
-                "joinedNerimity": "Deelgenomen aan Nerimity"
+                "joinedRugin": "Deelgenomen aan Rugin"
             },
             "order": {
                 "header": "Sorteren door",
@@ -1091,10 +1091,10 @@
             "videoModified": "Video was gewijzigd.",
             "couldNotGetVideo": "Kon de video niet krijgen.",
             "modifiedOrDeleted": "Deze video was gewijzigd/verwijdert door de ontwikkelaar in hun Google Drive.",
-            "googleDrivePolicy": "Door de nieuwe Google Drive beleid, je kan alleen video's spelen vanaf de Nerimity Desktop App."
+            "googleDrivePolicy": "Door de nieuwe Google Drive beleid, je kan alleen video's spelen vanaf de Rugin Desktop App."
         },
         "audioEmbed": {
-            "googleDrivePolicy": "Door de nieuwe Google Drive beleid, je kan alleen audio spelen vanaf de Nerimity Desktop App."
+            "googleDrivePolicy": "Door de nieuwe Google Drive beleid, je kan alleen audio spelen vanaf de Rugin Desktop App."
         }
     },
     "addFriendModal": {
@@ -1194,15 +1194,15 @@
         },
         "founder": {
             "name": "Oprichter",
-            "description": "Ontwikkelaar van Nerimity"
+            "description": "Ontwikkelaar van Rugin"
         },
         "admin": {
             "name": "Admin",
-            "description": "Admin van Nerimity"
+            "description": "Admin van Rugin"
         },
         "mod": {
             "name": "Moderator",
-            "description": "Moderator van Nerimity"
+            "description": "Moderator van Rugin"
         },
         "supporter": {
             "name": "Supporter",

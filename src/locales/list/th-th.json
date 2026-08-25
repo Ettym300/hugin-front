@@ -14,7 +14,7 @@
         "emailOrUsernameAndTag": "อีเมลหรือ username:tag",
         "password": "รหัสผ่าน",
         "login": "เข้าสู่ระบบ",
-        "createAccountInstead": "สมัครบัญชี Nerimity",
+        "createAccountInstead": "สมัครบัญชี Rugin",
         "loggingIn": "กำลังเข้าสู่ระบบ..."
     },
     "registerPage": {
@@ -25,7 +25,7 @@
         "confirmPassword": "ยืนยันรหัสผ่าน",
         "registerButton": "สมัคร",
         "registering": "กำลังสร้างบัญชี...",
-        "loginInstead": "เข้าสู่ระบบ Nerimity"
+        "loginInstead": "เข้าสู่ระบบ Rugin"
     },
     "dashboard": {
         "title": "แดชบอร์ด",

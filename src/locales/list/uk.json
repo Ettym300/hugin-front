@@ -72,11 +72,11 @@
         "by": "Призупинено",
         "deletionNotice": "Ваш акаунт і дані будуть видалені через 15 днів",
         "ipBanned": "Ваш IP забанено.",
-        "ipBanNotice": "Хтось з тим же IP був відсторонений від Nerimity. Ваш акаунт не піддався змінам."
+        "ipBanNotice": "Хтось з тим же IP був відсторонений від Rugin. Ваш акаунт не піддався змінам."
     },
     "homePage": {
         "slogan": "Сучасний та стильний застосунок для спілкування.",
-        "subslogan": "Nerimity пропонує елегантність та великий асортимент фіч, які відрізняють її від інших платформ.",
+        "subslogan": "Rugin пропонує елегантність та великий асортимент фіч, які відрізняють її від інших платформ.",
         "viewGitHubButton": "Дивитися на GitHub",
         "getStarted": "Розпочати",
         "availableOn": "Доступний на",
@@ -190,11 +190,11 @@
             "serverCount": "На {{count}} серверах",
             "title": "Дослідування - Боти",
             "noticeMessage": "Бота можливо підняти раз о {{hours}} години. Всі підняття скидуються кожні {{date}}.",
-            "moderationNotice": "Боти не модеруються Nerimity. Будь ласка, кидайте скарги на ботів, що є зловмисними або порушають УВ."
+            "moderationNotice": "Боти не модеруються Rugin. Будь ласка, кидайте скарги на ботів, що є зловмисними або порушають УВ."
         },
         "themes": {
             "title": "Дослідування - Теми",
-            "themesHeaderDescription": "Персоналізуйте Nerimity власною темою.",
+            "themesHeaderDescription": "Персоналізуйте Rugin власною темою.",
             "officialThemes": "Офіційні теми",
             "communityThemes": "Теми від спільноти",
             "noCommunityThemes": "Тем від спільноти не знайдено.",
@@ -210,7 +210,7 @@
         "servers": {
             "title": "Дослідування - Сервери",
             "noticeMessage": "Сервер можливо підняти раз о {{hours}} години. Всі підняття скидуються кожні {{date}}.",
-            "moderationNotice": "Сервери не модеруються Nerimity. Будь ласка, кидайте скаргу на сервери, що порушають правила.",
+            "moderationNotice": "Сервери не модеруються Rugin. Будь ласка, кидайте скаргу на сервери, що порушають правила.",
             "sortMostBumps": "Найбільш підняттів",
             "sortMostMembers": "Найбільш учасників",
             "sortRecentlyAdded": "Нещодавно додано",
@@ -532,7 +532,7 @@
         "language": {
             "reloadNotice": "Ви мусите перезавантажувати застосунок, щоб повністю вжити нову мову.",
             "reloadButton": "Перезавантажувати",
-            "searchNotice": "Переклади керуються спільністю. Коли якість переклади неточні чи недоречні, доповість про це Nerimity.",
+            "searchNotice": "Переклади керуються спільністю. Коли якість переклади неточні чи недоречні, доповість про це Rugin.",
             "contributors": "Автори"
         },
         "header": {
@@ -569,7 +569,7 @@
             "deleteAccountDescription": "Це неможливо відробити!",
             "deleteAccountNotice": "Ви мусите вийти зі всіх серверів чи видалити їх перед видаленням вашого акаунту.",
             "understoodButton": "Зрозумів",
-            "deletionNotice": "Шкода, що ви виходите від нас :( Коли вам щось не сподобалося, повідомить про це на офіційному серверу Nerimity.",
+            "deletionNotice": "Шкода, що ви виходите від нас :( Коли вам щось не сподобалося, повідомить про це на офіційному серверу Rugin.",
             "deletedInfo": {
                 "title": "Що буде видалено",
                 "email": "• Електрона пошта",
@@ -656,7 +656,7 @@
             "pushToTalk": "По натиску",
             "bindButton": "Підв'язати",
             "stopButton": "Спиніть",
-            "downloadAppNotice": "Завантажуйте застосунок Nerimity на комп'ютер, щоб користатися цей функціюй без фокусування на вкладці."
+            "downloadAppNotice": "Завантажуйте застосунок Rugin на комп'ютер, щоб користатися цей функціюй без фокусування на вкладці."
         },
         "connections": {
             "thirdParty": {
@@ -665,7 +665,7 @@
                 "unauthorizeButton": "Деавторізувати",
                 "unauthorizing": "Деавторізування…"
             },
-            "googleDescription": "Під'єднання вашого акаунту Google дозволить вам завантажувати файли в Nerimity. Файли будуть збережено на вашому Google Drive.",
+            "googleDescription": "Під'єднання вашого акаунту Google дозволить вам завантажувати файли в Rugin. Файли будуть збережено на вашому Google Drive.",
             "linkButton": "Під'єднати",
             "unlinkButton": "Роз'єднати"
         },
@@ -704,18 +704,18 @@
             "24HourFormatDescription": "Показувати час у 24-годинному формату."
         },
         "window": {
-            "downloadAppNotice": "Для змінення цих налаштувань вам потрібно завантажувати Nerimity для стільниці.",
+            "downloadAppNotice": "Для змінення цих налаштувань вам потрібно завантажувати Rugin для стільниці.",
             "startupOptions": "Опції запуску",
-            "openOnStartup": "Відкривати Nerimity при запуску",
+            "openOnStartup": "Відкривати Rugin при запуску",
             "startMinimized": "Запускати згортаною",
-            "startMinimizedDescription": "Автоматично згортувати Nerimity до таці.",
+            "startMinimizedDescription": "Автоматично згортувати Rugin до таці.",
             "disableHardwareAcceleration": "Вимкнути апаратне прискорення",
             "disableCustomTitlebar": "Вимкнути кастомний заголовок вікна",
             "reopenAppNotice": "Вам треба перезавантажити застосунок, щоб дії набули ефект."
         },
         "activity": {
             "extension": "Розширення для переглядача",
-            "extensionDescription": "Наше RPC-розширення дозволяє вам ділитися вашою активністю зі Spotify та YouTube з користувачами Nerimity!",
+            "extensionDescription": "Наше RPC-розширення дозволяє вам ділитися вашою активністю зі Spotify та YouTube з користувачами Rugin!",
             "visitButton": "Дивитися {{store}}",
             "activityStatus": "Статус активностей",
             "activityStatusDescription": "Ділитися зі всіма, що ви робите",
@@ -727,7 +727,7 @@
                 "emoji": "Емодзі"
             },
             "discordActivity": "Активність Discord",
-            "discordActivityDescription": "Ділитися своєю активністю Discord з користувачами Nerimity",
+            "discordActivityDescription": "Ділитися своєю активністю Discord з користувачами Rugin",
             "idPlaceholder": "ID користувача Discord",
             "serverModal": {
                 "text": "Будь ласка, долучися до сервера Discord, щоб ввімкнути ділення активністю.",
@@ -735,7 +735,7 @@
             }
         },
         "developer": {
-            "applicationsDescription": "Створюйте ботів для Nerimity.",
+            "applicationsDescription": "Створюйте ботів для Rugin.",
             "apiDocumentation": "Документація API (незакінчена)",
             "addButton": "Створити додаток/бота",
             "name": "Назва додатку",
@@ -785,18 +785,18 @@
             "noExperiments": "Зараз поки немає доступних експериментів.",
             "reloadRequired": {
                 "title": "Перезавантаження потрібне",
-                "body": "Nerimity треба перезавантажити, щоб прийняти зміни.",
+                "body": "Rugin треба перезавантажити, щоб прийняти зміни.",
                 "restartNow": "Перезавантажити зараз",
                 "restartLater": "Перезавантажити пізніше"
             }
         }
     },
     "welcomePopup": {
-        "subtitle": "Дякуємо за те, що спробували Nerimity!",
-        "joinServer": "Приєднуйтеся до офіційного сервера Nerimity",
+        "subtitle": "Дякуємо за те, що спробували Rugin!",
+        "joinServer": "Приєднуйтеся до офіційного сервера Rugin",
         "editProfile": "Редагуйте свій профіль",
         "support": "Підтримайте мені на {{platform}}",
-        "contribute": "Допоможіть Nerimity на GitHub"
+        "contribute": "Допоможіть Rugin на GitHub"
     },
     "dropDown": {
         "selectItem": "Оберіть елемент",
@@ -1033,7 +1033,7 @@
                 "header": "Сортувати за",
                 "member": "Учасник",
                 "joined": "Приєднався",
-                "joinedNerimity": "Приєднався до Nerimity"
+                "joinedRugin": "Приєднався до Rugin"
             },
             "order": {
                 "header": "Упорядкувати за",
@@ -1091,10 +1091,10 @@
             "videoModified": "Відео було модифіковане.",
             "couldNotGetVideo": "Не вдалося отримати відео.",
             "modifiedOrDeleted": "Це відео було модифіковане/видалене власником на їх Google Диску.",
-            "googleDrivePolicy": "Через нові правила Google Диску, відео можна програвати тільки з ПК клієнту Nerimity."
+            "googleDrivePolicy": "Через нові правила Google Диску, відео можна програвати тільки з ПК клієнту Rugin."
         },
         "audioEmbed": {
-            "googleDrivePolicy": "Через нові правила Google Диску, аудіо можна програвати тільки з ПК клієнту Nerimity."
+            "googleDrivePolicy": "Через нові правила Google Диску, аудіо можна програвати тільки з ПК клієнту Rugin."
         }
     },
     "addFriendModal": {
@@ -1194,15 +1194,15 @@
         },
         "founder": {
             "name": "Засновник",
-            "description": "Автор Nerimity"
+            "description": "Автор Rugin"
         },
         "admin": {
             "name": "Адмін",
-            "description": "Адмін Nerimity"
+            "description": "Адмін Rugin"
         },
         "mod": {
             "name": "Модератор",
-            "description": "Модератор Nerimity"
+            "description": "Модератор Rugin"
         },
         "supporter": {
             "name": "Сапортер",

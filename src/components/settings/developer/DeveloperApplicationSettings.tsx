@@ -281,7 +281,7 @@ const EditApplicationOauth2 = (props: {
     <>
       <SettingsBlock
         icon="menu_book"
-        href="https://docs.nerimity.com/endpoints/oauth2/ExchangeCode"
+        href="https://docs.rugin.com/endpoints/oauth2/ExchangeCode"
         label={t("settings.developer.oauth2.documentation")}
         hrefBlank
       />

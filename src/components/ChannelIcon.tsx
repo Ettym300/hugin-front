@@ -26,7 +26,7 @@ export const ChannelIcon = (props: {
     };
 
     if (props.icon!.includes(".")) {
-      const url = new URL(`${env.NERIMITY_CDN}emojis/${props.icon}`);
+      const url = new URL(`${env.RUGIN_CDN}emojis/${props.icon}`);
       url.searchParams.set("size", "36");
 
       if (shouldBeStatic()) {

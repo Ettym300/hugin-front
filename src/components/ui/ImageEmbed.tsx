@@ -32,7 +32,7 @@ export function ImageEmbed(props: ImageEmbedProps) {
     props.attachment.path?.endsWith("#a");
 
   const url = (ignoreFocus?: boolean) => {
-    const url = new URL(`${env.NERIMITY_CDN}${props.attachment.path}`);
+    const url = new URL(`${env.RUGIN_CDN}${props.attachment.path}`);
     if (ignoreFocus) return url.href;
     if (!isGif()) return url.href;
 

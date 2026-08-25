@@ -26,10 +26,10 @@ const decoration = css`
   }
 `;
 
-const POST_LINK_REGEX = /^https?:\/\/nerimity\.com\/p\/(\d+)$/i;
-const PROFILE_LINK_REGEX = /^https?:\/\/nerimity\.com\/app\/profile\/(\d+)$/i;
-const BOT_INVITE_REGEX = /nerimity\.com\/bot\/(\d+)(?:\?perms=(\d+))?/i;
-const MSG_LINKS = /^https?:\/\/nerimity\.com(\/app\/servers\/\d+\/\d+.*)$/i;
+const POST_LINK_REGEX = /^https?:\/\/rugin\.com\/p\/(\d+)$/i;
+const PROFILE_LINK_REGEX = /^https?:\/\/rugin\.com\/app\/profile\/(\d+)$/i;
+const BOT_INVITE_REGEX = /rugin\.com\/bot\/(\d+)(?:\?perms=(\d+))?/i;
+const MSG_LINKS = /^https?:\/\/rugin\.com(\/app\/servers\/\d+\/\d+.*)$/i;
 
 export function CustomLink(props: CustomLinkProps) {
   const { createPortal } = useCustomPortal();
@@ -44,9 +44,9 @@ export function CustomLink(props: CustomLinkProps) {
 
   const onLinkClick = (e: MouseEvent) => {
     const href = props.href || "";
-    const isNerimity = href.includes("nerimity.com");
+    const isRugin = href.includes("rugin.com");
 
-    if (props.isDangerous && !isNerimity) {
+    if (props.isDangerous && !isRugin) {
       e.preventDefault();
       createPortal((close) => (
         <DangerousLinkModal unsafeUrl={href || "#"} close={close} />

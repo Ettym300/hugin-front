@@ -4,7 +4,7 @@
     },
     "explore": {
         "themes": {
-            "themesHeaderDescription": "カスタムテーマを使って、Nerimityを自分好みにカスタマイズしましょう。"
+            "themesHeaderDescription": "カスタムテーマを使って、Ruginを自分好みにカスタマイズしましょう。"
         }
     },
     "servers": {
@@ -39,7 +39,7 @@
         },
         "window": {
             "startMinimized": "最小化して起動する",
-            "startMinimizedDescription": "Nerimityは自動的にシステムトレイに最小化されます。"
+            "startMinimizedDescription": "Ruginは自動的にシステムトレイに最小化されます。"
         }
     },
     "channelDrawer": {

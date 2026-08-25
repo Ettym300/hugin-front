@@ -8,9 +8,10 @@ export default {
   MESSAGE_LIMIT: parseInt(import.meta.env.VITE_MESSAGE_LIMIT || "50"),
   TURNSTILE_SITEKEY: import.meta.env.VITE_TURNSTILE_SITEKEY,
   EMOJI_URL: import.meta.env.VITE_EMOJI_URL,
-  NERIMITY_CDN: import.meta.env.VITE_NERIMITY_CDN,
-  OFFICIAL_SERVER: import.meta.env.VITE_OFFICIAL_SERVER || "nerimity",
+  RUGIN_CDN: import.meta.env.VITE_RUGIN_CDN,
+  OFFICIAL_SERVER: import.meta.env.VITE_OFFICIAL_SERVER || "rugin",
   GOOGLE_CLIENT_ID: import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined,
   GOOGLE_API_KEY: import.meta.env.VITE_GOOGLE_API_KEY as string | undefined,
-  RELEASE_TIMESTAMP: parseInt(import.meta.env.VITE_RELEASE_TIMESTAMP || 0)
+  RELEASE_TIMESTAMP: parseInt(import.meta.env.VITE_RELEASE_TIMESTAMP || 0),
+  LIVEKIT_ENABLED: import.meta.env.VITE_LIVEKIT_ENABLED === "true"
 };

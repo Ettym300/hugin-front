@@ -1,11 +1,11 @@
-.nerimityLogo {
+.ruginLogo {
   height: 20px;
   margin-left: 10px;
   background-color: rgb(38, 38, 38);
   pointer-events: none;
 }
 
-.nerimityTitle {
+.ruginTitle {
   margin-left: 8px;
   opacity: 0.8;
   font-size: 14px;

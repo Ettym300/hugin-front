@@ -94,7 +94,7 @@ export function CreateTicketModal(props: {
         .split(",")
         .map((raw) => {
           const id = raw.trim();
-          if (id.startsWith("https://nerimity.com/p/")) {
+          if (id.startsWith("https://rugin.com/p/")) {
             return id;
           }
           return `[q:${id}]`;
@@ -208,7 +208,7 @@ export function CreateTicketModal(props: {
             />
             <Input
               label="Existing Server Invite URL"
-              placeholder="https://nerimity.com/i/xxxxxxxxxx"
+              placeholder="https://rugin.com/i/xxxxxxxxxx"
               value={serverInviteUrl()}
               onText={setServerInviteUrl}
             />

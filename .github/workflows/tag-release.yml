@@ -39,14 +39,14 @@ jobs:
       - name: Build App
         run: pnpm run build
         env:
-          VITE_SERVER_URL: "https://nerimity.com"
-          VITE_APP_URL: "https://nerimity.com"
+          VITE_SERVER_URL: "https://rugin.com"
+          VITE_APP_URL: "https://rugin.com"
           VITE_RELEASE_TIMESTAMP: ${{ steps.get_version.outputs.RELEASE_TIMESTAMP }}
           VITE_APP_VERSION: ${{ steps.get_version.outputs.VERSION }}
           VITE_MOBILE_WIDTH: 850
           VITE_TURNSTILE_SITEKEY: "0x4AAAAAAABO1ilip_YaVHJk"
-          VITE_EMOJI_URL: "https://nerimity.com/twemojis/"
-          VITE_NERIMITY_CDN: "https://cdn.nerimity.com/"
+          VITE_EMOJI_URL: "https://rugin.com/twemojis/"
+          VITE_RUGIN_CDN: "https://cdn.rugin.com/"
           VITE_GOOGLE_CLIENT_ID: "833085928210-2ksk1asgbmqvsg6jb3es4asnmug2a4iu.apps.googleusercontent.com"
           VITE_GOOGLE_API_KEY: "AIzaSyAPeozJV7itoZk9Fk1VYbFCDMMXB-gU38M"
 
@@ -73,8 +73,8 @@ jobs:
           password: ${{ secrets.PASS }}
           port: ${{ secrets.PORT }}
           script: |
-            find /var/www/nerimity.com/dist/assets -type f -mtime +7 -delete
-            unzip -o -DD /var/www/chat-client-${{ steps.get_version.outputs.VERSION }}.zip -d /var/www/nerimity.com/dist
+            find /var/www/rugin.com/dist/assets -type f -mtime +7 -delete
+            unzip -o -DD /var/www/chat-client-${{ steps.get_version.outputs.VERSION }}.zip -d /var/www/rugin.com/dist
             rm -rf /var/www/chat-client-${{ steps.get_version.outputs.VERSION }}.zip
 
       - name: Publish Draft Release

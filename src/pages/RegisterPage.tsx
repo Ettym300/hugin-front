@@ -84,7 +84,7 @@ export default function RegisterPage() {
 
   const registerClicked = async (event?: SubmitEvent | MouseEvent) => {
     event?.preventDefault();
-    const redirectTo = location.query.redirect || "/app/explore/servers";
+    const redirectTo = location.query.redirect || "/app";
     if (requestSent()) return;
     setRequestSent(true);
     setError({ message: "", path: "" });
@@ -142,7 +142,7 @@ export default function RegisterPage() {
             onSubmit={registerClicked}
           >
             <TitleContainer>
-              {t("registerPage.title", { appName: "Nerimity" })}
+              {t("registerPage.title", { appName: "Rugin" })}
             </TitleContainer>
             <NoticesContainer gap={5}>
               <span style={{ "margin-bottom": "6px" }}>

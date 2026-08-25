@@ -1,31 +1,31 @@
 <p align="center">
-<img src="https://raw.githubusercontent.com/Nerimity/nerimity-web/main/readme-assets/banner.png" />
+<img src="https://raw.githubusercontent.com/Rugin/rugin-web/main/readme-assets/banner.png" />
 </p> 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Nerimity/nerimity-web/main/readme-assets/Dashboard.png" width="32%"/> 
-  <img src="https://raw.githubusercontent.com/Nerimity/nerimity-web/main/readme-assets/Profile.png" width="32%"/>
-  <img src="https://raw.githubusercontent.com/Nerimity/nerimity-web/main/readme-assets/Server.png" width="32%"/>
-  <img src="https://raw.githubusercontent.com/Nerimity/nerimity-web/main/readme-assets/ServerSettings.png" width="32%"/>
+  <img src="https://raw.githubusercontent.com/Rugin/rugin-web/main/readme-assets/Dashboard.png" width="32%"/> 
+  <img src="https://raw.githubusercontent.com/Rugin/rugin-web/main/readme-assets/Profile.png" width="32%"/>
+  <img src="https://raw.githubusercontent.com/Rugin/rugin-web/main/readme-assets/Server.png" width="32%"/>
+  <img src="https://raw.githubusercontent.com/Rugin/rugin-web/main/readme-assets/ServerSettings.png" width="32%"/>
 </p>
 
-# Nerimity Web (SolidJS)
+# Rugin Web (SolidJS)
 
-[![Nerimity](https://raw.githubusercontent.com/Nerimity/assets/main/src/nerimity-badge-88x31.png)](https://nerimity.com)
+[![Rugin](https://raw.githubusercontent.com/Rugin/assets/main/src/rugin-badge-88x31.png)](https://rugin.com)
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y1FN57Z)
 
 Chat App made using SolidJS.
 
 ## 🗂️ Repos
 
-- Nerimity Web - Frontend (You Are Here)
-- [Nerimity Server - Backend](https://github.com/Nerimity/nerimity-server)
+- Rugin Web - Frontend (You Are Here)
+- [Rugin Server - Backend](https://github.com/Rugin/rugin-server)
 
 ## 🔧 Setup
 
 - Fork the repo
 - duplicate and rename `example.env` to `.env`
 - Run `pnpm i` and `pnpm run dev`
-- Go to http://local.nerimity.com:3000
+- Go to http://local.rugin.com:3000
 
 ## ✨ Features
 
@@ -80,9 +80,9 @@ Chat App made using SolidJS.
 
 We use **Weblate** for managing all translations.
 
-If you would like to help translate this project, please visit our Weblate page: https://hosted.weblate.org/projects/nerimity/
+If you would like to help translate this project, please visit our Weblate page: https://hosted.weblate.org/projects/rugin/
 
-[![Translation status](https://hosted.weblate.org/widget/nerimity/nerimity-web/multi-auto.svg)](https://hosted.weblate.org/engage/nerimity/)
+[![Translation status](https://hosted.weblate.org/widget/rugin/rugin-web/multi-auto.svg)](https://hosted.weblate.org/engage/rugin/)
 
 ## 🤝 Contributions
 

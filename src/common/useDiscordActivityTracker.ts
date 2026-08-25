@@ -6,8 +6,8 @@ import {
 import { localRPC } from "./LocalRPC";
 import { debounce } from "./debounce";
 
-const URL = "https://supertiger.nerimity.com/trackdispresence";
-const NERIMITY_APP_ID = "1630300334100500480";
+const URL = "https://supertiger.rugin.com/trackdispresence";
+const RUGIN_APP_ID = "1630300334100500480";
 
 let ws: WebSocket | null = null;
 let pingIntervalId: NodeJS.Timeout;
@@ -119,7 +119,7 @@ export const useDiscordActivityTracker = () => {
 
         console.log(`Activity Update: ${activity?.name || null}`);
         return {
-          id: activity.syncId || activity.applicationId || NERIMITY_APP_ID,
+          id: activity.syncId || activity.applicationId || RUGIN_APP_ID,
           data: {
             startedAt:
               activity.timestamps?.start ||
@@ -160,7 +160,7 @@ export const useDiscordActivityTracker = () => {
   const restart = () => {
     clearTimeout(restartDelayTimeoutId);
 
-    localRPC.updateRPC(NERIMITY_APP_ID);
+    localRPC.updateRPC(RUGIN_APP_ID);
     clearInterval(pingIntervalId);
     if (ws) {
       ws.onclose = () => {};

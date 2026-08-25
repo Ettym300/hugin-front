@@ -215,11 +215,11 @@ function NotificationSoundDropDown(props: {
         onClick: () =>
           setSelectedSounds({ ...selectedSounds(), [props.typeId]: sound }),
         label:
-          sound === "nerimity-mute"
+          sound === "rugin-mute"
             ? t("settings.notifications.mute")
             : capitalizeFirstLetter(sound.replaceAll("-", " ")),
         suffix: (
-          <Show when={sound !== "nerimity-mute"}>
+          <Show when={sound !== "rugin-mute"}>
             <div style={{ "margin-left": "auto", "flex-shrink": 0 }}>
               <Button
                 onClick={(e) => testSound(e, sound)}

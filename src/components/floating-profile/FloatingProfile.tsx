@@ -652,8 +652,8 @@ const DesktopProfileFlyout = (props: {
               size={12}
               color="rgba(255,255,255,0.7)"
             >
-              <div class={styles.joinedContainer} title="Nerimity">
-                <Avatar url="https://nerimity.com/assets/logo.png" size={16} />
+              <div class={styles.joinedContainer} title="Rugin">
+                <Avatar url="https://rugin.com/assets/logo.png" size={16} />
                 {userJoinedAt()}
               </div>
               <Show when={member()}>

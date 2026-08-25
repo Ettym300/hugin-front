@@ -31,19 +31,19 @@ jobs:
       - name: Get short SHA
         id: slug
         run: |
-          git config --global --add safe.directory /__w/nerimity-web/nerimity-web  
+          git config --global --add safe.directory /__w/rugin-web/rugin-web  
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Build App
         run: pnpm run build
         env:
-          VITE_SERVER_URL: "https://nerimity.com"
-          VITE_APP_URL: "https://latest.nerimity.com"
+          VITE_SERVER_URL: "https://rugin.com"
+          VITE_APP_URL: "https://latest.rugin.com"
           VITE_MOBILE_WIDTH: 850
           VITE_TURNSTILE_SITEKEY: "0x4AAAAAAABO1ilip_YaVHJk"
           VITE_APP_VERSION: ${{ steps.slug.outputs.sha_short }}
-          VITE_EMOJI_URL: "https://nerimity.com/twemojis/"
-          VITE_NERIMITY_CDN: "https://cdn.nerimity.com/"
+          VITE_EMOJI_URL: "https://rugin.com/twemojis/"
+          VITE_RUGIN_CDN: "https://cdn.rugin.com/"
           VITE_GOOGLE_CLIENT_ID: "833085928210-2ksk1asgbmqvsg6jb3es4asnmug2a4iu.apps.googleusercontent.com"
           VITE_GOOGLE_API_KEY: "AIzaSyAPeozJV7itoZk9Fk1VYbFCDMMXB-gU38M"
 

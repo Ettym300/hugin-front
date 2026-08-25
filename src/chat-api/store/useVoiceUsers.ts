@@ -1,7 +1,10 @@
 import { createStore, reconcile } from "solid-js/store";
 import { RawVoice } from "../RawData";
 import { batch, createEffect, createMemo, createSignal, on } from "solid-js";
-import { getCachedCredentials } from "../services/VoiceService";
+import {
+  getCachedCredentials,
+  postLiveKitToken
+} from "../services/VoiceService";
 import { emitVoiceSignal } from "../emits/voiceEmits";
 
 import type SimplePeer from "@thaunknown/simple-peer";
@@ -27,6 +30,22 @@ import {
   getVoiceMicConstraints,
   resolveNoiseSuppressionMode
 } from "@/common/voiceAudioSettings";
+import env from "@/common/env";
+import { ConnectionState, Track } from "livekit-client";
+import {
+  connectLiveKitRoom,
+  disconnectLiveKitRoom,
+  publishLiveKitScreenShare,
+  setLiveKitDeafened,
+  setLiveKitMicrophoneEnabled,
+  setLiveKitRemoteVolume,
+  setLiveKitScreenShareSubscribed,
+  unpublishLiveKitScreenShare
+} from "../livekit/livekitRoom";
+
+export function isLiveKitEnabled() {
+  return env.LIVEKIT_ENABLED;
+}
 
 const FALLBACK_ICE_SERVERS: RTCIceServer[] = [
   {
@@ -107,6 +126,12 @@ export const [cachedLiveVolumes, setCachedLiveVolumes] = createStore<
 const [watchedLives, setWatchedLives] = createStore<Record<string, boolean>>(
   {}
 );
+// livePublishers[streamerUserId] = remotes currently publishing screen share
+const [livePublishers, setLivePublishers] = createStore<Record<string, boolean>>(
+  {}
+);
+// Placeholder so UI can show "LIVE / watch" before ScreenShare is subscribed.
+const livePublisherPlaceholders = new Map<string, MediaStream>();
 // liveViewers[viewerUserId] = remotes currently watching our outbound live
 const [liveViewers, setLiveViewers] = createStore<Record<string, boolean>>({});
 export type ConnectionStatus = "CONNECTED" | "DISCONNECTED" | "CONNECTING";
@@ -162,6 +187,10 @@ function toggleDeafen() {
   if (!currentUser) return;
 
   const isMicEnabled = !!currentUser.audioStream;
+
+  if (isLiveKitEnabled()) {
+    setLiveKitDeafened(newDeafenEnabled);
+  }
 
   const voiceUsers = getVoiceUsersByChannelId(currentUser.channelId);
   voiceUsers.forEach((voiceUser) => {
@@ -233,6 +262,7 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
   }
   if (!channelId) {
     current?.micCleanup?.();
+    void disconnectLiveKitRoom();
     setCurrentVoiceUser(undefined);
     setDeafened("wasMicEnabled", false);
 
@@ -243,7 +273,9 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
       track.stop();
     });
     setWatchedLives(reconcile({}));
+    setLivePublishers(reconcile({}));
     setLiveViewers(reconcile({}));
+    livePublisherPlaceholders.clear();
 
     return;
   }
@@ -257,7 +289,98 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
       micMuted: true
     });
   }
+
+  if (isLiveKitEnabled()) {
+    void connectLiveKitToChannel(channelId);
+  }
 };
+
+async function connectLiveKitToChannel(channelId: string) {
+  try {
+    const auth = await postLiveKitToken(channelId);
+    const latest = currentVoiceUser();
+    if (!latest || latest.channelId !== channelId) return;
+
+    await connectLiveKitRoom(auth, {
+      onConnectionState: (state) => {
+        if (state !== ConnectionState.Connected) return;
+        const me = useAccount().user()?.id;
+        getVoiceUsersByChannelId(channelId).forEach((voiceUser) => {
+          if (voiceUser.userId === me) return;
+          updateConnectionStatus(voiceUser, "CONNECTED");
+        });
+      },
+      onParticipantConnected: (userId) => {
+        const voiceUser = getVoiceUser(channelId, userId);
+        if (voiceUser) updateConnectionStatus(voiceUser, "CONNECTED");
+      },
+      onParticipantDisconnected: (userId) => {
+        const voiceUser = getVoiceUser(channelId, userId);
+        if (voiceUser) updateConnectionStatus(voiceUser, "DISCONNECTED");
+        setLivePublishers(userId, false);
+        setWatchedLives(userId, false);
+        livePublisherPlaceholders.delete(userId);
+      },
+      onScreenSharePublished: (userId) => {
+        setLivePublishers(userId, true);
+      },
+      onScreenShareUnpublished: (userId) => {
+        setLivePublishers(userId, false);
+        setWatchedLives(userId, false);
+        livePublisherPlaceholders.delete(userId);
+      },
+      onRemoteTrack: ({ userId, track, stream, source, audioElement }) => {
+        const voiceUser = getVoiceUser(channelId, userId);
+        if (!voiceUser) return;
+
+        pushVoiceUserTrack(voiceUser, track, stream);
+
+        if (track.kind === "video") {
+          applyIncomingVideoWatch(userId, track);
+        }
+
+        if (source === Track.Source.Microphone && audioElement) {
+          const volume = cachedVolumes[userId] || 1;
+          audioElement.volume = Math.min(1, volume);
+          audioElement.muted = deafened.enabled;
+          setVoiceUsers(channelId, userId, "audio", audioElement as HTMLAudioElement);
+          setLiveKitRemoteVolume(userId, volume, Track.Source.Microphone);
+        }
+
+        if (source === Track.Source.ScreenShareAudio && audioElement) {
+          const volume = cachedLiveVolumes[userId] || 1;
+          audioElement.volume = Math.min(1, volume);
+          setLiveKitRemoteVolume(userId, volume, Track.Source.ScreenShareAudio);
+        }
+
+        updateConnectionStatus(voiceUser, "CONNECTED");
+      },
+      onRemoteTrackRemoved: ({ userId, kind }) => {
+        const voiceUser = getVoiceUser(channelId, userId);
+        if (!voiceUser?.streamWithTracks) return;
+
+        const filtered = voiceUser.streamWithTracks
+          .map((entry) => ({
+            stream: entry.stream,
+            tracks: entry.stream
+              .getTracks()
+              .filter((t) => t.readyState !== "ended")
+          }))
+          .filter((entry) => entry.tracks.length > 0);
+
+        setVoiceUsers(channelId, userId, "streamWithTracks", filtered);
+        if (
+          kind === "audio" &&
+          !filtered.some((s) => s.tracks.some((t) => t.kind === "audio"))
+        ) {
+          setVoiceUsers(channelId, userId, "audio", undefined);
+        }
+      }
+    });
+  } catch (err) {
+    log("RTC", "Failed to connect LiveKit", err);
+  }
+}
 
 const activeRemoteStream = (userId: string, kind: "audio" | "video") => {
   const current = currentVoiceUser();
@@ -345,6 +468,10 @@ const createVoiceUser = (rawVoice: RawVoice, reconnecting = false) => {
     rawVoice.channelId === currentVoiceUser()?.channelId;
 
   if (isCurrentUserInVoice) {
+    if (isLiveKitEnabled()) {
+      updateConnectionStatus(newVoiceUser, "CONNECTED");
+      return;
+    }
     if (!reconnecting) {
       createPeer(newVoiceUser);
     }
@@ -409,6 +536,7 @@ const handlePeerData = (voiceUser: VoiceUser, data: unknown) => {
 };
 
 const createPeer = (voiceUser: VoiceUser, signal?: SimplePeer.SignalData) => {
+  if (isLiveKitEnabled()) return;
   if (!LazySimplePeer) {
     console.log("No LazySimplePeer");
     return;
@@ -672,7 +800,11 @@ const disableMic = () => {
     current.vadAudioStream?.getTracks().forEach((track) => {
       track.stop();
     });
-    removeStream(current.audioStream);
+    if (isLiveKitEnabled()) {
+      void setLiveKitMicrophoneEnabled(false);
+    } else {
+      removeStream(current.audioStream);
+    }
     current.micCleanup?.();
     setCurrentVoiceUser({
       ...current,
@@ -753,7 +885,11 @@ const enableMic = async () => {
     return;
   }
   const rawStream = await getUserMic();
-  const noiseMode = resolveNoiseSuppressionMode(getVoiceMicConstraints());
+  let noiseMode = resolveNoiseSuppressionMode(getVoiceMicConstraints());
+  // LiveKit already encodes Opus — skip RNNoise re-encode.
+  if (isLiveKitEnabled() && noiseMode === "enhanced") {
+    noiseMode = "browser";
+  }
   const wrapped = await wrapMicWithNoiseSuppression(rawStream, noiseMode);
   wrapped.setGain(getMicGainLinear());
   const stream = wrapped.stream;
@@ -782,7 +918,12 @@ const enableMic = async () => {
     vadInstance = createVadInstance(stream);
   }
 
-  addStreamToPeers(stream);
+  if (isLiveKitEnabled()) {
+    const micTrack = stream.getAudioTracks()[0];
+    await setLiveKitMicrophoneEnabled(true, micTrack);
+  } else {
+    addStreamToPeers(stream);
+  }
 
   setCurrentVoiceUser({
     ...current,
@@ -816,18 +957,32 @@ const setVideoStream = (stream: MediaStream | null) => {
   const current = currentVoiceUser();
   if (!current) return;
   if (current.videoStream) {
-    removeStream(current.videoStream);
+    if (isLiveKitEnabled()) {
+      void unpublishLiveKitScreenShare();
+    } else {
+      removeStream(current.videoStream);
+    }
   }
   setCurrentVoiceUser({ ...current, videoStream: stream });
 
   if (!stream) return;
 
-  addStreamToPeers(stream);
+  if (isLiveKitEnabled()) {
+    void publishLiveKitScreenShare(stream).catch((err) => {
+      log("RTC", "Failed to publish LiveKit screen share", err);
+    });
+  } else {
+    addStreamToPeers(stream);
+  }
 
   const videoTrack = stream.getVideoTracks()[0]!;
 
   videoTrack.onended = () => {
-    removeStream(stream);
+    if (isLiveKitEnabled()) {
+      void unpublishLiveKitScreenShare();
+    } else {
+      removeStream(stream);
+    }
     setCurrentVoiceUser({ ...current, videoStream: null });
     videoTrack.onended = null;
   };
@@ -943,6 +1098,11 @@ const setLiveWatched = (userId: string, watch: boolean) => {
   setWatchedLives(userId, watch);
   applyLiveWatch(userId, watch);
 
+  if (isLiveKitEnabled()) {
+    setLiveKitScreenShareSubscribed(userId, watch);
+    return;
+  }
+
   const current = currentVoiceUser();
   if (!current) return;
   sendLiveWatchMessage(getVoiceUser(current.channelId, userId)?.peer, watch);
@@ -958,7 +1118,18 @@ const videoEnabled = (userId: string) => {
     const currentUser = currentVoiceUser();
     return currentUser?.videoStream;
   }
-  return activeRemoteStream(userId, "video");
+  const remote = activeRemoteStream(userId, "video");
+  if (remote) return remote;
+  // LiveKit: screen share is only subscribed after watch — use publisher flag.
+  if (isLiveKitEnabled() && livePublishers[userId]) {
+    let placeholder = livePublisherPlaceholders.get(userId);
+    if (!placeholder) {
+      placeholder = new MediaStream();
+      livePublisherPlaceholders.set(userId, placeholder);
+    }
+    return placeholder;
+  }
+  return undefined;
 };
 
 export default function useVoiceUsers() {
@@ -985,6 +1156,7 @@ export default function useVoiceUsers() {
     deafened,
     isLiveWatched,
     setLiveWatched,
-    toggleLiveWatched
+    toggleLiveWatched,
+    isLiveKitEnabled
   };
 }

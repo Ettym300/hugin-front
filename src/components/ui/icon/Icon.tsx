@@ -1,7 +1,6 @@
 import { JSX } from "solid-js/jsx-runtime";
 import styles from "./styles.module.scss";
 import { classNames } from "@/common/classNames";
-import { createEffect } from "solid-js";
 import env from "@/common/env";
 
 interface IconProps {
@@ -14,66 +13,35 @@ interface IconProps {
   onClick?: JSX.EventHandlerUnion<HTMLSpanElement, MouseEvent>;
 }
 
-const url = "https://nerimity.com/msr/";
-const iconCache: Record<string, string> = {};
-
-const fetchWithCache = async (url: string) => {
-  const cache = await window.caches?.match(url, { cacheName: "icons" });
-  if (cache) return cache.text();
-
-  const res = await fetch(url);
-  if (!res.ok) return false;
-  await window.caches
-    ?.open("icons")
-    .then((cache) => cache.put(url, res.clone()));
-  return res.text();
-};
-
-const fetchIcon = async (name = "texture", el: HTMLSpanElement, size = 24) => {
-  const border = name.endsWith("_border");
-  name = name.replace("_border", "");
-  if (!border) {
-    name += "-fill";
-  }
-
-  const fullUrl = url + name + ".svg";
-
-  const res = iconCache[fullUrl] || (await fetchWithCache(fullUrl));
-  if (!res) {
-    console.error(`Icon ${fullUrl} not found`);
-    return;
-  }
-  iconCache[fullUrl] = res;
-
-  const strSize = size + "px";
-
-  const transformed = res.replace(
-    'width="48" height="48"',
-    `width="${strSize}" height="${strSize}" fill="currentColor"`
-  );
-
-  el.innerHTML = transformed;
-};
 export default function Icon(props: IconProps) {
-  let el: HTMLSpanElement | undefined;
-
-  createEffect(() => {
-    fetchIcon(props.name, el!, props.size);
-  });
+  const rawName = () => props.name || "texture";
+  const outlined = () => rawName().endsWith("_border");
+  const glyph = () => rawName().replace(/_border$/, "");
+  const sizePx = () => `${props.size || 24}px`;
 
   return (
     <span
-      ref={el}
       {...(env.DEV_MODE ? { "data-icon": props.name } : undefined)}
-      class={classNames("icon", styles.icon, props.class)}
+      class={classNames(
+        "icon",
+        "material-symbols-rounded",
+        styles.icon,
+        props.class
+      )}
       style={{
         ...props.style,
         "--icon-color": props.color,
-        width: (props.size || 24) + "px",
-        height: (props.size || 24) + "px"
+        width: sizePx(),
+        height: sizePx(),
+        "font-size": sizePx(),
+        "font-variation-settings": outlined()
+          ? "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24"
+          : "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24"
       }}
       title={props.title}
       onClick={props.onClick}
-    />
+    >
+      {glyph()}
+    </span>
   );
 }

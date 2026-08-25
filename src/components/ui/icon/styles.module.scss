@@ -1,6 +1,18 @@
 .icon {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   color: var(--icon-color, var(--text-color));
   user-select: none;
+  line-height: 1;
+  overflow: hidden;
+  flex-shrink: 0;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
 }

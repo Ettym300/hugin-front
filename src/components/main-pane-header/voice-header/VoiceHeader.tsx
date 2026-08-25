@@ -24,8 +24,11 @@ import { useMatch, useNavigate, useParams } from "solid-navigator";
 import {
   VoiceUser,
   cachedLiveVolumes,
-  setCachedLiveVolumes
+  setCachedLiveVolumes,
+  isLiveKitEnabled
 } from "@/chat-api/store/useVoiceUsers";
+import { setLiveKitRemoteVolume } from "@/chat-api/livekit/livekitRoom";
+import { Track } from "livekit-client";
 import { t } from "@nerimity/i18lite";
 import { StorageKeys, useLocalStorage } from "@/common/localStorage";
 
@@ -507,6 +510,13 @@ function VideoStream(props: {
     if (!props.userId) return;
     setCachedLiveVolumes(props.userId, clamped);
     if (videoEl) videoEl.volume = clamped;
+    if (isLiveKitEnabled()) {
+      setLiveKitRemoteVolume(
+        props.userId,
+        clamped,
+        Track.Source.ScreenShareAudio
+      );
+    }
   };
 
   const toggleVolumeMute = () => {

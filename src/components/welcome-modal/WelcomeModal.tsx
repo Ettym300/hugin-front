@@ -20,7 +20,7 @@ export function WelcomeModal(props: { close: () => void }) {
   return (
     <LegacyModal
       ignoreBackgroundClick
-      title={t("registerPage.title", { appName: "Nerimity" })}
+      title={t("registerPage.title", { appName: "Rugin" })}
       maxWidth={600}
       actionButtons={ActionButtons}
     >
@@ -105,7 +105,7 @@ function SupportBoostyItem() {
 function SourceCodeItem() {
   return (
     <CustomLink
-      href="https://github.com/Nerimity"
+      href="https://github.com/Rugin"
       target="_blank"
       style={{ "text-decoration": "none" }}
     >

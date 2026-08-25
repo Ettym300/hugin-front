@@ -42,7 +42,7 @@ export default function ContextMenuServer(props: Props) {
   const isServerPublic = () => !!exploreItem();
   const isServerCreator = () => account.user()?.id === server()?.createdById;
 
-  const isNerimityAdmin = () => account.hasModeratorPerm(true);
+  const isRuginAdmin = () => account.hasModeratorPerm(true);
 
   const onLeaveClicked = () => {
     createPortal?.((close) => (
@@ -279,7 +279,7 @@ export default function ContextMenuServer(props: Props) {
             ]
           : []),
         { separator: true },
-        isNerimityAdmin()
+        isRuginAdmin()
           ? {
               icon: "security",
               label: "Admin Pane",

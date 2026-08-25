@@ -58,7 +58,7 @@ export default defineConfig({
   },
   server: {
     host: true,
-    allowedHosts: ["local.nerimity.com", "localhost"],
+    allowedHosts: ["local.rugin.com", "localhost"],
     port: 3000
   }
 });

@@ -13,7 +13,7 @@ import useChannels from "./useChannels";
 import { getGoogleDriveAccessToken } from "../services/UserService";
 import { uploadFileGoogleDrive } from "@/common/driveAPI";
 import { batch } from "solid-js";
-import { uploadAttachment } from "../services/nerimityCDNService";
+import { uploadAttachment } from "../services/ruginCDNService";
 
 const account = useAccount();
 
@@ -238,8 +238,8 @@ const sendAndStoreMessage = async (channelId: string, content?: string) => {
 
   const shouldUploadToGoogleDrive =
     properties?.attachment?.uploadTo === "google_drive";
-  const shouldUploadToNerimityCdn =
-    properties?.attachment?.uploadTo === "nerimity_cdn";
+  const shouldUploadToRuginCdn =
+    properties?.attachment?.uploadTo === "rugin_cdn";
 
   let googleDriveFileId: string | undefined;
   if (file && shouldUploadToGoogleDrive) {
@@ -269,8 +269,8 @@ const sendAndStoreMessage = async (channelId: string, content?: string) => {
 
   channelProperties.removeReplies(channelId);
 
-  let nerimityCdnFileId: string | undefined;
-  if (shouldUploadToNerimityCdn && file) {
+  let ruginCdnFileId: string | undefined;
+  if (shouldUploadToRuginCdn && file) {
     const data = await uploadAttachment(channelId, {
       file,
       channelId,
@@ -278,7 +278,7 @@ const sendAndStoreMessage = async (channelId: string, content?: string) => {
     }).catch((err) => {
       channelProperties.updateContent(channelId, content || "");
       channelProperties.update(channelId, "htmlEnabled", htmlMode);
-      channelProperties.setAttachment(channelId, file, "nerimity_cdn");
+      channelProperties.setAttachment(channelId, file, "rugin_cdn");
       pushFailedMessage(channelId, err.message || "Failed to upload File. ");
       const index = messages[channelId]?.findIndex(
         (m) => m.tempId === tempMessageId
@@ -289,7 +289,7 @@ const sendAndStoreMessage = async (channelId: string, content?: string) => {
     if (!data) {
       return;
     }
-    nerimityCdnFileId = data.fileId;
+    ruginCdnFileId = data.fileId;
   }
 
   const message: void | Message = await postMessage({
@@ -299,7 +299,7 @@ const sendAndStoreMessage = async (channelId: string, content?: string) => {
     socketId: socketClient.id(),
     replyToMessageIds,
     mentionReplies,
-    nerimityCdnFileId,
+    ruginCdnFileId,
     googleDriveAttachment: googleDriveFileId
       ? { id: googleDriveFileId, mime: file?.type! }
       : undefined,
@@ -371,7 +371,7 @@ const pushFailedMessage = (channelId: string, content: string) => {
     buttons: [],
     replyMessages: [],
     createdBy: {
-      username: "Nerimity",
+      username: "Rugin",
       tag: "owo",
       bot: true,
       badges: 0,

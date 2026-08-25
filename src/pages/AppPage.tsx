@@ -188,7 +188,7 @@ export default function AppPage() {
     if (showChangelog()) {
       caches.delete("icons").then(() => console.log("icons cache deleted"));
       caches
-        .delete("nerimity-assets")
+        .delete("rugin-assets")
         .then(() => console.log("assets cache deleted"));
       createPortal?.((close) => <ChangelogModal close={close} />);
     }

@@ -123,7 +123,7 @@ export default function ServerSettingsWebhook() {
 
     if (!res) return;
 
-    url = `https://nerimity.com/api/webhooks/${params.webhookId}/${res.token}`;
+    url = `https://rugin.com/api/webhooks/${params.webhookId}/${res.token}`;
 
     copyToClipboard(url);
   };

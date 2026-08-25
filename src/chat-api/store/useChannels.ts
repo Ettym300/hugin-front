@@ -245,8 +245,9 @@ async function joinCall(this: Channel, reconnect = false) {
     return;
   }
   await loadSimplePeer();
-  // TURN (Cloudflare) is optional locally — a failed generate must not block join.
+  // TURN optional; LiveKit SFU does not need Cloudflare TURN credentials.
   if (
+    !env.LIVEKIT_ENABLED &&
     !env.DEV_MODE &&
     getStorageBoolean(StorageKeys.voiceUseTurnServers, true)
   ) {

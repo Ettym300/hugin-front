@@ -75,11 +75,11 @@
         "by": "Per",
         "deletionNotice": "El teu compte i les teves dades s'eliminaran d'aquí a 15 dies",
         "ipBanned": "La teva IP està banejada.",
-        "ipBanNotice": "Algú amb la mateixa IP ha estat suspès de Nerimity. El teu compte no s’ha vist afectat."
+        "ipBanNotice": "Algú amb la mateixa IP ha estat suspès de Rugin. El teu compte no s’ha vist afectat."
     },
     "homePage": {
         "slogan": "Una aplicació de xat moderna i elegant.",
-        "subslogan": "Nerimity ofereix una experiència elegant i rica en funcions que la fa destacar.",
+        "subslogan": "Rugin ofereix una experiència elegant i rica en funcions que la fa destacar.",
         "viewGitHubButton": "Veure a GitHub",
         "getStarted": "Endinsar-se",
         "availableOn": "Disponible a",
@@ -134,10 +134,10 @@
         "sending": "Enviant correu…"
     },
     "welcomePopup": {
-        "subtitle": "Gràcies per provar Nerimity!",
-        "joinServer": "Uneix-te al servidor oficial de Nerimity",
+        "subtitle": "Gràcies per provar Rugin!",
+        "joinServer": "Uneix-te al servidor oficial de Rugin",
         "editProfile": "Edita el meu perfil",
         "support": "Dóna'm suport a {{platform}}",
-        "contribute": "Col·labora amb Nerimity a GitHub"
+        "contribute": "Col·labora amb Rugin a GitHub"
     }
 }

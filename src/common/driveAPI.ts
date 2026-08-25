@@ -27,30 +27,30 @@ export const initializeGoogleDrive = (accessToken?: string) =>
     gapi.load("client", start);
   });
 
-let nerimityUploadsFolder: gapi.client.drive.File | undefined;
+let ruginUploadsFolder: gapi.client.drive.File | undefined;
 
 export const getOrCreateUploadsFolder = async (accessToken: string) => {
-  if (nerimityUploadsFolder) return nerimityUploadsFolder;
+  if (ruginUploadsFolder) return ruginUploadsFolder;
   if (!googleApiInitialized()) await initializeGoogleDrive(accessToken);
   const res = await gapi.client.drive.files.list({
-    q: "name = 'nerimity_uploads' and mimeType = 'application/vnd.google-apps.folder'",
+    q: "name = 'rugin_uploads' and mimeType = 'application/vnd.google-apps.folder'",
     fields: "files(id)"
   });
   const folder = res.result.files?.[0];
   if (folder) {
-    nerimityUploadsFolder = folder;
-    return nerimityUploadsFolder;
+    ruginUploadsFolder = folder;
+    return ruginUploadsFolder;
   }
 
   const newFolder = await gapi.client.drive.files.create({
     resource: {
-      name: "nerimity_uploads",
+      name: "rugin_uploads",
       mimeType: "application/vnd.google-apps.folder"
     },
     fields: "id"
   });
-  nerimityUploadsFolder = newFolder.result;
-  return nerimityUploadsFolder;
+  ruginUploadsFolder = newFolder.result;
+  return ruginUploadsFolder;
 };
 
 // https://stackoverflow.com/questions/53839499/google-drive-api-and-file-uploads-from-the-browser
@@ -94,7 +94,7 @@ export const uploadFileGoogleDrive = async (
         return reject({ message: "Could not connect to server." });
       }
       if (xhr.status !== 200) {
-        nerimityUploadsFolder = undefined;
+        ruginUploadsFolder = undefined;
         return reject(xhr.response);
       }
       const id = xhr.response.id;

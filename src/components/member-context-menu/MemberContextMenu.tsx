@@ -44,6 +44,8 @@ import {
   cachedVolumes,
   setCachedVolumes
 } from "@/chat-api/store/useVoiceUsers";
+import { setLiveKitRemoteVolume } from "@/chat-api/livekit/livekitRoom";
+import { Track } from "livekit-client";
 
 import {
   SteppedSlider,
@@ -332,8 +334,11 @@ function Header(props: { userId: string }) {
   const onVolumeChange = (e: any) => {
     setVoiceVolume(Number(e.currentTarget?.value!));
     const audio = voiceUser()?.audio;
-    if (!audio) return;
-    audio.volume = Number(e.currentTarget?.value!);
+    const volume = Number(e.currentTarget?.value!);
+    if (audio) audio.volume = volume;
+    if (store.voiceUsers.isLiveKitEnabled()) {
+      setLiveKitRemoteVolume(props.userId, volume, Track.Source.Microphone);
+    }
   };
 
   return (

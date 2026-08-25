@@ -1,15 +1,15 @@
 const repos = {
-  nerimityWeb: {
-    owner: "Nerimity",
-    repo: "nerimity-web"
+  ruginWeb: {
+    owner: "Rugin",
+    repo: "rugin-web"
   },
-  nerimityDesktop: {
-    owner: "Nerimity",
-    repo: "nerimity-desktop"
+  ruginDesktop: {
+    owner: "Rugin",
+    repo: "rugin-desktop"
   },
-  nerimityReactNative: {
-    owner: "Nerimity",
-    repo: "NerimityReactNative"
+  ruginReactNative: {
+    owner: "Rugin",
+    repo: "RuginReactNative"
   }
 };
 
@@ -32,12 +32,12 @@ async function fetchJson<T>(url: string): Promise<T> {
   return json;
 }
 
-export function getLatestRelease({ owner, repo } = repos.nerimityWeb) {
+export function getLatestRelease({ owner, repo } = repos.ruginWeb) {
   const url = `https://api.github.com/repos/${owner}/${repo}/releases/latest`;
   return fetchJson<Release>(url);
 }
 
-export function getLatestSha({ owner, repo } = repos.nerimityWeb) {
+export function getLatestSha({ owner, repo } = repos.ruginWeb) {
   const url = `https://api.github.com/repos/${owner}/${repo}/commits/main`;
 
   const res = fetchJson<{ sha: string }>(url);
@@ -61,8 +61,8 @@ export async function getPlatformDownloadLinks() {
   }
   const platforms: Platform[] = [];
 
-  const release = await getLatestRelease(repos.nerimityDesktop);
-  const mobileRelease = await getLatestRelease(repos.nerimityReactNative);
+  const release = await getLatestRelease(repos.ruginDesktop);
+  const mobileRelease = await getLatestRelease(repos.ruginReactNative);
 
   const assets = [...release.assets, ...mobileRelease.assets];
 

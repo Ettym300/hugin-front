@@ -3,7 +3,7 @@ import { RawPost, RawPostNotification, RawUser } from "../RawData";
 import { Post } from "../store/usePosts";
 import { request } from "./Request";
 import ServiceEndpoints from "./ServiceEndpoints";
-import { uploadAttachment } from "./nerimityCDNService";
+import { uploadAttachment } from "./ruginCDNService";
 import useAccount from "../store/useAccount";
 
 interface GetFeedPostsOpts {
@@ -262,7 +262,7 @@ export const createPost = async (opts: {
   const body: any = {
     content: opts.content,
     poll: opts.poll,
-    ...(fileId ? { nerimityCdnFileId: fileId } : undefined),
+    ...(fileId ? { ruginCdnFileId: fileId } : undefined),
     ...(opts.replyToPostId ? { postId: opts.replyToPostId } : undefined)
   };
 

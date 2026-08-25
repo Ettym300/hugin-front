@@ -10,7 +10,7 @@ import { RawMessage, ServerNotificationSoundMode } from "@/chat-api/RawData";
 import { ROLE_PERMISSIONS } from "@/chat-api/Bitwise";
 
 export const Sounds = [
-  "nerimity-mute",
+  "rugin-mute",
   "default",
   "default-call-join",
   "default-call-leave",
@@ -34,7 +34,7 @@ export const Sounds = [
 
 const audio = new Audio();
 export function playSound(name: (typeof Sounds)[number] = "default") {
-  if (name === "nerimity-mute") return;
+  if (name === "rugin-mute") return;
   audio.src = `/assets/sounds/${name}.mp3`;
   audio.volume = getStorageNumber(StorageKeys.NOTIFICATION_VOLUME, 10) / 100;
   audio.load();

@@ -189,7 +189,7 @@ function LanguageItem(props: {
 
   const handlePercentClick = async () => {
     window.open(
-      "https://hosted.weblate.org/projects/nerimity/-/" + props.key,
+      "https://hosted.weblate.org/projects/rugin/-/" + props.key,
       "_blank"
     );
     // createPortal((close) => (
@@ -304,7 +304,7 @@ function lastPath(url: string) {
 
 //   const fetchLocaleFromGithub = async (language: string) => {
 //     return await fetch(
-//       `https://raw.githubusercontent.com/Nerimity/nerimity-web/refs/heads/main/src/locales/list/${language}.json`,
+//       `https://raw.githubusercontent.com/Rugin/rugin-web/refs/heads/main/src/locales/list/${language}.json`,
 //     ).then((res) => res.json());
 //   };
 

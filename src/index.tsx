@@ -253,7 +253,7 @@ render(
 
     return (
       <MetaProvider>
-        <Title>Nerimity</Title>
+        <Title>Rugin</Title>
         <Router root={Root}>
           <Route
             path="/app"

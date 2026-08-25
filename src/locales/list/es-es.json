@@ -35,7 +35,7 @@
     },
     "homePage": {
         "slogan": "Una aplicación de chat moderna y elegante.",
-        "subslogan": "Nerimity ofrece una experiencia elegante y repleta de funciones que la hace única.",
+        "subslogan": "Rugin ofrece una experiencia elegante y repleta de funciones que la hace única.",
         "viewGitHubButton": "Ver en GitHub",
         "getStarted": "Comenzar",
         "availableOn": "Disponible en",
@@ -171,13 +171,13 @@
         "bots": {
             "title": "Explorar - Bots",
             "noticeMessage": "Un bot puede destacarse una vez cada {{hours}} horas. Todos los destacados se reinician cada {{date}}.",
-            "moderationNotice": "Nerimity no supervisa ni modera los bots. Rogamos reportar aquellos que sean maliciosos o infrinjan los Términos de Servicio.",
+            "moderationNotice": "Rugin no supervisa ni modera los bots. Rogamos reportar aquellos que sean maliciosos o infrinjan los Términos de Servicio.",
             "inviteButton": "Invitar",
             "serverCount": "En {{count}} servidores"
         },
         "themes": {
             "title": "Explorar - Temas",
-            "themesHeaderDescription": "Personaliza Nerimity con un tema personalizado.",
+            "themesHeaderDescription": "Personaliza Rugin con un tema personalizado.",
             "officialThemes": "Temas oficiales",
             "communityThemes": "Temas hechos por la comunidad",
             "noCommunityThemes": "No se han encontrado temas hechos por la comunidad.",
@@ -198,7 +198,7 @@
             "visitServerButton": "Visitar",
             "joinServerButton": "Unirse",
             "bumpButton": "Veces destacado {{count}}",
-            "moderationNotice": "Nerimity no supervisa ni modera los servidores. Rogamos reportar aquellos que sean maliciosos o infrinjan los Términos de Servicio.",
+            "moderationNotice": "Rugin no supervisa ni modera los servidores. Rogamos reportar aquellos que sean maliciosos o infrinjan los Términos de Servicio.",
             "sortMostActive": "Más activos (Beta)",
             "pinnedServers": "Servidores fijados",
             "recentlyBumped": "Servidores destacados recientemente",
@@ -490,7 +490,7 @@
             "reloadNotice": "Debes recargar la aplicación para aplicar completamente el nuevo idioma.",
             "reloadButton": "Recargar",
             "contributors": "Contribuyentes",
-            "searchNotice": "Las traducciones son gestionadas por la comunidad. Se ruega notificar a Nerimity cualquier traducción que resulte incorrecta o inapropiada."
+            "searchNotice": "Las traducciones son gestionadas por la comunidad. Se ruega notificar a Rugin cualquier traducción que resulte incorrecta o inapropiada."
         },
         "header": {
             "servers": "servidores",
@@ -524,7 +524,7 @@
             "deleteAccountDescription": "¡Esta acción no se puede deshacer!",
             "deleteAccountNotice": "Debes salir / eliminar todos los servidores antes de poder eliminar tu cuenta.",
             "understoodButton": "Entendido",
-            "deletionNotice": "Nos entristece verte irte :( Si algo no te gustó, por favor, háznoslo saber en el servidor oficial de Nerimity.",
+            "deletionNotice": "Nos entristece verte irte :( Si algo no te gustó, por favor, háznoslo saber en el servidor oficial de Rugin.",
             "deletedInfo": {
                 "title": "Que se eliminara:",
                 "email": "• Correo",
@@ -610,7 +610,7 @@
             "pushToTalk": "Pulsar para hablar",
             "bindButton": "Asignar",
             "stopButton": "Detener",
-            "downloadAppNotice": "Descarga la aplicación de escritorio de Nerimity para usar esta función sin necesidad de que la ventana esté activa.",
+            "downloadAppNotice": "Descarga la aplicación de escritorio de Rugin para usar esta función sin necesidad de que la ventana esté activa.",
             "leaveCall": "Tienes que salirte de la llamada primero",
             "inputConstraints": {
                 "echoCancelation": "Cancelación de eco",
@@ -660,18 +660,18 @@
             "reduceAnimationsDescription": "Evita que los GIF animados y los emojis se reproduzcan hasta que se pase el cursor por encima o se pulsen."
         },
         "window": {
-            "downloadAppNotice": "Para modificar estos ajustes, tienes que descargarte la aplicación de escritorio de Nerimity.",
+            "downloadAppNotice": "Para modificar estos ajustes, tienes que descargarte la aplicación de escritorio de Rugin.",
             "startupOptions": "Opciones al arrancar",
-            "openOnStartup": "Abrir Nerimity al iniciar",
+            "openOnStartup": "Abrir Rugin al iniciar",
             "startMinimized": "Iniciar minimizado",
-            "startMinimizedDescription": "Minimizar Nerimity automáticamente a la bandeja.",
+            "startMinimizedDescription": "Minimizar Rugin automáticamente a la bandeja.",
             "disableHardwareAcceleration": "Desactivar aceleración por hardware",
             "disableCustomTitlebar": "Desactivar barra de título personalizada",
             "reopenAppNotice": "Tienes que reabrir la aplicación para que el cambio tenga efecto."
         },
         "activity": {
             "extension": "Extensión de navegador",
-            "extensionDescription": "¡Nuestra extensión RPC te permite compartir tu actividad en Spotify y YouTube con los usuarios en Nerimity!",
+            "extensionDescription": "¡Nuestra extensión RPC te permite compartir tu actividad en Spotify y YouTube con los usuarios en Rugin!",
             "visitButton": "Visita {{store}}",
             "activityStatus": "Estatus de actividad",
             "activityStatusDescription": "Comparte lo que haces con todos",
@@ -683,7 +683,7 @@
                 "emoji": "Emoji"
             },
             "discordActivity": "Actividad de Discord",
-            "discordActivityDescription": "Comparte tu actividad de Discord con usuarios en Nerimity",
+            "discordActivityDescription": "Comparte tu actividad de Discord con usuarios en Rugin",
             "idPlaceholder": "User ID de Discord",
             "serverModal": {
                 "text": "Por favor, únete al servidor de Discord para poder activar la compartición de actividad.",
@@ -707,7 +707,7 @@
                 "uri": "URL {{count}}",
                 "redirectUri": "URI de redirección"
             },
-            "applicationsDescription": "Crea bots para Nerimity.",
+            "applicationsDescription": "Crea bots para Rugin.",
             "apiDocumentation": "Documentación de la API (incompleta)",
             "addButton": "Añadir aplicación",
             "name": "Nombre de la aplicación",
@@ -741,7 +741,7 @@
                 "botDescription": "Descripción del bot ({{current}}/{{max}})"
             },
             "useLatestUrl": "Utilizar URL más reciente",
-            "useLatestUrlDescription": "Cargar latest.nerimity.com la siguente vez que reinicies la aplicación. Se reiniciará la aplicación.",
+            "useLatestUrlDescription": "Cargar latest.rugin.com la siguente vez que reinicies la aplicación. Se reiniciará la aplicación.",
             "useLatestUrlWarning": "Podría ser inestable o tener errores."
         },
         "badges": {
@@ -770,7 +770,7 @@
             "googleDescription": "Vincular tu cuenta de Google te permitirá iniciar sesión con Google de forma rápida y sencilla.",
             "linkButton": "Vincular",
             "unlinkButton": "Desvincular",
-            "googleDriveDescription": "Vincular tu cuenta de Google te permitirá subir archivos a Nerimity. Los archivos se almacenarán en tu Google Drive.",
+            "googleDriveDescription": "Vincular tu cuenta de Google te permitirá subir archivos a Rugin. Los archivos se almacenarán en tu Google Drive.",
             "driveWarning": {
                 "title": "No se recomienda utilizar tu cuenta principal de Google para compartir o alojar archivos adjuntos.",
                 "message": "Debido a la forma en que la API de Google Drive gestiona los metadatos de los archivos, tu nombre de usuario y tu dirección de correo electrónico de Google suelen aparecer en los datos de fondo de cualquier archivo que compartas.\n\nUtiliza una cuenta temporal o secundaria si decides seguir usando Google Drive."
@@ -780,7 +780,7 @@
             "noExperiments": "No hay experimentos disponibles actualmente.",
             "reloadRequired": {
                 "title": "Recarga necesaria",
-                "body": "Nerimity tiene que recargarse para que los cambios tengan efectos.",
+                "body": "Rugin tiene que recargarse para que los cambios tengan efectos.",
                 "restartNow": "Recargar ahora",
                 "restartLater": "Recargar más tarde"
             }
@@ -1010,10 +1010,10 @@
             "videoModified": "El video fue modificado.",
             "couldNotGetVideo": "No se pudo obtener el video.",
             "modifiedOrDeleted": "Este vídeo ha sido modificado o eliminado por su creador en su Google Drive.",
-            "googleDrivePolicy": "Debido a la nueva política de Google Drive, solo es posible reproducir vídeos desde la aplicación de escritorio de Nerimity."
+            "googleDrivePolicy": "Debido a la nueva política de Google Drive, solo es posible reproducir vídeos desde la aplicación de escritorio de Rugin."
         },
         "audioEmbed": {
-            "googleDrivePolicy": "Debido a la nueva política de Google Drive, solo es posible reproducir audio desde la aplicación de escritorio de Nerimity."
+            "googleDrivePolicy": "Debido a la nueva política de Google Drive, solo es posible reproducir audio desde la aplicación de escritorio de Rugin."
         }
     },
     "addFriendModal": {
@@ -1107,15 +1107,15 @@
         },
         "founder": {
             "name": "Fundador",
-            "description": "Creador de Nerimity"
+            "description": "Creador de Rugin"
         },
         "admin": {
             "name": "Administrador",
-            "description": "Administrador de Nerimity"
+            "description": "Administrador de Rugin"
         },
         "mod": {
             "name": "Moderador",
-            "description": "Moderador de Nerimity"
+            "description": "Moderador de Rugin"
         },
         "supporter": {
             "name": "Donante",
@@ -1187,7 +1187,7 @@
         "by": "Por",
         "deletionNotice": "Tu cuenta y los datos serán eliminados en 15 días",
         "ipBanned": "Tu IP está baneada.",
-        "ipBanNotice": "Alguien con tu misma IP ha sido suspendido de Nerimity. Tu cuenta no se verá afectada."
+        "ipBanNotice": "Alguien con tu misma IP ha sido suspendido de Rugin. Tu cuenta no se verá afectada."
     },
     "markup": {
         "bold": "Negrita",
@@ -1252,7 +1252,7 @@
                 "header": "Ordenar",
                 "member": "Miembro",
                 "joined": "Se unió",
-                "joinedNerimity": "Se unió a Nerimity"
+                "joinedRugin": "Se unió a Rugin"
             },
             "order": {
                 "header": "Clasificar por",
@@ -1323,11 +1323,11 @@
         "transferring": "Transferiendo…"
     },
     "welcomePopup": {
-        "subtitle": "¡Gracias por probar Nerimity!",
-        "joinServer": "Únete al servidor oficial de Nerimity",
+        "subtitle": "¡Gracias por probar Rugin!",
+        "joinServer": "Únete al servidor oficial de Rugin",
         "editProfile": "Editar perfil",
         "support": "Apóyame en {{platform}}",
-        "contribute": "Contribuye a Nerimity en GitHub"
+        "contribute": "Contribuye a Rugin en GitHub"
     },
     "dropDown": {
         "selectItem": "Seleccionar elemento",

@@ -26,7 +26,7 @@ import { setServerSettingsHeaderPreview } from "./settings-pane/serverSettingsHe
 import {
   uploadAvatar,
   uploadBanner
-} from "@/chat-api/services/nerimityCDNService";
+} from "@/chat-api/services/ruginCDNService";
 import { FloatingSaveChanges } from "@/components/ui/FloatingSaveChanges";
 import ImageSelector from "@/components/ui/ImageSelector";
 

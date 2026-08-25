@@ -50,7 +50,7 @@ const generateToken = async (channelId?: string, userToken?: string | null) => {
 
   return res.token;
 };
-interface NerimityCDNRequestOpts {
+interface RuginCDNRequestOpts {
   file: File;
   onUploadProgress?: (progress: number) => void;
   channelId?: string;
@@ -59,9 +59,9 @@ interface NerimityCDNRequestOpts {
 
 export async function uploadBanner(
   groupId: string,
-  opts: NerimityCDNRequestOpts & { points?: number[] }
+  opts: RuginCDNRequestOpts & { points?: number[] }
 ) {
-  return nerimityCDNUploadRequest({
+  return ruginCDNUploadRequest({
     ...opts,
     type: "profile_banners",
     groupId
@@ -70,23 +70,23 @@ export async function uploadBanner(
 
 export async function uploadAvatar(
   groupId: string,
-  opts: NerimityCDNRequestOpts & { points?: number[] }
+  opts: RuginCDNRequestOpts & { points?: number[] }
 ) {
-  return nerimityCDNUploadRequest({ ...opts, type: "avatars", groupId });
+  return ruginCDNUploadRequest({ ...opts, type: "avatars", groupId });
 }
 
-export async function uploadEmoji(opts: NerimityCDNRequestOpts) {
-  return nerimityCDNUploadRequest({ ...opts, type: "emojis" });
+export async function uploadEmoji(opts: RuginCDNRequestOpts) {
+  return ruginCDNUploadRequest({ ...opts, type: "emojis" });
 }
 
 export async function uploadAttachment(
   groupId: string,
-  opts: NerimityCDNRequestOpts
+  opts: RuginCDNRequestOpts
 ) {
-  return nerimityCDNUploadRequest({ ...opts, type: "attachments", groupId });
+  return ruginCDNUploadRequest({ ...opts, type: "attachments", groupId });
 }
 
-async function nerimityCDNUploadRequest(opts: {
+async function ruginCDNUploadRequest(opts: {
   type: "avatars" | "profile_banners" | "emojis" | "attachments";
   channelId?: string;
   points?: number[];
@@ -95,7 +95,7 @@ async function nerimityCDNUploadRequest(opts: {
   userToken?: string | null;
   onUploadProgress?: (percent: number, speed?: string) => void;
 }) {
-  const url = new URL(`${env.NERIMITY_CDN}${opts.type}/${opts.groupId || ""}`);
+  const url = new URL(`${env.RUGIN_CDN}${opts.type}/${opts.groupId || ""}`);
 
   const formData = new FormData();
   formData.append("f", opts.file);
