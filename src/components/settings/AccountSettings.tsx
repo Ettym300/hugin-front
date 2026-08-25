@@ -234,6 +234,12 @@ export function EditAccountPage(props: {
           if (values.email && values.email !== account.user()?.email) {
             account.setUser({ emailConfirmed: false });
           }
+          if (res.user) {
+            account.setUser({
+              avatar: res.user.avatar,
+              banner: res.user.banner
+            });
+          }
         }
         setShowResetPassword(false);
         setInputValue("password", "");

@@ -12,9 +12,9 @@ export const updateTitleAlert = (newAlert: boolean, newCount?: number) => {
 const update = () => {
   const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
   if (alert) {
-    link.href = "/favicon-alert.ico";
+    link.href = "/assets/logo.png";
   } else {
-    link.href = "/favicon.ico";
+    link.href = "/assets/logo.png";
   }
   electronWindowAPI()?.setNotification(alert || false, count);
 };

@@ -15,7 +15,6 @@ export function FounderAdminSupporterBorder(props: {
     | "founder"
     | "supporter"
     | "admin"
-    | "palestine"
     | "mod"
     | "emo-supporter";
 }) {
@@ -23,24 +22,20 @@ export function FounderAdminSupporterBorder(props: {
     <div
       class={classNames(
         styles.container,
-        props.hovered && props.type !== "palestine" ? styles.hover : undefined
+        props.hovered ? styles.hover : undefined
       )}
     >
-      <Show when={props.type !== "palestine"}>
-        <img
-          src={`/borders/${props.type}-left-wing.webp`}
-          class={classNames(styles.wing, styles.leftWing)}
-        />
-      </Show>
+      <img
+        src={`/borders/${props.type}-left-wing.webp`}
+        class={classNames(styles.wing, styles.leftWing)}
+      />
       <img src={`/borders/${props.type}.webp`} class={styles.border} />
       <RawAvatar {...props} />
       {props.overlay}
-      <Show when={props.type !== "palestine"}>
-        <img
-          src={`/borders/${props.type}-right-wing.webp`}
-          class={classNames(styles.wing, styles.rightWing)}
-        />
-      </Show>
+      <img
+        src={`/borders/${props.type}-right-wing.webp`}
+        class={classNames(styles.wing, styles.rightWing)}
+      />
     </div>
   );
 }
