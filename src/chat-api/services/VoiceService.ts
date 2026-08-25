@@ -18,7 +18,8 @@ export const postLeaveVoice = async (channelId: string) => {
     method: "POST",
     url:
       env.SERVER_URL + "/api" + Endpoints.channel(channelId) + "/voice/leave",
-    useToken: true
+    useToken: true,
+    skipQueue: true
   });
   return data;
 };

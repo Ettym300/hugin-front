@@ -160,6 +160,9 @@ type VoiceUsersMap = Record<string, ChannelUsersMap>;
 const [voiceUsers, setVoiceUsers] = createStore<VoiceUsersMap>({});
 /** Ignore stale voice:user_joined for ourselves after clicking Leave. */
 let ignoreSelfJoinUntil = 0;
+/** Solid does not track Object.values(store) on nested deletes — bump this so the UI re-renders on join/leave. */
+const [voiceListVersion, setVoiceListVersion] = createSignal(0);
+const bumpVoiceList = () => setVoiceListVersion((v) => v + 1);
 const [deafened, setDeafened] = createStore({
   enabled: false,
   wasMicEnabled: false
@@ -492,7 +495,10 @@ const removeAllPeers = (channelIdToRemove?: string) => {
 };
 
 const getVoiceUsersByChannelId = (id: string) => {
-  return Object.values(voiceUsers[id] || {}).filter(Boolean) as VoiceUser[];
+  voiceListVersion();
+  return Object.values(voiceUsers[id] || {}).filter(
+    (user): user is VoiceUser => !!user
+  );
 };
 
 const getVoiceUser = (channelId?: string, userId?: string) => {
@@ -523,6 +529,7 @@ const removeVoiceUser = (channelId: string, userId: string) => {
     setLiveViewers(userId, false);
     setWatchedLives(userId, false);
     useUsers().get(userId)?.setVoiceChannelId(undefined);
+    bumpVoiceList();
   });
 };
 
@@ -588,6 +595,7 @@ const createVoiceUser = (rawVoice: RawVoice, reconnecting = false) => {
 
   if (!reconnecting || rawVoice.userId !== account.user()?.id) {
     setVoiceUsers(rawVoice.channelId, rawVoice.userId, newVoiceUser);
+    bumpVoiceList();
   }
 
   const isCurrentUserInVoice =
@@ -1420,6 +1428,7 @@ function resetAll() {
     } else {
       setVoiceUsers(reconcile({}));
     }
+    bumpVoiceList();
   });
 }
 
