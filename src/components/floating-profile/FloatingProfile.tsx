@@ -55,6 +55,8 @@ import { LogoutModal } from "../settings/LogoutModal";
 import { ClanTag } from "../clan-tag/ClanTag";
 import { generateUrl } from "@/common/image";
 import { UserCallVolumeSlider } from "../voice/UserCallVolumeSlider";
+import { Tooltip } from "../ui/Tooltip";
+import env from "@/common/env";
 
 interface Props {
   dmPane?: boolean;
@@ -229,6 +231,18 @@ const DesktopProfileFlyout = (props: {
     props.serverId
       ? serverMembers.get(props.serverId, props.userId)
       : undefined;
+
+  const isCreator = () =>
+    !!member() && serverMembers.isServerCreator(member()!);
+
+  const isAdmin = () =>
+    !!member() &&
+    serverMembers.hasPermission(
+      member()!,
+      ROLE_PERMISSIONS.ADMIN,
+      false,
+      true
+    );
 
   const server = () => servers.get(props.serverId!);
 
@@ -438,6 +452,30 @@ const DesktopProfileFlyout = (props: {
               </CustomLink>
               <Show when={details()?.profile?.clan}>
                 <ClanTag clan={details()?.profile?.clan!} hovered />
+              </Show>
+              <Show when={isAdmin() || isCreator()}>
+                <Tooltip
+                  tooltip={
+                    isCreator()
+                      ? t("informationDrawer.creator")
+                      : t("informationDrawer.admin")
+                  }
+                  class={styles.adminOrCreatorBadge}
+                  anchor="left"
+                >
+                  <Show when={isCreator()}>
+                    <img
+                      src={`${env.EMOJI_URL || "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/"}1f451.svg`}
+                      alt=""
+                    />
+                  </Show>
+                  <Show when={!isCreator()}>
+                    <img
+                      src={`${env.EMOJI_URL || "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/"}1f6e1.svg`}
+                      alt=""
+                    />
+                  </Show>
+                </Tooltip>
               </Show>
               <Show when={details()?.followsYou}>
                 <div class={styles.followsYou}>{t("profile.followsYou")}</div>

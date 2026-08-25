@@ -116,6 +116,22 @@
 .usernameDetails {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.adminOrCreatorBadge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-left: 2px;
+
+  img {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .username {
