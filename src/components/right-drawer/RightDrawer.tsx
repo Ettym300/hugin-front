@@ -214,10 +214,14 @@ const MemberItem = (props: {
             anchor="left"
           >
             <Show when={isCreator()}>
-              <img src="https://hugin.app/twemojis/1f451.svg" />
+              <img
+                src={`${env.EMOJI_URL || "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/"}1f451.svg`}
+              />
             </Show>
             <Show when={!isCreator()}>
-              <img src="https://hugin.app/twemojis/1f6e1.svg" />
+              <img
+                src={`${env.EMOJI_URL || "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/"}1f6e1.svg`}
+              />
             </Show>
           </Tooltip>
         </Show>
