@@ -7,7 +7,6 @@ import Breadcrumb, { BreadcrumbItem } from "../ui/Breadcrumb";
 import { t } from "@nerimity/i18lite";
 
 import {
-  Bitwise,
   hasBit,
   USER_BADGES,
   USER_BADGES_VALUES,
@@ -19,8 +18,6 @@ import SettingsBlock, {
 } from "../ui/settings-block/SettingsBlock";
 import { SelfUser } from "@/chat-api/events/connectionEventTypes";
 import Avatar from "../ui/Avatar";
-import { Notice } from "../ui/Notice/Notice";
-
 import Icon from "../ui/icon/Icon";
 import Block from "../ui/settings-block/Block";
 import { RawInventoryItem } from "@/chat-api/RawData";
@@ -37,6 +34,28 @@ const Container = styled("div")`
   flex-shrink: 0;
 `;
 
+const COSMETIC_BADGES = [
+  USER_BADGES.SUPPORTER,
+  USER_BADGES.EMO_SUPPORTER,
+  USER_BADGES.PALESTINE,
+  USER_BADGES.DEER_EARS_WHITE,
+  USER_BADGES.DEER_EARS_HORNS_DARK,
+  USER_BADGES.DEER_EARS_HORNS,
+  USER_BADGES.GOAT_HORNS,
+  USER_BADGES.GOAT_EARS_WHITE,
+  USER_BADGES.WOLF_EARS,
+  USER_BADGES.DOG_SHIBA,
+  USER_BADGES.DOG_EARS_BROWN,
+  USER_BADGES.BUNNY_EARS_MAID,
+  USER_BADGES.BUNNY_EARS_BLACK,
+  USER_BADGES.CAT_EARS_PURPLE,
+  USER_BADGES.CAT_EARS_BLUE,
+  USER_BADGES.CAT_EARS_WHITE,
+  USER_BADGES.CAT_EARS_MAID,
+  USER_BADGES.FOX_EARS_GOLD,
+  USER_BADGES.FOX_EARS_BROWN
+];
+
 export default function BadgeSettings() {
   const { header } = useStore();
 
@@ -47,34 +66,6 @@ export default function BadgeSettings() {
     });
   });
 
-  const availableBadges = [
-    USER_BADGES.DEER_EARS_WHITE,
-    USER_BADGES.DEER_EARS_HORNS_DARK,
-    USER_BADGES.DEER_EARS_HORNS,
-    USER_BADGES.GOAT_HORNS,
-    USER_BADGES.GOAT_EARS_WHITE,
-    USER_BADGES.WOLF_EARS,
-    USER_BADGES.DOG_SHIBA,
-    USER_BADGES.DOG_EARS_BROWN,
-    USER_BADGES.BUNNY_EARS_MAID,
-    USER_BADGES.BUNNY_EARS_BLACK,
-    USER_BADGES.CAT_EARS_PURPLE,
-    USER_BADGES.CAT_EARS_BLUE,
-    USER_BADGES.CAT_EARS_WHITE,
-    USER_BADGES.CAT_EARS_MAID,
-    USER_BADGES.FOX_EARS_GOLD,
-    USER_BADGES.FOX_EARS_BROWN
-  ];
-
-  const palestineDescription = () => {
-    const account = t("settings.drawer.account");
-    const profile = t("settings.drawer.profile");
-    return t("settings.badges.palestineDescription", {
-      account,
-      profile
-    });
-  };
-
   return (
     <Container>
       <Breadcrumb>
@@ -83,40 +74,32 @@ export default function BadgeSettings() {
       </Breadcrumb>
 
       <OwnedBadges />
-
-      <Notice
-        description={t("settings.badges.notice")}
-        type="error"
-        title={t("settings.badges.noticeTitle")}
-        icon="favorite"
-      />
-      <SupportMethodBlock />
-      <BadgesPreview badges={[USER_BADGES.SUPPORTER]} price={9.99} />
-      <BadgesPreview badges={availableBadges} price={4.99} />
-      <BadgesPreview
-        badges={[
-          {
-            ...USER_BADGES.PALESTINE,
-            description: palestineDescription
-          }
-        ]}
-        price={0}
-      />
+      <BadgesCatalog />
     </Container>
   );
 }
 
-const BadgesPreview = (props: { badges: Bitwise[]; price: number }) => {
+const BadgesCatalog = () => {
   const store = useStore();
   const user = () => store.account.user();
+
+  const handleBadgeToggle = (badge: UserBadge) => {
+    if (badge.removable === false) {
+      return toast(
+        t("settings.badges.unremovableError.title"),
+        t("settings.badges.unremovableError.body"),
+        "error"
+      );
+    }
+    toggleBadge(badge.bit).then((result) => {
+      store.account.setUser({ badges: result.badges });
+    });
+  };
 
   return (
     <Show when={user()}>
       <SettingsGroup>
-        <SettingsBlock
-          label={t("settings.badges.price", { price: `$${props.price}` })}
-          icon="favorite"
-        />
+        <SettingsBlock label={t("settings.drawer.badges")} icon="pets" />
         <Block
           class={css`
             display: grid;
@@ -126,13 +109,13 @@ const BadgesPreview = (props: { badges: Bitwise[]; price: number }) => {
             padding: 6px;
           `}
         >
-          <For each={props.badges}>
-            {(badge, i) => (
+          <For each={COSMETIC_BADGES}>
+            {(badge) => (
               <BadgeItem
                 user={user()!}
                 badge={badge}
-                index={i()}
-                length={props.badges.length}
+                enabled={hasBit(user()?.badges || 0, badge.bit)}
+                onClick={() => handleBadgeToggle(badge)}
               />
             )}
           </For>
@@ -155,6 +138,7 @@ const badgeItemStyle = css`
   position: relative;
   box-sizing: border-box;
   z-index: 1;
+  cursor: pointer;
   &:before {
     content: "";
     position: absolute;
@@ -171,18 +155,21 @@ const badgeItemStyle = css`
     text-align: center;
   }
 `;
+
 const BadgeItem = (props: {
   user: SelfUser;
   badge: UserBadge;
-  index: number;
-  length: number;
+  enabled: boolean;
+  onClick: () => void;
 }) => {
   const [hovered, setHovered] = createSignal(false);
   return (
     <div
       class={badgeItemStyle}
+      onClick={props.onClick}
       onMouseOver={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      style={{ opacity: props.enabled ? 1 : 0.55 }}
     >
       <Avatar
         user={{ ...props.user, badges: props.badge.bit }}
@@ -211,32 +198,12 @@ const BadgeItem = (props: {
         {props.badge.name()}
       </div>
       <div class="badge-desc">{props.badge.description?.()}</div>
+      <Checkbox
+        style={{ "pointer-events": "none" }}
+        checked={props.enabled}
+        disabled={props.badge.removable === false}
+      />
     </div>
-  );
-};
-
-const SupportMethodBlock = () => {
-  return (
-    <SettingsGroup>
-      <SettingsBlock label={t("settings.badges.supportMethods")} icon="info" />
-      <SettingsBlock
-        label="Ko-Fi"
-        iconSrc="/assets/kofi.svg"
-        href="https://ko-fi.com/supertiger"
-        hrefBlank
-      />
-      <SettingsBlock
-        class={css`
-          img {
-            border-radius: 50%;
-          }
-        `}
-        label="Boosty"
-        iconSrc="/assets/boosty.jpg"
-        href="https://boosty.to/supertigerdev/donate"
-        hrefBlank
-      />
-    </SettingsGroup>
   );
 };
 
@@ -250,32 +217,21 @@ const OwnedBadges = () => {
     fetchInventory().then(setInventory);
   });
 
-  const inventoryBadges = () => {
-    return inventory().filter((item) => item.itemType === "badge");
-  };
-
   const ownedBadges = () => {
-    const badges = inventoryBadges().map((item) => {
-      const badge = USER_BADGES_VALUES.find(
-        (badge) => badge.bit === parseInt(item.itemId)
-      )!;
-      return {
-        ...badge,
-        acquiredAt: item.acquiredAt,
-        enabled: hasBit(user()?.badges || 0, badge!.bit)
-      };
-    });
-    const hasPalestine = badges.find(
-      (badge) => badge.name() === USER_BADGES.PALESTINE.name()
-    );
-    if (!hasPalestine) {
-      badges.unshift({
-        ...USER_BADGES.PALESTINE,
-        acquiredAt: 0,
-        enabled: hasBit(user()?.badges || 0, USER_BADGES.PALESTINE.bit)
-      });
-    }
-    return badges;
+    return inventory()
+      .filter((item) => item.itemType === "badge")
+      .map((item) => {
+        const badge = USER_BADGES_VALUES.find(
+          (b) => b.bit === parseInt(item.itemId)
+        );
+        if (!badge) return null;
+        return {
+          ...badge,
+          acquiredAt: item.acquiredAt,
+          enabled: hasBit(user()?.badges || 0, badge.bit)
+        };
+      })
+      .filter(Boolean);
   };
 
   const handleBadgeToggle = (badge: { bit: number; removable?: boolean }) => {
@@ -292,12 +248,7 @@ const OwnedBadges = () => {
   };
 
   return (
-    <div>
-      <Notice
-        type="info"
-        description={t("settings.badges.acquisitionNotice")}
-        style={{ "margin-bottom": "12px" }}
-      />
+    <Show when={ownedBadges().length}>
       <SettingsGroup>
         <SettingsBlock
           label={t("settings.badges.inventory.ownedBadges", {
@@ -305,11 +256,10 @@ const OwnedBadges = () => {
           })}
           icon="badge"
         />
-
         <For each={ownedBadges()}>
           {(item) => (
             <SettingsBlock
-              onClick={() => handleBadgeToggle(item)}
+              onClick={() => handleBadgeToggle(item!)}
               label={item!.name?.()!}
               description={
                 item!.acquiredAt
@@ -327,12 +277,12 @@ const OwnedBadges = () => {
               <Checkbox
                 style={{ "pointer-events": "none" }}
                 checked={item!.enabled}
-                disabled={!item!.removable}
+                disabled={item!.removable === false}
               />
             </SettingsBlock>
           )}
         </For>
       </SettingsGroup>
-    </div>
+    </Show>
   );
 };

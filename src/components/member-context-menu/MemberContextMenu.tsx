@@ -57,7 +57,7 @@ type Props = Omit<ContextMenuProps, "items"> & {
 };
 
 export default function MemberContextMenu(props: Props) {
-  const { serverMembers, servers, account, users } = useStore();
+  const { serverMembers, servers, account, users, voiceUsers } = useStore();
   const { createPortal } = useCustomPortal();
 
   const navigate = useNavigate();
@@ -77,6 +77,12 @@ export default function MemberContextMenu(props: Props) {
 
   const muted = () =>
     member()?.muteExpireAt && member()?.muteExpireAt! > Date.now();
+
+  const inSameCall = () => {
+    const current = voiceUsers.currentUser();
+    if (!current?.channelId) return false;
+    return !!voiceUsers.getVoiceUser(current.channelId, props.userId);
+  };
 
   const adminItems = () => {
     if (!props.serverId) return [];
@@ -262,6 +268,16 @@ export default function MemberContextMenu(props: Props) {
             label: t("userContextMenu.sendMessage"),
             icon: "comment",
             onClick: () => users.openDM(props.userId)
+          },
+          {
+            label: voiceUsers.isLiveWatched(props.userId)
+              ? t("userContextMenu.stopWatchingLive")
+              : t("userContextMenu.watchLive"),
+            icon: voiceUsers.isLiveWatched(props.userId)
+              ? "visibility_off"
+              : "visibility",
+            show: inSameCall() && !!voiceUsers.videoEnabled(props.userId),
+            onClick: () => voiceUsers.toggleLiveWatched(props.userId)
           },
           ...adminItems(),
           { separator: true },

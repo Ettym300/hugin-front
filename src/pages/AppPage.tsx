@@ -53,6 +53,7 @@ import { lazyLoadEmojis } from "@/emoji";
 import { useReminders } from "@/components/useReminders";
 import { FriendStatus } from "@/chat-api/RawData";
 import { updateTitleAlert } from "@/common/BrowserTitle";
+import { theaterMode, FloatingLivePreview } from "@/components/main-pane-header/voice-header/VoiceHeader";
 
 const mobileMainPaneStyles = css`
   height: 100%;
@@ -91,6 +92,35 @@ const MainPaneContainer = styled("div")<MainPaneContainerProps>`
     }
 
     scrollbar-width: none; /* Firefox */
+  }
+
+  &[data-theater="true"] {
+    display: grid;
+    overflow: hidden;
+    grid-template-areas:
+      "head head"
+      "stage chat";
+    grid-template-columns: minmax(0, 1fr) clamp(260px, 26%, 360px);
+    grid-template-rows: auto minmax(0, 1fr);
+
+    > * {
+      grid-area: head;
+    }
+
+    > .voice-stage {
+      position: relative;
+      top: auto;
+      z-index: 1;
+      grid-area: stage;
+      min-height: 0;
+      max-height: none;
+    }
+
+    > .messagePane {
+      grid-area: chat;
+      min-width: 0;
+      border-left: var(--panel-border);
+    }
   }
 `;
 
@@ -215,21 +245,24 @@ export default function AppPage() {
   });
 
   return (
-    <DrawerLayout
-      Content={() => <MainPane />}
-      LeftDrawer={() => (
-        <CustomScrollbarProvider>
-          <LeftDrawer />
-        </CustomScrollbarProvider>
-      )}
-      RightDrawer={() => (
-        <CustomScrollbarProvider>
-          <RightDrawer />
-        </CustomScrollbarProvider>
-      )}
-    >
-      <MobileBottomPane />
-    </DrawerLayout>
+    <>
+      <DrawerLayout
+        Content={() => <MainPane />}
+        LeftDrawer={() => (
+          <CustomScrollbarProvider>
+            <LeftDrawer />
+          </CustomScrollbarProvider>
+        )}
+        RightDrawer={() => (
+          <CustomScrollbarProvider>
+            <RightDrawer />
+          </CustomScrollbarProvider>
+        )}
+      >
+        <MobileBottomPane />
+      </DrawerLayout>
+      <FloatingLivePreview />
+    </>
   );
 }
 
@@ -301,6 +334,7 @@ function LeftDrawer() {
 function MainPane() {
   const windowProperties = useWindowProperties();
   const { hasRightDrawer, hasLeftDrawer } = useDrawer();
+  const { header, voiceUsers } = useStore();
   const [outerPaneElement, setOuterPaneElement] = createSignal<
     HTMLDivElement | undefined
   >(undefined);
@@ -310,18 +344,29 @@ function MainPane() {
   );
 
   const { width } = useResizeObserver(outerPaneElement);
+  const onInbox = useMatch(() => "/app/inbox/:id");
+  const onServerChannel = useMatch(() => "/app/servers/:serverId/:channelId");
+  const onMessageRoute = () => !!onInbox() || !!onServerChannel();
 
   useServerRedirect();
   useUserNotices();
   applyCustomCss();
 
+  const isStreamingHere = () => {
+    const details = header.details();
+    if (details.id !== "MessagePane" || !details.channelId) return false;
+    if (!onMessageRoute()) return false;
+    return voiceUsers
+      .getVoiceUsersByChannelId(details.channelId)
+      .some((voiceUser) => voiceUsers.videoEnabled(voiceUser.userId));
+  };
+
+  const isTheater = () =>
+    theaterMode() && isStreamingHere() && !windowProperties.isMobileWidth();
+
   createEffect(() => {
     windowProperties.setPaneWidth(width());
   });
-
-  const isMobileWithOrHasRightDrawer = () => {
-    return windowProperties.isMobileWidth() || hasRightDrawer();
-  };
 
   return (
     <OuterMainPaneContainer ref={setOuterPaneElement}>
@@ -332,6 +377,7 @@ function MainPane() {
           style={{ background: windowProperties.paneBackgroundColor() }}
           hasLeftDrawer={hasLeftDrawer()}
           hasRightDrawer={hasRightDrawer()}
+          data-theater={isTheater()}
           class={classNames(
             "main-pane-container",
             conditionalClass(
@@ -342,7 +388,7 @@ function MainPane() {
         >
           <MainPaneHeader />
           <Outlet name="mainPane" />
-          <Show when={!windowProperties.isMobileAgent()}>
+          <Show when={!windowProperties.isMobileAgent() && !isTheater()}>
             <CustomScrollbar
               scrollElement={mainPaneEl()}
               class={css`

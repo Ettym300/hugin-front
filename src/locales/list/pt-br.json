@@ -529,16 +529,21 @@
             "voiceActivity": "Atividade de voz",
             "pushToTalk": "Apertar para falar",
             "inputDevices": "Dispositivos de entrada",
-            "nextCallNotice": "Mudanças serão aplicadas em suas próximas chamadas.",
+            "nextCallNotice": "Mudanças de microfone, fone e supressão de ruído são aplicadas na chamada atual.",
             "bindButton": "Configurar",
             "leaveCall": "Você deve sair da chamada primeiro",
             "inputConstraints": {
                 "echoCancelation": "Cancelamento de eco",
                 "echoCancelationDescription": "Impede que o microfone capte o som dos alto-falantes.",
                 "noiseSuppression": "Supressão de ruído",
-                "noiseSuppressionDescription": "Filtra ruídos de fundo constantes (ventiladores, zumbidos).",
+                "noiseSuppressionDescription": "Remove ruído de fundo. O modo aprimorado usa RNNoise com compressor para voz mais limpa (teclado, batidas no mic).",
                 "autoGainControl": "Controle automático de ganho",
                 "autoGainControlDescription": "Ajusta automaticamente os níveis de volume para manter um sinal estável."
+            },
+            "noiseModes": {
+                "disabled": "Desativado",
+                "browser": "Navegador",
+                "enhanced": "Aprimorado (RNNoise)"
             },
             "useTurn": "Use os servidores TURN da Cloudflare",
             "useTurnDescription": "Use servidores TURN para obter uma melhor conectividade",
@@ -705,7 +710,9 @@
         "editRoles": "Editar cargos",
         "changeNickname": "Alterar apelido",
         "callVolume": "Volume da chamada",
-        "transferOwnership": "Transferir propriedade"
+        "transferOwnership": "Transferir propriedade",
+        "watchLive": "Assistir live",
+        "stopWatchingLive": "Ocultar live"
     },
     "kickServerMemberModal": {
         "title": "Expulsar {{username}}",
@@ -826,6 +833,11 @@
         "admin": "Administrador(a)",
         "info": "Informações",
         "files": "Arquivos",
+        "tabs": {
+            "info": "Info",
+            "files": "Arquivos",
+            "search": "Busca"
+        },
         "searchBarPlaceholder": "Pesquisar {{username}}",
         "searchBarChannelPlaceholder": "Pesquisar em {{channelName}}",
         "sortLatest": "Mais recente",
@@ -1215,6 +1227,15 @@
             "muted": "Silenciado(a)",
             "fullscreen": "Tela cheia",
             "deafened": "Ensurdecido(a)",
+            "watchLive": "Assistir",
+            "stopWatchingLive": "Ocultar esta live",
+            "hiddenLives": "Lives ocultas",
+            "theaterMode": "Modo teatro",
+            "noLiveSelected": "Nenhuma live selecionada",
+            "noLiveSelectedHint": "Escolha abaixo quem você quer assistir",
+            "resizeLive": "Arraste para redimensionar a live",
+            "hidePreview": "Ocultar preview da live",
+            "showPreview": "Mostrar preview da live",
             "webcamModal": {
                 "title": "Compartilhamento de webcam",
                 "error": "Não foi possível compartilhar a câmera",
@@ -1380,7 +1401,9 @@
     },
     "serverDrawer": {
         "joinedThisSessionNotice": "Você verá todas as notificações deste servidor.",
-        "joinedThisSessionNoticeSetToMentionsOnly": "Definir para apenas menções"
+        "joinedThisSessionNoticeSetToMentionsOnly": "Definir para apenas menções",
+        "voiceChannels": "Canais de voz",
+        "textChannels": "Canais de texto"
     },
     "datetime": {
         "lessThanAMinuteAgo": "há alguns segundos",

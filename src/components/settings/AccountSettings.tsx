@@ -27,6 +27,7 @@ import { FileBrowserRef } from "../ui/FileBrowser";
 import { reconcile } from "solid-js/store";
 import Breadcrumb, { BreadcrumbItem } from "../ui/Breadcrumb";
 import { t } from "@nerimity/i18lite";
+import env from "@/common/env";
 
 import { setStorageString, StorageKeys } from "@/common/localStorage";
 import socketClient from "@/chat-api/socketClient";
@@ -349,7 +350,12 @@ export function EditAccountPage(props: {
   return (
     <>
       <Show
-        when={!props.bot && account.user() && !account.user()?.emailConfirmed}
+        when={
+          !props.bot &&
+          account.user() &&
+          !account.user()?.emailConfirmed &&
+          !env.DEV_MODE
+        }
       >
         <ConfirmEmailNotice />
       </Show>

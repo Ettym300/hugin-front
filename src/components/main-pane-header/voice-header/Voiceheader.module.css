@@ -19,19 +19,23 @@
   align-items: center;
   flex-direction: column;
   flex-shrink: 0;
-  min-height: 100px;
-  padding-right: 10px;
-  padding-left: 10px;
-  border-bottom: solid 1px rgba(255, 255, 255, 0.1);
-  background-color: var(--header-background-color);
+  min-height: 140px;
+  padding-right: 12px;
+  padding-left: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 0, 0, 0.22);
   resize: vertical;
   user-select: none;
-  backdrop-filter: blur(34px);
   &.videoStream {
     display: flex;
-    height: 60vh;
+    overflow: hidden;
+    height: auto;
+    min-height: 180px;
+    max-height: calc(100dvh - var(--header-height) - 88px);
     padding-right: 0;
     padding-left: 0;
+    background-color: var(--pane-color);
+    resize: none;
     .voiceParticipants {
       align-self: flex-start;
       flex-direction: column;
@@ -65,6 +69,98 @@
         padding: 3px;
       }
     }
+  }
+
+  &.galleryView,
+  &.stageView {
+    .top {
+      flex-direction: column;
+      padding: 0;
+    }
+  }
+
+  .galleryLayout {
+    display: flex;
+    overflow: hidden;
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+    min-height: 0;
+  }
+
+  .hiddenLives {
+    display: flex;
+    overflow: hidden;
+    flex-shrink: 0;
+    align-items: center;
+    width: 100%;
+    padding: 6px 10px 10px;
+    gap: 10px;
+    box-sizing: border-box;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.22);
+  }
+
+  .hiddenLivesLabel {
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+  }
+
+  .hiddenLivesList {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex: 1;
+    align-items: flex-start;
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .stageLayout {
+    display: flex;
+    overflow: hidden;
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+    min-height: 0;
+    padding: 8px;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+
+  .stageMain {
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+    min-height: 0;
+    .voiceTile {
+      min-height: 0;
+      height: 100%;
+    }
+  }
+
+  .filmstrip {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-shrink: 0;
+    height: 112px;
+    padding: 8px 10px 14px;
+    gap: 8px;
+    box-sizing: border-box;
+    align-items: flex-start;
+  }
+
+  .filmstripTile {
+    flex: 0 0 148px;
+    width: 148px;
+    height: 84px;
+    min-height: 84px;
+    max-height: 84px;
   }
 
   &.miniView {
@@ -106,7 +202,7 @@
     overflow: hidden;
     flex: 1;
     width: 100%;
-    height: 100%;
+    min-height: 0;
   }
   .voiceParticipants {
     display: flex;
@@ -124,6 +220,167 @@
     gap: 10px;
   }
 
+  .videoGrid {
+    display: grid;
+    overflow: hidden;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    gap: 8px;
+    box-sizing: border-box;
+    align-content: stretch;
+    justify-content: center;
+    grid-auto-rows: minmax(0, 1fr);
+  }
+
+  .videoGrid .voiceTile {
+    min-height: 0;
+  }
+
+  .voiceTile {
+    position: relative;
+    overflow: hidden;
+    display: block;
+    box-sizing: border-box;
+    height: 100%;
+    min-height: 140px;
+    border: solid 2px transparent;
+    border-radius: 14px;
+    background-color: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    &.hasVideo {
+      background-color: black;
+    }
+    &.selected,
+    &.talking {
+      border-color: var(--success-color);
+      box-shadow: none;
+    }
+    &.disconnected {
+      opacity: 0.35;
+    }
+    &.filmstripTile {
+      overflow: hidden;
+      height: 84px;
+      min-height: 84px;
+      max-height: 84px;
+      border-radius: 10px;
+      &.selected,
+      &.talking {
+        box-shadow: none;
+      }
+    }
+    .videoContainer {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+    }
+    .watchLiveOverlay {
+      position: absolute;
+      z-index: 3;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.28);
+      pointer-events: none;
+    }
+    .livePausedBadge {
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #ed4245;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+    .watchLiveLabel {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--primary-color);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .unwatchLive {
+      position: absolute;
+      z-index: 4;
+      top: 6px;
+      right: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: none;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      cursor: pointer;
+    }
+    .unwatchLive:hover {
+      background: rgba(0, 0, 0, 0.85);
+    }
+    &.filmstripTile .watchLiveLabel {
+      padding: 3px 7px;
+      font-size: 10px;
+    }
+    &.filmstripTile .livePausedBadge {
+      display: none;
+    }
+    &.filmstripTile .unwatchLive {
+      width: 22px;
+      height: 22px;
+      top: 4px;
+      right: 4px;
+    }
+  }
+
+  .tileAvatar {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tileName,
+  .videoName {
+    position: absolute;
+    z-index: 2;
+    top: 6px;
+    left: 6px;
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    max-width: calc(100% - 40px);
+    padding: 2px 7px;
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-size: 11px;
+    gap: 4px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    pointer-events: none;
+  }
+
+  .compactFilmstrip .videoName {
+    top: 3px;
+    left: 3px;
+    max-width: calc(100% - 34px);
+    padding: 1px 5px;
+    font-size: 9px;
+  }
+
   .videoContainer {
     position: relative;
     overflow: hidden;
@@ -131,43 +388,320 @@
     margin: 5px;
     border-radius: 8px;
     background-color: black;
-    &:hover {
-      .videoOverlay {
-        transform: translateY(0);
-      }
+    &.compact {
+      margin: 0;
     }
     video {
       width: 100%;
       height: 100%;
+      object-fit: contain;
+      background-color: black;
     }
-    .videoOverlay {
+    &.compact video {
       position: absolute;
+      inset: 0;
+    }
+    .videoControls {
+      position: absolute;
+      z-index: 4;
       right: 0;
       bottom: 0;
       left: 0;
       display: flex;
-      justify-content: flex-end;
-      padding: 6px;
-      background-color: rgba(0, 0, 0, 0.8);
-      transition: 0.2s;
-      transform: translateY(100%);
+      align-items: center;
+      padding: 4px 6px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
       gap: 4px;
+      pointer-events: auto;
+    }
+    .videoControlsFilmstrip {
+      padding: 2px 4px;
+      background: rgba(0, 0, 0, 0.8);
     }
     .volumeSlider {
       display: flex;
-      padding-right: 6px;
+      flex: 1;
+      align-items: center;
+      min-width: 0;
+      padding: 2px 4px;
       border-radius: 6px;
-      background-color: rgba(255, 255, 255, 0.1);
-      gap: 2px;
+      background-color: rgba(255, 255, 255, 0.12);
+      gap: 4px;
+
+      input[type="range"] {
+        flex: 1;
+        min-width: 0;
+        height: 6px;
+        margin: 0;
+        accent-color: var(--primary-color);
+        cursor: pointer;
+      }
 
       button {
         border: none;
         background-color: transparent;
+        flex-shrink: 0;
       }
     }
+    .videoControlsFilmstrip .volumeSlider {
+      padding: 1px 2px;
+      gap: 2px;
+      input[type="range"] {
+        height: 4px;
+      }
+    }
+  }
+  .stageResizeHandle {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 12px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: ns-resize;
+  }
+  .stageResizeHandle::after {
+    width: 42px;
+    height: 4px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.32);
+    content: "";
+  }
+  .stageResizeHandle:hover::after {
+    background: rgba(255, 255, 255, 0.55);
   }
   .voiceActions {
     display: flex;
     flex-shrink: 0;
   }
+
+  .stageEmpty {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+    padding: 20px;
+    gap: 6px;
+    color: var(--content-color-dim60);
+    text-align: center;
+  }
+
+  .stageEmptyTitle {
+    color: var(--content-color);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .stageEmptyHint {
+    font-size: 12px;
+  }
+
+  /*
+   * Barra de controles sobre o video, embaixo (menos invasiva).
+   * No desktop some ate o mouse passar pelo palco; no toque fica sempre visivel.
+   *
+   * Em miniView fica sempre visivel: e o unico caminho para expandir de novo.
+   */
+  &.videoStream:not(.miniView) .voiceActions {
+    position: absolute;
+    z-index: 5;
+    top: auto;
+    bottom: 12px;
+    left: 50%;
+    padding: 6px;
+    border: 1px solid var(--panel-border-color);
+    border-radius: 26px;
+    background: var(--call-bar-background-color);
+    box-shadow: var(--panel-shadow);
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+    pointer-events: none;
+    transition:
+      opacity 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  &.videoStream:not(.miniView):hover .voiceActions,
+  &.videoStream:not(.miniView):focus-within .voiceActions {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Espaco embaixo para a barra nao cobrir tiles ao aparecer. */
+  &.videoStream:not(.miniView) .hiddenLives {
+    padding-top: 10px;
+    padding-bottom: 56px;
+  }
+}
+
+/* Sem hover em toque, a barra tem de ficar sempre visivel. */
+:global .mobileAgent {
+  :local {
+    .headerVoiceParticipants.videoStream:not(.miniView) .voiceActions {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+  }
+}
+
+.floatingLive {
+  position: fixed;
+  z-index: 40;
+  right: 16px;
+  bottom: 16px;
+  width: min(380px, calc(100vw - 24px));
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: var(--pane-color);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+  user-select: none;
+}
+
+.floatingLiveMobile {
+  right: 8px;
+  bottom: calc(var(--bottom-pane-gap) + 12px);
+}
+
+.floatingLiveGrabbing,
+.floatingLiveGrabbing .floatingLiveBar {
+  cursor: grabbing;
+}
+
+.floatingLiveBar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  overflow: hidden;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 12px;
+  gap: 8px;
+  cursor: grab;
+  touch-action: none;
+  text-align: left;
+}
+
+.floatingLiveBarLabel,
+.floatingLiveChipLabel {
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.floatingLiveHide,
+.floatingLiveChipButton {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.floatingLiveHide:hover,
+.floatingLiveChipButton:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.floatingLiveChip {
+  position: fixed;
+  z-index: 40;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  max-width: min(280px, calc(100vw - 24px));
+  padding: 6px 6px 6px 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: var(--pane-color);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.floating {
+  position: relative;
+  z-index: auto;
+  top: auto;
+  right: auto;
+  left: auto;
+  overflow: hidden;
+  height: 220px !important;
+  min-height: 180px !important;
+  padding: 0;
+  border: none;
+  resize: none;
+  background-color: #0b0b0f;
+}
+
+.floating.videoStream {
+  height: 220px !important;
+  min-height: 180px !important;
+}
+
+.floating.stageView {
+  height: 280px !important;
+  min-height: 240px !important;
+}
+
+.floating .voiceParticipants {
+  height: 100%;
+}
+
+.floating .voiceTile {
+  min-height: 0;
+}
+
+.floating .videoGrid {
+  padding: 6px;
+  gap: 6px;
+}
+
+.floating .hiddenLives {
+  padding: 4px 6px;
+}
+
+.floating .hiddenLivesLabel {
+  display: none;
+}
+
+.floating .stageLayout {
+  padding: 4px;
+  gap: 4px;
+}
+
+.floating .filmstrip {
+  height: 64px;
+  padding: 4px 6px 6px;
+}
+
+.floating .filmstripTile {
+  flex: 0 0 96px;
+  width: 96px;
+  height: 48px;
+  min-height: 48px;
+  max-height: 48px;
 }

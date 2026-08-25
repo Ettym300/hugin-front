@@ -11,6 +11,7 @@ interface RootProps {
   alert?: boolean;
   handlePosition?: "bottom" | "left";
   onClick?: (e?: MouseEvent) => void;
+  onDblClick?: (e: MouseEvent) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onContextMenu?: (e: MouseEvent) => void;
@@ -32,6 +33,7 @@ const Root = (props: RootProps) => (
       "--alert-color": props.alertColor
     }}
     onClick={props.onClick}
+    onDblClick={props.onDblClick}
     data-handle-position={props.handlePosition || "left"}
     onMouseEnter={props.onMouseEnter}
     onContextMenu={props.onContextMenu}

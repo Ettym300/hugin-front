@@ -21,6 +21,7 @@ import useServerMembers, { ServerMember } from "./useServerMembers";
 import useAccount from "./useAccount";
 import useMention from "./useMention";
 import socketClient from "../socketClient";
+import env from "@/common/env";
 import {
   postGenerateCredential,
   postJoinVoice,
@@ -35,6 +36,7 @@ import { getCustomSound, playSound } from "@/common/Sound";
 import { getStorageBoolean, StorageKeys } from "@/common/localStorage";
 import { isExperimentEnabled } from "@/common/experiments";
 import { reactNativeAPI } from "@/common/ReactNative";
+import { toast } from "@/components/ui/custom-portal/CustomPortal";
 
 export type Channel = Omit<RawChannel, "recipient"> & {
   updateLastSeen(this: Channel, timestamp?: number): void;
@@ -151,7 +153,9 @@ function canSendMessage(this: Channel, userId: string) {
   const muted =
     member?.muteExpireAt && new Date(member?.muteExpireAt) > new Date();
   const emailConfirmed =
-    account.user()?.id != userId || account.user()?.emailConfirmed;
+    env.DEV_MODE ||
+    account.user()?.id != userId ||
+    account.user()?.emailConfirmed;
 
   if (!emailConfirmed) {
     return false;
@@ -232,15 +236,31 @@ async function joinCall(this: Channel, reconnect = false) {
     return;
   }
   const { setCurrentChannelId } = useVoiceUsers();
-  await loadSimplePeer();
-  if (getStorageBoolean(StorageKeys.voiceUseTurnServers, true)) {
-    await postGenerateCredential();
+  const socketId = socketClient.id();
+  if (!socketId) {
+    toast(
+      "WebSocket desconectado. Espere 'Conectado' no topo, ou faça logout/login.",
+      "Call"
+    );
+    return;
   }
-  postJoinVoice(this.id, socketClient.id()!).then(() => {
-    if (reconnect) return;
-    setCurrentChannelId(this.id, reconnect);
-    this.setCallJoinedAt(Date.now());
-  });
+  await loadSimplePeer();
+  // TURN (Cloudflare) is optional locally — a failed generate must not block join.
+  if (
+    !env.DEV_MODE &&
+    getStorageBoolean(StorageKeys.voiceUseTurnServers, true)
+  ) {
+    await postGenerateCredential().catch(() => {});
+  }
+  postJoinVoice(this.id, socketId)
+    .then(() => {
+      if (reconnect) return;
+      setCurrentChannelId(this.id, reconnect);
+      this.setCallJoinedAt(Date.now());
+    })
+    .catch((err) => {
+      toast(err?.message || "Falha ao entrar na call.", "Call");
+    });
 }
 function leaveCall(this: Channel) {
   const { setCurrentChannelId, removeVoiceUser } = useVoiceUsers();
@@ -248,12 +268,21 @@ function leaveCall(this: Channel) {
   if (!account.isAuthenticated()) {
     setCurrentChannelId(null);
     removeVoiceUser(this.id, account.user()?.id as string);
+    this.setCallJoinedAt(undefined);
     return;
   }
-  postLeaveVoice(this.id).then(() => {
-    playSound(getCustomSound("CALL_LEAVE"));
-    setCurrentChannelId(null);
-  });
+  postLeaveVoice(this.id)
+    .then(() => {
+      playSound(getCustomSound("CALL_LEAVE"));
+      setCurrentChannelId(null);
+      this.setCallJoinedAt(undefined);
+    })
+    .catch(() => {
+      // Force local leave so re-join is not stuck after a failed leave.
+      setCurrentChannelId(null);
+      this.setCallJoinedAt(undefined);
+      removeVoiceUser(this.id, account.user()?.id as string);
+    });
 }
 function update(this: Channel, update: Partial<RawChannel>) {
   setChannels(this.id, update);

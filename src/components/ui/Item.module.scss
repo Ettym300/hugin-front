@@ -7,14 +7,14 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   user-select: none;
-  transition: 0.2s;
+  transition: 0.15s background-color, 0.15s transform;
   text-decoration: none;
 
   &:hover {
-    background-color: hsl(216deg 7% 28% / 40%);
+    background-color: var(--drawer-item-hover-background-color);
 
     &:after {
       background-color: rgba(255, 255, 255, 0.1);
@@ -45,13 +45,14 @@
   }
 
   &[data-selected="true"] {
-    --handle-length: 16px;
-    background-color: hsl(216deg 7% 28% / 60%);
+    --handle-length: 20px;
+    background-color: var(--drawer-item-background-color);
     &:after {
       background-color: var(--handle-color);
     }
     .label {
       opacity: 1;
+      font-weight: 500;
     }
   }
 

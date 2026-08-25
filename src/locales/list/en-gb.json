@@ -715,7 +715,7 @@
       "callLeave": "Call Leave"
     },
     "call": {
-      "nextCallNotice": "Changes will be applied on your next calls.",
+      "nextCallNotice": "Mic, headset and noise suppression changes apply to the current call.",
       "leaveCall": "You must leave the call first",
       "inputDevices": "Input Devices",
       "outputDevices": "Output Devices",
@@ -724,9 +724,14 @@
         "echoCancelation": "Echo Cancellation",
         "echoCancelationDescription": "Prevents the microphone from picking up sound from the speakers.",
         "noiseSuppression": "Noise Suppression",
-        "noiseSuppressionDescription": "Filters out constant background noise (fans, hums).",
+        "noiseSuppressionDescription": "Removes background noise. Enhanced mode uses RNNoise with a compressor for cleaner voice (keyboard, mic taps).",
         "autoGainControl": "Auto Gain Control",
         "autoGainControlDescription": "Automatically adjusts volume levels to maintain a consistent signal."
+      },
+      "noiseModes": {
+        "disabled": "Disabled",
+        "browser": "Browser",
+        "enhanced": "Enhanced (RNNoise)"
       },
       "inputMode": "Input Mode",
       "openMic": "Open Mic",
@@ -957,7 +962,9 @@
     "editRoles": "Edit Roles",
     "changeNickname": "Change Nickname",
     "transferOwnership": "Transfer Ownership",
-    "callVolume": "Call Volume"
+    "callVolume": "Call Volume",
+    "watchLive": "Watch live",
+    "stopWatchingLive": "Hide live"
   },
   "emojiModal": {
     "title": "Emoji",
@@ -1115,6 +1122,15 @@
       "muted": "Muted",
       "deafened": "Deafened",
       "fullscreen": "Fullscreen",
+      "watchLive": "Watch",
+      "stopWatchingLive": "Hide this live",
+      "hiddenLives": "Hidden lives",
+      "theaterMode": "Theater mode",
+      "noLiveSelected": "No live selected",
+      "noLiveSelectedHint": "Choose below who you want to watch",
+      "resizeLive": "Drag to resize the live",
+      "hidePreview": "Hide live preview",
+      "showPreview": "Show live preview",
       "webcamModal": {
         "title": "Webcam Share",
         "error": "Failed to share camera",
@@ -1164,6 +1180,11 @@
   "informationDrawer": {
     "info": "Info",
     "files": "Files",
+    "tabs": {
+      "info": "Info",
+      "files": "Files",
+      "search": "Search"
+    },
     "searchBarPlaceholder": "Search {{username}}",
     "searchBarChannelPlaceholder": "Search in {{channelName}}",
     "sortLatest": "Latest",
@@ -1384,7 +1405,9 @@
   },
   "serverDrawer": {
     "joinedThisSessionNotice": "You'll see all notifications from this server.",
-    "joinedThisSessionNoticeSetToMentionsOnly": "Set to mentions only"
+    "joinedThisSessionNoticeSetToMentionsOnly": "Set to mentions only",
+    "voiceChannels": "Voice Channels",
+    "textChannels": "Text Channels"
   },
   "datetime": {
     "lessThanAMinuteAgo": "a few seconds ago",

@@ -2,7 +2,11 @@ import styles from "./styles.module.css";
 
 import useStore from "@/chat-api/store/useStore";
 import { formatTimestamp } from "@/common/date";
-import { getStorageString, StorageKeys } from "@/common/localStorage";
+import {
+  getStorageString,
+  removeStorage,
+  StorageKeys
+} from "@/common/localStorage";
 import { useNavigate } from "solid-navigator";
 import { Match, Show, Switch } from "solid-js";
 import Button from "../ui/Button";
@@ -23,12 +27,23 @@ export const ConnectionErrorModal = (props: {
   const navigate = useNavigate();
   const err = () => account.authenticationError()!;
 
+  const isDeadSession = () => {
+    const message = (err()?.message || "").toLowerCase();
+    return (
+      message.includes("invalid token") ||
+      message.includes("no token") ||
+      !getStorageString(StorageKeys.USER_TOKEN, null)
+    );
+  };
+
   const logoutClick = () => {
     if (props.suspensionPreview) return;
     logout();
   };
 
   const loginPage = () => {
+    removeStorage(StorageKeys.USER_TOKEN);
+    account.setSocketDetails({ authenticationError: null });
     navigate("/login");
     props.close();
   };
@@ -38,14 +53,21 @@ export const ConnectionErrorModal = (props: {
   const ActionButtons = (
     <FlexRow style={{ "justify-content": "flex-end", flex: 1, margin: "5px" }}>
       <Button onClick={props.close} label={t("connectionErrorModal.ok")} />
-      <Show when={hasToken()}>
+      <Show when={isDeadSession()}>
+        <Button
+          onClick={loginPage}
+          label={t("header.loginButton")}
+          primary
+        />
+      </Show>
+      <Show when={!isDeadSession() && hasToken()}>
         <Button
           onClick={logoutClick}
           label={t("header.logoutButton")}
           color="var(--alert-color)"
         />
       </Show>
-      <Show when={!hasToken()}>
+      <Show when={!isDeadSession() && !hasToken()}>
         <Button onClick={() => loginPage()} label={t("header.loginButton")} />
       </Show>
     </FlexRow>

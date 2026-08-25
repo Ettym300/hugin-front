@@ -19,11 +19,16 @@ import { downKeys, useGlobalKey } from "@/common/GlobalKey";
 import { arrayEquals } from "@/common/arrayEquals";
 import { LazySimplePeer } from "@/components/LazySimplePeer";
 import { log } from "@/common/logger";
+import {
+  wrapMicWithNoiseSuppression,
+  getMicGainLinear
+} from "@/common/noiseSuppressor";
+import {
+  getVoiceMicConstraints,
+  resolveNoiseSuppressionMode
+} from "@/common/voiceAudioSettings";
 
-const createIceServers = () => [
-  ...(getStorageBoolean(StorageKeys.voiceUseTurnServers, true)
-    ? [getCachedCredentials()]
-    : []),
+const FALLBACK_ICE_SERVERS: RTCIceServer[] = [
   {
     urls: ["stun:stun.l.google.com:19302"]
   },
@@ -52,6 +57,39 @@ const createIceServers = () => [
   }
 ];
 
+function asIceServerList(value: unknown): RTCIceServer[] {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => asIceServerList(item));
+  }
+  if (typeof value === "object") {
+    const obj = value as Record<string, unknown>;
+    if (obj.iceServers) return asIceServerList(obj.iceServers);
+    if (obj.urls || obj.url) return [value as RTCIceServer];
+  }
+  return [];
+}
+
+const createIceServers = (): RTCIceServer[] => {
+  // Avoid [null, ...] when Cloudflare TURN credentials were never fetched (DEV).
+  const extra = getStorageBoolean(StorageKeys.voiceUseTurnServers, true)
+    ? asIceServerList(getCachedCredentials())
+    : [];
+  return [...extra, ...FALLBACK_ICE_SERVERS];
+};
+
+function playRemoteMedia(el: HTMLMediaElement) {
+  const tryPlay = () => {
+    void el.play().catch(() => {});
+  };
+  tryPlay();
+  const unlock = () => {
+    tryPlay();
+    document.removeEventListener("pointerdown", unlock);
+  };
+  document.addEventListener("pointerdown", unlock, { once: true });
+}
+
 type StreamWithTracks = {
   stream: MediaStream;
   tracks: MediaStreamTrack[];
@@ -61,6 +99,16 @@ type StreamWithTracks = {
 export const [cachedVolumes, setCachedVolumes] = createStore<
   Record<string, number>
 >({});
+// Live / screen-share audio volume (separate from mic call volume).
+export const [cachedLiveVolumes, setCachedLiveVolumes] = createStore<
+  Record<string, number>
+>({});
+// watchedLives[streamerUserId] = lives the local user chose to watch.
+const [watchedLives, setWatchedLives] = createStore<Record<string, boolean>>(
+  {}
+);
+// liveViewers[viewerUserId] = remotes currently watching our outbound live
+const [liveViewers, setLiveViewers] = createStore<Record<string, boolean>>({});
 export type ConnectionStatus = "CONNECTED" | "DISCONNECTED" | "CONNECTING";
 
 export type VoiceUser = RawVoice & {
@@ -87,8 +135,10 @@ interface CurrentVoiceUser {
   channelId: string;
   audioStream: MediaStream | null;
   videoStream: MediaStream | null;
+  originalAudioStream?: MediaStream | null;
   vadInstance?: ReturnType<typeof vad>;
   vadAudioStream?: MediaStream | null;
+  micCleanup?: () => void;
 }
 const [currentVoiceUser, setCurrentVoiceUser] = createSignal<
   CurrentVoiceUser | undefined
@@ -182,6 +232,7 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
     });
   }
   if (!channelId) {
+    current?.micCleanup?.();
     setCurrentVoiceUser(undefined);
     setDeafened("wasMicEnabled", false);
 
@@ -191,6 +242,8 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
     current?.videoStream?.getTracks().forEach((track) => {
       track.stop();
     });
+    setWatchedLives(reconcile({}));
+    setLiveViewers(reconcile({}));
 
     return;
   }
@@ -213,14 +266,17 @@ const activeRemoteStream = (userId: string, kind: "audio" | "video") => {
   if (!voiceUser) return;
 
   if (kind === "audio") {
-    return voiceUser.streamWithTracks?.find((stream) =>
-      stream.tracks.every((track) => track.kind === kind)
-    )?.stream;
-  } else {
-    return voiceUser.streamWithTracks?.find((stream) =>
-      stream.tracks.find((track) => track.kind === kind)
-    )?.stream;
+    const streams = voiceUser.streamWithTracks || [];
+    // Prefer mic-only streams; fall back to any stream that still has audio
+    // (e.g. screen share with system audio mixed in).
+    return (
+      streams.find((s) => s.tracks.every((t) => t.kind === "audio"))?.stream ||
+      streams.find((s) => s.tracks.some((t) => t.kind === "audio"))?.stream
+    );
   }
+  return voiceUser.streamWithTracks?.find((stream) =>
+    stream.tracks.find((track) => track.kind === kind)
+  )?.stream;
 };
 
 const removeAllPeers = (channelIdToRemove?: string) => {
@@ -256,6 +312,8 @@ const removeVoiceUser = (channelId: string, userId: string) => {
     voiceUser.peer?.destroy();
     voiceUser.audio?.remove();
     setVoiceUsers(channelId, userId, undefined);
+    setLiveViewers(userId, false);
+    setWatchedLives(userId, false);
   });
 };
 
@@ -314,6 +372,42 @@ const updateConnectionStatus = (
   }
 };
 
+type LiveWatchMessage = { t: "liveWatch"; watch: boolean };
+
+const sendLiveWatchMessage = (
+  peer: SimplePeer.Instance | undefined,
+  watch: boolean
+) => {
+  if (!peer) return;
+  const payload: LiveWatchMessage = { t: "liveWatch", watch };
+  try {
+    peer.send(JSON.stringify(payload));
+  } catch (err) {
+    log("RTC", "Failed to send live watch state", err);
+  }
+};
+
+const handlePeerData = (voiceUser: VoiceUser, data: unknown) => {
+  let parsed: Partial<LiveWatchMessage>;
+  try {
+    const text =
+      typeof data === "string"
+        ? data
+        : new TextDecoder().decode(data as ArrayBufferView);
+    parsed = JSON.parse(text);
+  } catch {
+    return;
+  }
+  if (parsed?.t !== "liveWatch") return;
+
+  setLiveViewers(voiceUser.userId, !!parsed.watch);
+  log(
+    "RTC",
+    voiceUser.user().username,
+    parsed.watch ? "started watching our live" : "stopped watching our live"
+  );
+};
+
 const createPeer = (voiceUser: VoiceUser, signal?: SimplePeer.SignalData) => {
   if (!LazySimplePeer) {
     console.log("No LazySimplePeer");
@@ -344,9 +438,12 @@ const createPeer = (voiceUser: VoiceUser, signal?: SimplePeer.SignalData) => {
 
   setVoiceUsers(voiceUser.channelId, voiceUser.userId, "peer", peer);
 
+  peer.on("data", (data) => handlePeerData(voiceUser, data));
+
   peer.on("connect", () => {
     log("RTC", "Connected to", voiceUser.user().username + "!");
     updateConnectionStatus(voiceUser, "CONNECTED");
+    sendLiveWatchMessage(peer, !!watchedLives[voiceUser.userId]);
   });
   peer.on("end", () => {
     log("RTC", "Disconnected from", voiceUser.user().username + ".");
@@ -410,6 +507,9 @@ const createPeer = (voiceUser: VoiceUser, signal?: SimplePeer.SignalData) => {
     };
 
     pushVoiceUserTrack(voiceUser, track, stream);
+    if (track.kind === "video") {
+      applyIncomingVideoWatch(userId, track);
+    }
 
     const newVoiceUser = getVoiceUser(channelId, userId);
 
@@ -433,7 +533,7 @@ const createPeer = (voiceUser: VoiceUser, signal?: SimplePeer.SignalData) => {
       setVoiceUsers(channelId, userId, "vadInstance", vadInstance);
 
       audio.srcObject = activeAudio || null;
-      audio.play();
+      playRemoteMedia(audio);
       if (!audio.srcObject) {
         setVoiceUsers(channelId, userId, "audio", undefined);
       }
@@ -459,10 +559,38 @@ function createVadInstance(
   const current = currentVoiceUser();
   if (!current) return;
   const audioContext = new AudioContext();
+  // Browsers start AudioContext suspended until a user gesture; without resume
+  // VOICE_ACTIVITY never opens the outbound mic track.
+  void audioContext.resume();
+
+  let stopTimer: number | undefined;
+  const clearStopTimer = () => {
+    if (stopTimer) {
+      window.clearTimeout(stopTimer);
+      stopTimer = undefined;
+    }
+  };
+
+  const setTalking = (talking: boolean) => {
+    setVoiceUsers(current.channelId, userId || account.user()?.id!, {
+      voiceActivity: talking
+    });
+    if (originalStreamTrack) {
+      originalStreamTrack.enabled = talking;
+    }
+  };
+
+  // Local gate was 0.15 (too high for many mics) → unmuted but silent to peers.
   const vadInstance = vad(audioContext, vadStream, {
+    fftSize: 1024,
+    smoothingTimeConstant: 0.4,
+    minCaptureFreq: 80,
+    maxCaptureFreq: 4000,
     ...(!userId
       ? {
-          minNoiseLevel: 0.15,
+          minNoiseLevel: 0.035,
+          maxNoiseLevel: 0.7,
+          avgNoiseMultiplier: 1,
           noiseCaptureDuration: 0
         }
       : {
@@ -473,22 +601,25 @@ function createVadInstance(
         }),
 
     onVoiceStart: function () {
-      setVoiceUsers(current.channelId, userId || account.user()?.id!, {
-        voiceActivity: true
-      });
-      if (originalStreamTrack) {
-        originalStreamTrack.enabled = true;
-      }
+      clearStopTimer();
+      setTalking(true);
     },
     onVoiceStop: function () {
-      setVoiceUsers(current.channelId, userId || account.user()?.id!, {
-        voiceActivity: false
-      });
-      if (originalStreamTrack) {
-        originalStreamTrack.enabled = false;
-      }
+      clearStopTimer();
+      // Keep the mic open between words so speech is not clipped.
+      stopTimer = window.setTimeout(() => {
+        setTalking(false);
+        stopTimer = undefined;
+      }, userId ? 180 : 550);
     }
   });
+
+  const destroy = vadInstance.destroy.bind(vadInstance);
+  vadInstance.destroy = () => {
+    clearStopTimer();
+    destroy();
+    void audioContext.close();
+  };
 
   return vadInstance;
 }
@@ -542,7 +673,15 @@ const disableMic = () => {
       track.stop();
     });
     removeStream(current.audioStream);
-    setCurrentVoiceUser({ ...current, audioStream: null });
+    current.micCleanup?.();
+    setCurrentVoiceUser({
+      ...current,
+      audioStream: null,
+      originalAudioStream: null,
+      vadInstance: undefined,
+      vadAudioStream: null,
+      micCleanup: undefined
+    });
     setVoiceUsers(current.channelId, userId, {
       voiceActivity: false
     });
@@ -551,19 +690,21 @@ const disableMic = () => {
   }
 };
 
-const getUserMic = (shouldLog = true) => {
-  const deviceId = getStorageString(StorageKeys.inputDeviceId, undefined);
-  const constraints = getStorageObject(StorageKeys.voiceMicConstraints, {
-    echo: true,
-    noise: true,
-    gain: true
-  });
+const getStoredMicConstraints = (): MediaTrackConstraints => {
+  const constraints = getVoiceMicConstraints();
+  const noiseMode = resolveNoiseSuppressionMode(constraints);
 
-  const audioConstraints: MediaTrackConstraints = {
+  return {
     echoCancellation: constraints.echo,
-    noiseSuppression: constraints.noise,
+    // Browser NS only in "browser" mode — enhanced uses RNNoise instead.
+    noiseSuppression: noiseMode === "browser",
     autoGainControl: constraints.gain
   };
+};
+
+const getUserMic = (shouldLog = true) => {
+  const deviceId = getStorageString(StorageKeys.inputDeviceId, undefined);
+  const audioConstraints = getStoredMicConstraints();
 
   const rtcLog = (...args: unknown[]) => {
     if (shouldLog) {
@@ -578,20 +719,23 @@ const getUserMic = (shouldLog = true) => {
       video: false
     });
   }
+  const parsedDeviceId = JSON.parse(deviceId);
   return navigator.mediaDevices
     .getUserMedia({
-      audio: { deviceId: { exact: JSON.parse(deviceId) } },
+      audio: {
+        ...audioConstraints,
+        deviceId: { exact: parsedDeviceId }
+      },
       video: false
     })
     .then((stream) => {
-      rtcLog("Using Microphone with deviceId", JSON.parse(deviceId));
+      rtcLog("Using Microphone with deviceId", parsedDeviceId);
       return stream;
     })
     .catch(() => {
       rtcLog(
-        "RTC",
         "Failed to get microphone with deviceId",
-        JSON.parse(deviceId),
+        parsedDeviceId,
         "Falling back to default microphone"
       );
       return navigator.mediaDevices.getUserMedia({
@@ -608,7 +752,11 @@ const enableMic = async () => {
   if (current.audioStream) {
     return;
   }
-  const stream = await getUserMic();
+  const rawStream = await getUserMic();
+  const noiseMode = resolveNoiseSuppressionMode(getVoiceMicConstraints());
+  const wrapped = await wrapMicWithNoiseSuppression(rawStream, noiseMode);
+  wrapped.setGain(getMicGainLinear());
+  const stream = wrapped.stream;
 
   let vadStream: MediaStream | undefined;
   let vadInstance: ReturnType<typeof vad> | undefined;
@@ -619,13 +767,19 @@ const enableMic = async () => {
     });
   }
 
+  if (voiceMode() === "VOICE_ACTIVITY") {
+    // Detect on the real mic. Cloning the processed dest stream is silent in Chrome.
+    vadStream = wrapped.originalStream.clone();
+  }
+
   if (voiceMode() !== "OPEN") {
     stream.getAudioTracks()[0]!.enabled = false;
   }
 
   if (voiceMode() === "VOICE_ACTIVITY") {
-    vadStream = await getUserMic(false);
     vadInstance = createVadInstance(vadStream, stream);
+  } else if (voiceMode() === "OPEN") {
+    vadInstance = createVadInstance(stream);
   }
 
   addStreamToPeers(stream);
@@ -633,9 +787,18 @@ const enableMic = async () => {
   setCurrentVoiceUser({
     ...current,
     audioStream: stream,
+    originalAudioStream: wrapped.originalStream,
     vadInstance,
-    vadAudioStream: vadStream
+    vadAudioStream: vadStream,
+    micCleanup: wrapped.dispose
   });
+};
+
+const restartMic = async () => {
+  const current = currentVoiceUser();
+  if (!current?.audioStream) return;
+  disableMic();
+  await enableMic();
 };
 
 const toggleMic = async () => {
@@ -740,6 +903,55 @@ const micEnabled = (userId: string) => {
   return activeRemoteStream(userId, "audio");
 };
 
+const remoteVideoTracks = (userId: string) => {
+  const current = currentVoiceUser();
+  if (!current) return [];
+  const voiceUser = getVoiceUser(current.channelId, userId);
+  const tracks: MediaStreamTrack[] = [];
+  voiceUser?.streamWithTracks?.forEach((entry) => {
+    entry.tracks.forEach((track) => {
+      if (track.kind === "video") tracks.push(track);
+    });
+  });
+  return tracks;
+};
+
+const applyLiveWatch = (userId: string, watch: boolean) => {
+  remoteVideoTracks(userId).forEach((track) => {
+    track.enabled = watch;
+  });
+};
+
+const applyIncomingVideoWatch = (
+  userId: string,
+  track: MediaStreamTrack
+) => {
+  if (userId === useAccount().user()?.id) {
+    track.enabled = true;
+    return;
+  }
+  track.enabled = !!watchedLives[userId];
+};
+
+const isLiveWatched = (userId: string) => {
+  if (useAccount().user()?.id === userId) return true;
+  return !!watchedLives[userId];
+};
+
+const setLiveWatched = (userId: string, watch: boolean) => {
+  if (useAccount().user()?.id === userId) return;
+  setWatchedLives(userId, watch);
+  applyLiveWatch(userId, watch);
+
+  const current = currentVoiceUser();
+  if (!current) return;
+  sendLiveWatchMessage(getVoiceUser(current.channelId, userId)?.peer, watch);
+};
+
+const toggleLiveWatched = (userId: string) => {
+  setLiveWatched(userId, !isLiveWatched(userId));
+};
+
 const videoEnabled = (userId: string) => {
   const account = useAccount();
   if (account.user()?.id === userId) {
@@ -762,6 +974,7 @@ export default function useVoiceUsers() {
     activeRemoteStream,
     videoEnabled,
     toggleMic,
+    restartMic,
     setVideoStream,
     resetAll,
 
@@ -769,6 +982,9 @@ export default function useVoiceUsers() {
 
     micEnabled,
     toggleDeafen,
-    deafened
+    deafened,
+    isLiveWatched,
+    setLiveWatched,
+    toggleLiveWatched
   };
 }

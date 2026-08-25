@@ -6,8 +6,9 @@ body {
   margin: 0;
   color: var(--text-color);
   background: var(--background-color);
-  font-family: "Inter", sans-serif;
-  font-weight: 300;
+  font-family: "Inter", "gg sans", "Noto Sans", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-y: contain;
@@ -16,8 +17,14 @@ body {
 }
 
 :root {
-  --header-height: 50px;
+  --header-height: 52px;
   --bottom-pane-gap: 70px;
+  --app-gap: 8px;
+  --panel-radius: 18px;
+  /* O fallback cobre o primeiro paint, antes de o tema ser aplicado no
+     documento pelo JS. */
+  --panel-border: 1px solid var(--panel-border-color, rgba(255, 255, 255, 0.055));
+  --panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
 #root.mobileAgent {

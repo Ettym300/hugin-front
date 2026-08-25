@@ -58,8 +58,7 @@ export default defineConfig({
   },
   server: {
     host: true,
-    allowedHosts: ["local.nerimity.com"],
+    allowedHosts: ["local.nerimity.com", "localhost"],
     port: 3000
-    // open: true,
   }
 });

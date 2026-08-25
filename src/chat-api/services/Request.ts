@@ -52,6 +52,9 @@ export async function request<T>(opts: RequestOpts): Promise<T> {
     url.search = new URLSearchParams(params || opts.params || {}).toString();
 
     const response = await fetch(url, {
+      // Authenticated API must not use browser HTTP cache (Express ETag → 304
+      // is outside response.ok and breaks JSON parse / channel open).
+      cache: "no-store",
       signal: opts.abortSignal,
       method: opts.method,
       body:
@@ -71,11 +74,16 @@ export async function request<T>(opts: RequestOpts): Promise<T> {
     const text = await response.text();
 
     try {
-      if (!response.ok) {
+      // 304 is success-with-cache; fetch marks it as !ok.
+      const ok = response.ok || response.status === 304;
+      if (!ok) {
         const json = JSON.parse(text);
         return Promise.reject(json);
       }
       if (opts.notJSON) return text as T;
+      if (!text) {
+        return {} as T;
+      }
       return JSON.parse(text);
     } catch {
       const code = response.status;

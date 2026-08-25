@@ -62,6 +62,15 @@ export const onDisconnect = (
 
 export const onAuthenticateError = (error: { message: string; data: any }) => {
   const account = useAccount();
+  // Stale sessions (Redis flush / restarted API) leave a dead token in
+  // localStorage; Login then redirects to /app and loops on Invalid token.
+  const message = (error?.message || "").toLowerCase();
+  if (
+    message.includes("invalid token") ||
+    message.includes("no token provided")
+  ) {
+    localStorage.removeItem(StorageKeys.USER_TOKEN);
+  }
   account.setSocketDetails({
     socketId: null,
     socketConnected: false,

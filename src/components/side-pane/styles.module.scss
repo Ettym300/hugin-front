@@ -4,13 +4,14 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: 50px;
-  min-width: 40px;
-  max-width: 65px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  margin-left: 3px;
-  gap: 5px;
+  width: 72px;
+  min-width: 48px;
+  max-width: 72px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-left: 0;
+  background: transparent;
+  gap: 6px;
 }
 
 :global .electron-custom-titlebar {
@@ -58,15 +59,22 @@ body .customStatusInput {
     overflow: hidden;
     width: 42px;
     height: 42px;
-    border-radius: 50%;
+    border-radius: 16px;
     color: white;
-    background-color: rgba(53, 53, 53, 0.6);
+    background-color: rgba(255, 255, 255, 0.06);
     transition:
       opacity 0.2s,
-      background-color 0.2s;
-    corner-shape: squircle;
+      background-color 0.2s,
+      border-radius 0.2s;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
     &.selected {
       background-color: var(--primary-color);
+      border-radius: 14px;
       &:hover {
         opacity: 1;
       }

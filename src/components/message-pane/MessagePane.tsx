@@ -223,7 +223,8 @@ function MessagePane() {
 
   const member = () =>
     serverMembers.get(channel()?.serverId!, account.user()?.id!);
-  const isEmailNotConfirmed = () => !account.user()?.emailConfirmed;
+  const isEmailNotConfirmed = () =>
+    !env.DEV_MODE && !account.user()?.emailConfirmed;
 
   const muted = () =>
     member()?.muteExpireAt && new Date(member()?.muteExpireAt!) > new Date();

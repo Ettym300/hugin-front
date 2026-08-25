@@ -28,7 +28,11 @@ import RouterEndpoints from "@/common/RouterEndpoints";
 import { CHANNEL_PERMISSIONS, ROLE_PERMISSIONS } from "@/chat-api/Bitwise";
 import { fetchPinnedMessages } from "@/chat-api/services/MessageService";
 import { t } from "@nerimity/i18lite";
-import { VoiceHeader } from "./voice-header/VoiceHeader";
+import {
+  VoiceHeader,
+  setTheaterMode,
+  theaterMode
+} from "./voice-header/VoiceHeader";
 
 export default function MainPaneHeader() {
   const {
@@ -119,6 +123,14 @@ export default function MainPaneHeader() {
     return isAdmin;
   };
 
+  const isStreamingHere = () => {
+    const channelId = header.details().channelId;
+    if (!channelId) return false;
+    return voiceUsers
+      .getVoiceUsersByChannelId(channelId)
+      .some((voiceUser) => voiceUsers.videoEnabled(voiceUser.userId));
+  };
+
   const notificationCount = createMemo(() => {
     const friendRequestCount = friends
       .array()
@@ -185,6 +197,17 @@ export default function MainPaneHeader() {
           )}
         </div>
         <div class={styles.rightIcons}>
+          <Show when={isStreamingHere()}>
+            <Button
+              type="hover_border"
+              iconSize={24}
+              margin={3}
+              iconName={theaterMode() ? "fullscreen_exit" : "fullscreen"}
+              color={theaterMode() ? "var(--primary-color)" : undefined}
+              hoverText={t("mainPaneHeader.voice.theaterMode")}
+              onClick={() => setTheaterMode(!theaterMode())}
+            />
+          </Show>
           <Show when={canCall()}>
             <Button
               type="hover_border"

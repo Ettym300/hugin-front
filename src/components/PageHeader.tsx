@@ -144,6 +144,15 @@ export default function PageHeader(props: { hideAccountInfo?: boolean }) {
         }, 5000);
         return "retrying";
       }
+      // Dead token — don't keep bouncing Login → /app → Invalid token.
+      const message = String(err?.message || "").toLowerCase();
+      if (
+        message.includes("invalid token") ||
+        err?.code === 401 ||
+        err?.status === 401
+      ) {
+        localStorage.removeItem(StorageKeys.USER_TOKEN);
+      }
     });
     if (details === "retrying") {
       return;

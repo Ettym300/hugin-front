@@ -2,6 +2,12 @@
   display: flex;
   overflow: hidden;
   flex: 1;
+  padding: var(--app-gap);
+  background: var(--background-color);
+}
+
+.drawerLayout.mobile {
+  padding: 0;
 }
 
 .opacityContent {
@@ -17,12 +23,16 @@
 .container {
   display: flex;
   flex: 1;
+  gap: var(--app-gap);
 }
 
 body .mobile {
+  padding: 0;
   .content {
     margin: 0;
     border-radius: 0;
+    border: none;
+    box-shadow: none;
   }
 }
 
@@ -30,25 +40,22 @@ body .mobile {
   display: flex;
   position: relative;
   overflow: hidden;
-
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
+  border: var(--panel-border);
+  border-radius: var(--panel-radius);
+  background: var(--pane-color);
+  box-shadow: var(--panel-shadow);
 
   &.hasLeftDrawer {
     margin-left: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
   }
-
   &.hasRightDrawer {
     margin-right: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
   }
 }
 
 .sideBar {
-  padding-right: 4px;
+  padding-right: 0;
+  background: transparent;
   &.hasLeftDrawer {
     padding-right: 0;
   }
@@ -56,44 +63,34 @@ body .mobile {
 .leftDrawer {
   display: flex;
   flex-direction: column;
-  background: var(--side-pane-color);
-  margin-right: 0;
-  margin-left: 0;
-  border-radius: 8px;
-
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
-
-  width: 100%;
   overflow: hidden;
   position: relative;
+  width: 100%;
+  margin-right: 0;
+  margin-left: 0;
+  border: var(--panel-border);
+  border-radius: var(--panel-radius);
+  background: var(--side-pane-color);
+  box-shadow: var(--panel-shadow);
 }
 
 .rightPane {
   display: flex;
   flex-direction: column;
-  background: var(--side-pane-color);
-  width: 100%;
-  margin-left: 0;
-
   overflow: hidden;
   position: relative;
+  width: 100%;
+  margin-left: 0;
+  border: var(--panel-border);
+  border-radius: var(--panel-radius);
+  background: var(--side-pane-color);
+  box-shadow: var(--panel-shadow);
 }
 
-.mobile .leftDrawer {
-  border-radius: 8px;
+.mobile .leftDrawer,
+.mobile .rightPane,
+.mobile .content {
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
 }
-.mobile .rightPane {
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-}
-
-// .mobile .leftDrawer {
-//   border-radius: 0;
-//   margin: 0;
-// }
-
-// .mobile .rightPane {
-//   margin: 0;
-//   border-radius: 0;
-// }

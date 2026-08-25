@@ -122,9 +122,23 @@ const MemberItem = (props: {
 
   const font = createMemo(() => getFont(user().profile?.font || 0));
 
+  const hasBanner = () => !!user().banner;
+
+  const bannerBackgroundUrl = createMemo(() => {
+    const url = generateUrl(user(), "banner");
+    if (!url) return null;
+    try {
+      const parsed = new URL(url);
+      parsed.searchParams.set("size", "400");
+      return parsed.href;
+    } catch {
+      return url;
+    }
+  });
+
   return (
     <div
-      style={props.style}
+      style={{ ...props.style, height: "100%" }}
       onMouseEnter={() => {
         userDetailsPreloader.preload(user().id);
         setHovering(true);
@@ -140,9 +154,22 @@ const MemberItem = (props: {
       <div
         onClick={onClick}
         ref={elementRef}
-        class={cn(styles.memberItem, "trigger-profile-flyout")}
+        class={cn(
+          styles.memberItem,
+          hasBanner() && styles.memberItemWithBanner,
+          "trigger-profile-flyout"
+        )}
         onContextMenu={onContextMenu}
       >
+        <Show when={hasBanner()}>
+          <div
+            class={styles.memberBannerBg}
+            style={{
+              "background-image": `url("${bannerBackgroundUrl()}")`
+            }}
+          />
+          <div class={styles.memberBannerOverlay} />
+        </Show>
         <Avatar
           resize={96}
           animate={hovering() || !!isProfileFlyoutOpened()}
@@ -187,10 +214,14 @@ const MemberItem = (props: {
             anchor="left"
           >
             <Show when={isCreator()}>
-              <img src="https://nerimity.com/twemojis/1f451.svg" />
+              <img
+                src={`${env.EMOJI_URL || "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/"}1f451.svg`}
+              />
             </Show>
             <Show when={!isCreator()}>
-              <img src="https://nerimity.com/twemojis/1f6e1.svg" />
+              <img
+                src={`${env.EMOJI_URL || "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/"}1f6e1.svg`}
+              />
             </Show>
           </Tooltip>
         </Show>
@@ -201,71 +232,41 @@ const MemberItem = (props: {
 
 type Page = "info" | "attachments" | "search";
 
-const selectedHeaderButtonStyle = css`
-  position: relative;
-  pointer-events: none;
-
-  &:focus {
-    && {
-      background-color: transparent;
-    }
-  }
-
-  border-color: transparent;
-  &:before {
-    position: absolute;
-    content: "";
-    inset: 0;
-    opacity: 0.2;
-    background-color: var(--primary-color);
-    border-radius: 8px;
-  }
-`;
+const drawerTabs: { id: Page; icon: string; labelKey: string }[] = [
+  { id: "info", icon: "info", labelKey: "informationDrawer.tabs.info" },
+  {
+    id: "attachments",
+    icon: "attach_file",
+    labelKey: "informationDrawer.tabs.files"
+  },
+  { id: "search", icon: "search", labelKey: "informationDrawer.tabs.search" }
+];
 
 const Header = (props: {
   onChange: (Page: Page) => void;
   selectedPage: Page;
 }) => {
   return (
-    <DrawerHeader
-      class={css`
-        justify-content: center;
-        gap: 4px;
-      `}
-    >
-      <Button
-        class={classNames(
-          props.selectedPage === "info" && selectedHeaderButtonStyle
-        )}
-        iconName="info"
-        label={t("informationDrawer.info")}
-        type="hover_border"
-        onClick={() => props.onChange("info")}
-        margin={0}
-        iconSize={16}
-      />
-      <Button
-        class={classNames(
-          props.selectedPage === "attachments" && selectedHeaderButtonStyle
-        )}
-        iconName="attach_file"
-        type="hover_border"
-        label={t("informationDrawer.files")}
-        onClick={() => props.onChange("attachments")}
-        margin={0}
-        iconSize={16}
-      />
-      <Button
-        class={classNames(
-          props.selectedPage === "search" && selectedHeaderButtonStyle
-        )}
-        iconName="search"
-        label={t("general.searchPlaceholder")}
-        type="hover_border"
-        onClick={() => props.onChange("search")}
-        margin={0}
-        iconSize={16}
-      />
+    <DrawerHeader class={styles.drawerTabsHeader}>
+      <div class={styles.drawerTabs} role="tablist">
+        <For each={drawerTabs}>
+          {(tab) => (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={props.selectedPage === tab.id}
+              class={cn(
+                styles.drawerTab,
+                props.selectedPage === tab.id && styles.drawerTabSelected
+              )}
+              onClick={() => props.onChange(tab.id)}
+            >
+              <Icon name={tab.icon} size={15} />
+              <span class={styles.drawerTabLabel}>{t(tab.labelKey)}</span>
+            </button>
+          )}
+        </For>
+      </div>
     </DrawerHeader>
   );
 };
@@ -641,8 +642,20 @@ function RoleItem(props: {
   members: ServerMember[];
   roleIcon?: string;
 }) {
+  const users = useUsers();
   const [expanded, setExpanded] = createSignal(true);
   const [hovered, setHovered] = createSignal(false);
+
+  const memberListHeight = (member: ServerMember) =>
+    users.get(member.userId)?.banner ? 52 : 42;
+
+  const virtualListItems = createMemo(() =>
+    props.members.map((m) => ({
+      id: m.userId,
+      height: memberListHeight(m),
+      member: m
+    }))
+  );
 
   return (
     <div
@@ -676,10 +689,10 @@ function RoleItem(props: {
           scrollContainer={
             document.querySelector("._rightPane_177w9_66 .go1493520435")!
           }
-          items={props.members.map((m) => ({
-            id: m.userId,
-            height: 50,
-            element: (style) => <MemberItem member={m} style={style} />
+          items={virtualListItems().map(({ id, height, member }) => ({
+            id,
+            height,
+            element: (style) => <MemberItem member={member} style={style} />
           }))}
         />
       </Show>

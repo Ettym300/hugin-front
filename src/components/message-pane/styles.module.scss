@@ -38,8 +38,8 @@
   --attachment-image-border: 1px solid rgba(255, 255, 255, 0.24);
   --attachment-image-bg: rgba(0, 0, 0, 0.6);
 
-  --text-area-border: solid 1px rgba(255, 255, 255, 0.2);
-  --text-area-border-bottom: solid 1px rgba(255, 255, 255, 0.3);
+  --text-area-border: solid 1px rgba(255, 255, 255, 0.08);
+  --text-area-border-bottom: solid 1px rgba(255, 255, 255, 0.08);
   --text-area-border-bottom-focus: solid 1px var(--primary-color);
   --text-area-bg: var(--chat-input-background-color);
   --text-area-advanced-bg: var(--chat-markup-bar-background-color);
@@ -428,7 +428,7 @@ body .advancedMarkupOptions {
   flex: 1;
   border: var(--text-area-border);
   border-bottom: var(--text-area-border-bottom);
-  border-radius: 8px;
+  border-radius: 14px;
   background: var(--text-area-bg);
   cursor: text;
   transition: 0.2s;
@@ -459,7 +459,7 @@ body .advancedMarkupOptions {
   color: var(--text-area-fg);
   background: transparent;
   resize: none;
-  font-size: 12px;
+  font-size: 14px;
 
   &:placeholder-shown {
     text-overflow: ellipsis;
