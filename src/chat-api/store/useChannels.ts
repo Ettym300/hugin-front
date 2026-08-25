@@ -23,13 +23,15 @@ import useMention from "./useMention";
 import socketClient from "../socketClient";
 import {
   postGenerateCredential,
-  postJoinVoice
+  postJoinVoice,
+  postLeaveVoice
 } from "../services/VoiceService";
 import useVoiceUsers from "./useVoiceUsers";
 import { useMatch, useNavigate } from "solid-navigator";
 import RouterEndpoints from "@/common/RouterEndpoints";
 import useServers from "./useServers";
 import { loadSimplePeer } from "@/components/LazySimplePeer";
+import { getCustomSound, playSound } from "@/common/Sound";
 import { getStorageBoolean, StorageKeys } from "@/common/localStorage";
 import { isExperimentEnabled } from "@/common/experiments";
 import { reactNativeAPI } from "@/common/ReactNative";
@@ -230,30 +232,34 @@ async function joinCall(this: Channel, reconnect = false) {
     reactNativeAPI()?.joinCall(this.id);
     return;
   }
-  const voice = useVoiceUsers();
-  const account = useAccount();
+  const { setCurrentChannelId } = useVoiceUsers();
   if (!env.LIVEKIT_ENABLED) {
     await loadSimplePeer();
-    if (!env.DEV_MODE && getStorageBoolean(StorageKeys.voiceUseTurnServers, true)) {
+    if (
+      !env.DEV_MODE &&
+      getStorageBoolean(StorageKeys.voiceUseTurnServers, true)
+    ) {
       await postGenerateCredential().catch(() => {});
     }
   }
   postJoinVoice(this.id, socketClient.id()!).then(() => {
     if (reconnect) return;
-    voice.setCurrentChannelId(this.id, reconnect);
-    const me = account.user()?.id;
-    if (me) {
-      voice.createVoiceUser({
-        channelId: this.id,
-        userId: me,
-        serverId: this.serverId
-      });
-    }
+    setCurrentChannelId(this.id, reconnect);
     this.setCallJoinedAt(Date.now());
   });
 }
 function leaveCall(this: Channel) {
-  useVoiceUsers().leaveCurrentCall(this.id);
+  const { setCurrentChannelId, removeVoiceUser } = useVoiceUsers();
+  const account = useAccount();
+  if (!account.isAuthenticated()) {
+    setCurrentChannelId(null);
+    removeVoiceUser(this.id, account.user()?.id as string);
+    return;
+  }
+  postLeaveVoice(this.id).then(() => {
+    playSound(getCustomSound("CALL_LEAVE"));
+    setCurrentChannelId(null);
+  });
 }
 function update(this: Channel, update: Partial<RawChannel>) {
   setChannels(this.id, update);

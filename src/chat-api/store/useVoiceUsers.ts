@@ -50,8 +50,9 @@ import {
   MAX_OUTPUT_GAIN_PERCENT,
   getOutputGainLinear
 } from "@/common/outputGain";
-import { postLeaveVoice, postLiveKitToken } from "../services/VoiceService";
-import { getCustomSound, playSound } from "@/common/Sound";
+import {
+  postLiveKitToken
+} from "../services/VoiceService";
 import { ConnectionState, Track } from "livekit-client";
 
 export function isLiveKitEnabled() {
@@ -258,31 +259,32 @@ createEffect(
   )
 );
 
-const sameUserId = (a?: string | number | null, b?: string | number | null) =>
-  a != null && b != null && String(a) === String(b);
-
 const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
   const current = currentVoiceUser();
   if (missingPeerTimer) {
     window.clearTimeout(missingPeerTimer);
     missingPeerTimer = undefined;
   }
+  if (current?.channelId) {
+    removeAllPeers(current?.channelId);
+    current.vadInstance?.destroy();
+    current.vadAudioStream?.getAudioTracks()[0]?.stop();
+    batch(() => {
+      getVoiceUsersByChannelId(current.channelId).forEach((voiceUser) => {
+        voiceUser.vadInstance?.destroy();
+        setVoiceUsers(current.channelId, voiceUser.userId, {
+          voiceActivity: false,
+          vadInstance: undefined
+        });
+      });
+    });
+  }
   if (!channelId) {
     enableMicGeneration++;
-    // Drop "in call" first so the list and resetAll cannot put us back.
+    void disconnectLiveKitRoom();
     setCurrentVoiceUser(undefined);
     setDeafened("wasMicEnabled", false);
     bumpVoiceList();
-
-    const me = useAccount().user()?.id;
-    if (me) removeUserFromAllChannels(me);
-
-    if (current?.channelId) {
-      removeAllPeers(current.channelId);
-      current.vadInstance?.destroy();
-      current.vadAudioStream?.getAudioTracks()[0]?.stop();
-    }
-    void disconnectLiveKitRoom();
 
     current?.micCleanup?.();
     current?.audioStream?.getTracks().forEach((track) => {
@@ -301,22 +303,8 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
 
     return;
   }
-  if (current?.channelId) {
-    removeAllPeers(current?.channelId);
-    current.vadInstance?.destroy();
-    current.vadAudioStream?.getAudioTracks()[0]?.stop();
-    batch(() => {
-      getVoiceUsersByChannelId(current.channelId).forEach((voiceUser) => {
-        voiceUser.vadInstance?.destroy();
-        setVoiceUsers(current.channelId, voiceUser.userId, {
-          voiceActivity: false,
-          vadInstance: undefined
-        });
-      });
-    });
-  }
   void preloadNoiseSuppressor();
-    if (!reconnect) {
+  if (!reconnect) {
     setCurrentVoiceUser({
       channelId,
       audioStream: null,
@@ -506,74 +494,28 @@ const removeAllPeers = (channelIdToRemove?: string) => {
 };
 
 const getVoiceUsersByChannelId = (id: string) => {
+  // Solid does not track Object.values(store) on nested deletes.
   voiceListVersion();
-  const current = currentVoiceUser();
-  const me = useAccount().user()?.id;
-  return Object.values(voiceUsers[id] || {}).filter((user): user is VoiceUser => {
-    if (!user || typeof user.user !== "function") return false;
-    // If we already left, never keep showing ourselves — even if the store is stale.
-    if (sameUserId(user.userId, me) && current?.channelId !== id) return false;
-    return true;
-  });
+  return Object.values(voiceUsers[id] || {}).filter(Boolean) as VoiceUser[];
 };
 
 const getVoiceUser = (channelId?: string, userId?: string) => {
   return voiceUsers[channelId!]?.[userId!];
 };
 
-const cleanupVoiceUserMedia = (voiceUser?: VoiceUser) => {
-  if (!voiceUser) return;
-  voiceUser.vadInstance?.destroy();
-  voiceUser.peer?.destroy();
-  voiceUser.audio?.remove();
-};
-
 const removeVoiceUser = (channelId: string, userId: string) => {
-  const voiceUser =
-    getVoiceUser(channelId, userId) ||
-    getVoiceUser(String(channelId), String(userId));
+  const voiceUser = getVoiceUser(channelId, userId);
+  if (!voiceUser) return;
   batch(() => {
+    voiceUser.vadInstance?.destroy();
+    voiceUser.peer?.destroy();
+    voiceUser.audio?.remove();
     setVoiceUsers(channelId, userId, undefined);
-    if (String(channelId) !== channelId || String(userId) !== userId) {
-      setVoiceUsers(String(channelId), String(userId), undefined);
-    }
     setLiveViewers(userId, false);
     setWatchedLives(userId, false);
     useUsers().get(userId)?.setVoiceChannelId(undefined);
-    useUsers().get(String(userId))?.setVoiceChannelId(undefined);
     bumpVoiceList();
   });
-  cleanupVoiceUserMedia(voiceUser);
-};
-
-const removeUserFromAllChannels = (userId: string) => {
-  const me = String(userId);
-  for (const channelId of Object.keys(voiceUsers)) {
-    const channel = voiceUsers[channelId];
-    if (!channel) continue;
-    for (const uid of Object.keys(channel)) {
-      const voiceUser = channel[uid];
-      if (String(uid) === me || sameUserId(voiceUser?.userId, userId)) {
-        removeVoiceUser(channelId, uid);
-      }
-    }
-  }
-  useUsers().get(userId)?.setVoiceChannelId(undefined);
-  useUsers().get(me)?.setVoiceChannelId(undefined);
-};
-
-const leaveCurrentCall = (channelId?: string) => {
-  const account = useAccount();
-  const current = currentVoiceUser();
-  const id = channelId || current?.channelId;
-
-  setCurrentChannelId(null);
-
-  if (!account.isAuthenticated() || !id) return;
-
-  postLeaveVoice(id)
-    .then(() => playSound(getCustomSound("CALL_LEAVE")))
-    .catch(() => {});
 };
 
 const createVoiceUser = (rawVoice: RawVoice, reconnecting = false) => {
@@ -1491,7 +1433,6 @@ export default function useVoiceUsers() {
     applyOutgoingLiveEncoding,
     resetAll,
     isLiveKitEnabled,
-    leaveCurrentCall,
 
     isLocalMicMuted: () => !currentVoiceUser()?.audioStream,
 

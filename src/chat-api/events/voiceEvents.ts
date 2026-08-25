@@ -20,16 +20,12 @@ export function onVoiceUserLeft(payload: {
   const { removeVoiceUser, setCurrentChannelId, currentUser } = useVoiceUsers();
   const { user } = useAccount();
 
-  const isSelf =
-    user()?.id != null && String(user()!.id) === String(payload.userId);
-
-  if (!isSelf && currentUser()?.channelId === payload.channelId) {
+  if (currentUser()?.channelId === payload.channelId) {
     playSound(getCustomSound("CALL_LEAVE"));
   }
 
-  if (isSelf) {
+  if (user()?.id === payload.userId) {
     setCurrentChannelId(null);
-    return;
   }
 
   removeVoiceUser(payload.channelId, payload.userId);
