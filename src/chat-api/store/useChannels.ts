@@ -36,6 +36,8 @@ import { getStorageBoolean, StorageKeys } from "@/common/localStorage";
 import { isExperimentEnabled } from "@/common/experiments";
 import { reactNativeAPI } from "@/common/ReactNative";
 import env from "@/common/env";
+import { toast } from "@/components/ui/custom-portal/CustomPortal";
+import { log } from "@/common/logger";
 
 export type Channel = Omit<RawChannel, "recipient"> & {
   updateLastSeen(this: Channel, timestamp?: number): void;
@@ -232,7 +234,16 @@ async function joinCall(this: Channel, reconnect = false) {
     reactNativeAPI()?.joinCall(this.id);
     return;
   }
-  const { setCurrentChannelId } = useVoiceUsers();
+  const voice = useVoiceUsers();
+  const account = useAccount();
+  const socketId = socketClient.id();
+  if (!socketId) {
+    toast(
+      "WebSocket desconectado. Aguarde um segundo ou recarregue a página.",
+      "Call"
+    );
+    return;
+  }
   if (!env.LIVEKIT_ENABLED) {
     await loadSimplePeer();
     if (
@@ -242,24 +253,42 @@ async function joinCall(this: Channel, reconnect = false) {
       await postGenerateCredential().catch(() => {});
     }
   }
-  postJoinVoice(this.id, socketClient.id()!).then(() => {
-    if (reconnect) return;
-    setCurrentChannelId(this.id, reconnect);
-    this.setCallJoinedAt(Date.now());
-  });
+  postJoinVoice(this.id, socketId)
+    .then(() => {
+      if (reconnect) return;
+      voice.setCurrentChannelId(this.id, reconnect);
+      const me = account.user()?.id;
+      // Don't rely only on voice:user_joined (API/WS are separate processes).
+      if (me) {
+        voice.createVoiceUser({
+          channelId: this.id,
+          userId: me,
+          serverId: this.serverId
+        });
+      }
+      this.setCallJoinedAt(Date.now());
+    })
+    .catch((err) => {
+      log("RTC", "join voice failed", err);
+      toast(err?.message || "Não foi possível entrar na call.", "Call");
+    });
 }
 function leaveCall(this: Channel) {
   const { setCurrentChannelId, removeVoiceUser } = useVoiceUsers();
   const account = useAccount();
-  if (!account.isAuthenticated()) {
-    setCurrentChannelId(null);
-    removeVoiceUser(this.id, account.user()?.id as string);
-    return;
-  }
-  postLeaveVoice(this.id).then(() => {
-    playSound(getCustomSound("CALL_LEAVE"));
-    setCurrentChannelId(null);
-  });
+  const userId = account.user()?.id as string;
+
+  // Clear local state first so rejoin is never blocked if HTTP/WS glitches.
+  if (userId) removeVoiceUser(this.id, userId);
+  setCurrentChannelId(null);
+
+  if (!account.isAuthenticated()) return;
+
+  postLeaveVoice(this.id)
+    .then(() => playSound(getCustomSound("CALL_LEAVE")))
+    .catch((err) => {
+      log("RTC", "leave voice failed", err);
+    });
 }
 function update(this: Channel, update: Partial<RawChannel>) {
   setChannels(this.id, update);
