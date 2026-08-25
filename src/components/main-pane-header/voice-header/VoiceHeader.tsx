@@ -832,7 +832,7 @@ function VoiceActions(props: {
   };
 
   const onCallEndClick = async () => {
-    channel()?.leaveCall();
+    voiceUsers.leaveCurrentCall(props.channelId);
   };
 
   const isInCall = () =>

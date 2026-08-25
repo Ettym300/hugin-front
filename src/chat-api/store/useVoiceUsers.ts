@@ -1,4 +1,4 @@
-import { createStore, reconcile } from "solid-js/store";
+import { createStore, produce, reconcile } from "solid-js/store";
 import { RawVoice } from "../RawData";
 import { batch, createEffect, createMemo, createSignal, on } from "solid-js";
 import { getCachedCredentials } from "../services/VoiceService";
@@ -50,7 +50,8 @@ import {
   MAX_OUTPUT_GAIN_PERCENT,
   getOutputGainLinear
 } from "@/common/outputGain";
-import { postLiveKitToken } from "../services/VoiceService";
+import { postLeaveVoice, postLiveKitToken } from "../services/VoiceService";
+import { getCustomSound, playSound } from "@/common/Sound";
 import { ConnectionState, Track } from "livekit-client";
 
 export function isLiveKitEnabled() {
@@ -157,6 +158,8 @@ type VoiceUsersMap = Record<string, ChannelUsersMap>;
 
 // voiceUsers[channelId][userId] = VoiceUser
 const [voiceUsers, setVoiceUsers] = createStore<VoiceUsersMap>({});
+/** Ignore stale voice:user_joined for ourselves after clicking Leave. */
+let ignoreSelfJoinUntil = 0;
 const [deafened, setDeafened] = createStore({
   enabled: false,
   wasMicEnabled: false
@@ -277,6 +280,8 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
   if (!channelId) {
     enableMicGeneration++;
     void disconnectLiveKitRoom();
+    const me = useAccount().user()?.id;
+    if (me) removeUserFromAllChannels(me);
     setCurrentVoiceUser(undefined);
     setDeafened("wasMicEnabled", false);
 
@@ -493,27 +498,77 @@ const getVoiceUsersByChannelId = (id: string) => {
 const getVoiceUser = (channelId?: string, userId?: string) => {
   return voiceUsers[channelId!]?.[userId!];
 };
+
+const cleanupVoiceUserMedia = (voiceUser?: VoiceUser) => {
+  if (!voiceUser) return;
+  voiceUser.vadInstance?.destroy();
+  voiceUser.peer?.destroy();
+  voiceUser.audio?.remove();
+};
+
 const removeVoiceUser = (channelId: string, userId: string) => {
   const voiceUser = getVoiceUser(channelId, userId);
-  if (!voiceUser) {
-    // Still clear the user flag if a stale leave arrives after optimistic remove.
-    useUsers().get(userId)?.setVoiceChannelId(undefined);
-    return;
-  }
+  cleanupVoiceUserMedia(voiceUser);
   batch(() => {
-    voiceUser?.vadInstance?.destroy();
-    voiceUser.peer?.destroy();
-    voiceUser.audio?.remove();
-    setVoiceUsers(channelId, userId, undefined);
+    setVoiceUsers(
+      produce((state) => {
+        const channel = state[channelId];
+        if (!channel) return;
+        delete channel[userId];
+        if (!Object.keys(channel).length) {
+          delete state[channelId];
+        }
+      })
+    );
     setLiveViewers(userId, false);
     setWatchedLives(userId, false);
     useUsers().get(userId)?.setVoiceChannelId(undefined);
   });
 };
 
+const removeUserFromAllChannels = (userId: string) => {
+  const channelIds = Object.keys(voiceUsers);
+  for (const channelId of channelIds) {
+    if (voiceUsers[channelId]?.[userId]) {
+      removeVoiceUser(channelId, userId);
+    }
+  }
+  useUsers().get(userId)?.setVoiceChannelId(undefined);
+};
+
+const leaveCurrentCall = (channelId?: string) => {
+  const account = useAccount();
+  const userId = account.user()?.id;
+  const current = currentVoiceUser();
+  const id = channelId || current?.channelId;
+  ignoreSelfJoinUntil = Date.now() + 15_000;
+
+  if (userId) removeUserFromAllChannels(userId);
+  setCurrentChannelId(null);
+
+  if (!account.isAuthenticated() || !id) return;
+
+  postLeaveVoice(id)
+    .then(() => playSound(getCustomSound("CALL_LEAVE")))
+    .catch(() => {});
+};
+
+const clearLeaveGuard = () => {
+  ignoreSelfJoinUntil = 0;
+};
+
 const createVoiceUser = (rawVoice: RawVoice, reconnecting = false) => {
   const account = useAccount();
   const users = useUsers();
+  const me = account.user()?.id;
+
+  if (
+    rawVoice.userId === me &&
+    !currentVoiceUser() &&
+    Date.now() < ignoreSelfJoinUntil
+  ) {
+    return;
+  }
 
   if (!voiceUsers[rawVoice.channelId]) {
     setVoiceUsers(rawVoice.channelId, {});
@@ -1428,6 +1483,8 @@ export default function useVoiceUsers() {
     applyOutgoingLiveEncoding,
     resetAll,
     isLiveKitEnabled,
+    leaveCurrentCall,
+    clearLeaveGuard,
 
     isLocalMicMuted: () => !currentVoiceUser()?.audioStream,
 

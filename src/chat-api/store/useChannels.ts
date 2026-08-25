@@ -23,15 +23,13 @@ import useMention from "./useMention";
 import socketClient from "../socketClient";
 import {
   postGenerateCredential,
-  postJoinVoice,
-  postLeaveVoice
+  postJoinVoice
 } from "../services/VoiceService";
 import useVoiceUsers from "./useVoiceUsers";
 import { useMatch, useNavigate } from "solid-navigator";
 import RouterEndpoints from "@/common/RouterEndpoints";
 import useServers from "./useServers";
 import { loadSimplePeer } from "@/components/LazySimplePeer";
-import { getCustomSound, playSound } from "@/common/Sound";
 import { getStorageBoolean, StorageKeys } from "@/common/localStorage";
 import { isExperimentEnabled } from "@/common/experiments";
 import { reactNativeAPI } from "@/common/ReactNative";
@@ -241,32 +239,13 @@ async function joinCall(this: Channel, reconnect = false) {
   }
   postJoinVoice(this.id, socketClient.id()!).then(() => {
     if (reconnect) return;
+    useVoiceUsers().clearLeaveGuard();
     setCurrentChannelId(this.id, reconnect);
     this.setCallJoinedAt(Date.now());
   });
 }
 function leaveCall(this: Channel) {
-  const { setCurrentChannelId, removeVoiceUser } = useVoiceUsers();
-  const account = useAccount();
-  const userId = account.user()?.id as string | undefined;
-  const channelId = this.id;
-
-  // Optimistic UI: leave locally immediately so the sidebar/header don't keep
-  // showing the current user until (or if) the WS leave event arrives.
-  if (userId) removeVoiceUser(channelId, userId);
-  setCurrentChannelId(null);
-
-  if (!account.isAuthenticated()) {
-    return;
-  }
-
-  postLeaveVoice(channelId)
-    .then(() => {
-      playSound(getCustomSound("CALL_LEAVE"));
-    })
-    .catch(() => {
-      // Local leave already applied; server sync can retry on next join.
-    });
+  useVoiceUsers().leaveCurrentCall(this.id);
 }
 function update(this: Channel, update: Partial<RawChannel>) {
   setChannels(this.id, update);
