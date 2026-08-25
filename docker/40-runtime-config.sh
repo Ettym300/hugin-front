@@ -27,10 +27,16 @@ window.__CONCORD_ENV__ = {
 EOF
 
 API_URL="${VITE_SERVER_URL%/}"
+# Strip scheme+host for Docker DNS re-resolve (nginx resolves bare hostnames at start).
+api_host_port() {
+  printf '%s' "$1" | sed -E 's#^https?://##'
+}
+API_HOSTPORT="$(api_host_port "$API_URL")"
 API_PROXY=""
 if [ -n "$API_URL" ]; then
   API_PROXY="  location /api/ {
-    proxy_pass ${API_URL}/api/;
+    set \$api_upstream http://${API_HOSTPORT};
+    proxy_pass \$api_upstream/api/;
     proxy_http_version 1.1;
     proxy_set_header Host \$proxy_host;
     proxy_set_header X-Real-IP \$remote_addr;
@@ -46,10 +52,12 @@ CDN_URL="${VITE_HUGIN_CDN%/}"
 # VITE_HUGIN_CDN so existing deployments behave exactly as before.
 CDN_UPSTREAM_URL="${CDN_UPSTREAM:-$CDN_URL}"
 CDN_UPSTREAM_URL="${CDN_UPSTREAM_URL%/}"
+CDN_HOSTPORT="$(api_host_port "$CDN_UPSTREAM_URL")"
 CDN_PROXY=""
 if [ -n "$CDN_UPSTREAM_URL" ]; then
   CDN_PROXY="  location ~ ^/(avatars|profile_banners|attachments|emojis|proxy)/ {
-    proxy_pass ${CDN_UPSTREAM_URL};
+    set \$cdn_upstream http://${CDN_HOSTPORT};
+    proxy_pass \$cdn_upstream;
     proxy_http_version 1.1;
     proxy_set_header Host \$proxy_host;
     proxy_set_header X-Real-IP \$remote_addr;
@@ -61,10 +69,12 @@ if [ -n "$CDN_UPSTREAM_URL" ]; then
 fi
 
 WS_URL="${VITE_WS_URL%/}"
+WS_HOSTPORT="$(api_host_port "$WS_URL")"
 WS_PROXY=""
 if [ -n "$WS_URL" ]; then
   WS_PROXY="  location /socket.io/ {
-    proxy_pass ${WS_URL}/socket.io/;
+    set \$ws_upstream http://${WS_HOSTPORT};
+    proxy_pass \$ws_upstream/socket.io/;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection \"upgrade\";
@@ -79,10 +89,12 @@ if [ -n "$WS_URL" ]; then
 fi
 
 LIVEKIT_URL="${LIVEKIT_UPSTREAM%/}"
+LIVEKIT_HOSTPORT="$(api_host_port "$LIVEKIT_URL")"
 LIVEKIT_PROXY=""
 if [ -n "$LIVEKIT_URL" ]; then
   LIVEKIT_PROXY="  location /livekit/ {
-    proxy_pass ${LIVEKIT_URL}/;
+    set \$livekit_upstream http://${LIVEKIT_HOSTPORT};
+    proxy_pass \$livekit_upstream/;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection \"upgrade\";
@@ -102,6 +114,10 @@ server {
   root /usr/share/nginx/html;
   index index.html;
   client_max_body_size 20M;
+
+  # Docker embedded DNS — re-resolve upstreams so deploys don't crash nginx
+  # when api/ws/cdn are briefly unavailable at start.
+  resolver 127.0.0.11 valid=10s ipv6=off;
 
   gzip on;
   gzip_types text/plain text/css application/javascript application/json image/svg+xml;

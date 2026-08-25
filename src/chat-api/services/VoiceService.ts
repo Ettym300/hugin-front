@@ -42,7 +42,8 @@ export const postLiveKitToken = async (channelId: string) => {
 
 const lastCredentials = {
   generatedAt: null as null | number,
-  result: null as null | any
+  result: null as null | any,
+  failedAt: null as null | number
 };
 
 export const getCachedCredentials = () => lastCredentials.result;
@@ -54,14 +55,24 @@ export const postGenerateCredential = async () => {
       return lastCredentials as { result: any };
     }
   }
-  const data = await request<{ result: any }>({
-    method: "POST",
-    url: env.SERVER_URL + "/api/voice/generate",
-    useToken: true
-  });
+  // Cloudflare TURN not configured → 403. Don't spam join with generate.
+  if (lastCredentials.failedAt && Date.now() - lastCredentials.failedAt < 60 * 60 * 1000) {
+    return lastCredentials as { result: any };
+  }
+  try {
+    const data = await request<{ result: any }>({
+      method: "POST",
+      url: env.SERVER_URL + "/api/voice/generate",
+      useToken: true
+    });
 
-  lastCredentials.generatedAt = Date.now();
-  lastCredentials.result = data.result;
+    lastCredentials.generatedAt = Date.now();
+    lastCredentials.failedAt = null;
+    lastCredentials.result = data.result;
 
-  return data;
+    return data;
+  } catch (err) {
+    lastCredentials.failedAt = Date.now();
+    throw err;
+  }
 };

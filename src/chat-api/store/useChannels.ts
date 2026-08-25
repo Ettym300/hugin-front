@@ -281,6 +281,7 @@ function leaveCall(this: Channel) {
   // Clear local state first so rejoin is never blocked if HTTP/WS glitches.
   if (userId) removeVoiceUser(this.id, userId);
   setCurrentChannelId(null);
+  this.setCallJoinedAt(undefined);
 
   if (!account.isAuthenticated()) return;
 
