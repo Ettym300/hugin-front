@@ -230,7 +230,8 @@ async function joinCall(this: Channel, reconnect = false) {
     reactNativeAPI()?.joinCall(this.id);
     return;
   }
-  const { setCurrentChannelId } = useVoiceUsers();
+  const voice = useVoiceUsers();
+  const account = useAccount();
   if (!env.LIVEKIT_ENABLED) {
     await loadSimplePeer();
     if (!env.DEV_MODE && getStorageBoolean(StorageKeys.voiceUseTurnServers, true)) {
@@ -239,8 +240,15 @@ async function joinCall(this: Channel, reconnect = false) {
   }
   postJoinVoice(this.id, socketClient.id()!).then(() => {
     if (reconnect) return;
-    useVoiceUsers().clearLeaveGuard();
-    setCurrentChannelId(this.id, reconnect);
+    voice.setCurrentChannelId(this.id, reconnect);
+    const me = account.user()?.id;
+    if (me) {
+      voice.createVoiceUser({
+        channelId: this.id,
+        userId: me,
+        serverId: this.serverId
+      });
+    }
     this.setCallJoinedAt(Date.now());
   });
 }

@@ -158,8 +158,6 @@ type VoiceUsersMap = Record<string, ChannelUsersMap>;
 
 // voiceUsers[channelId][userId] = VoiceUser
 const [voiceUsers, setVoiceUsers] = createStore<VoiceUsersMap>({});
-/** Ignore stale voice:user_joined for ourselves after clicking Leave. */
-let ignoreSelfJoinUntil = 0;
 /** Solid does not track Object.values(store) on nested deletes — bump this so the UI re-renders on join/leave. */
 const [voiceListVersion, setVoiceListVersion] = createSignal(0);
 const bumpVoiceList = () => setVoiceListVersion((v) => v + 1);
@@ -318,7 +316,7 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
     });
   }
   void preloadNoiseSuppressor();
-  if (!reconnect) {
+    if (!reconnect) {
     setCurrentVoiceUser({
       channelId,
       audioStream: null,
@@ -328,6 +326,7 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
       micMuted: true
     });
   }
+  bumpVoiceList();
 
   if (isLiveKitEnabled()) {
     void connectLiveKitToChannel(channelId);
@@ -567,7 +566,6 @@ const leaveCurrentCall = (channelId?: string) => {
   const account = useAccount();
   const current = currentVoiceUser();
   const id = channelId || current?.channelId;
-  ignoreSelfJoinUntil = Date.now() + 15_000;
 
   setCurrentChannelId(null);
 
@@ -578,20 +576,9 @@ const leaveCurrentCall = (channelId?: string) => {
     .catch(() => {});
 };
 
-const clearLeaveGuard = () => {
-  ignoreSelfJoinUntil = 0;
-};
-
-const isIgnoringSelfJoin = () => Date.now() < ignoreSelfJoinUntil;
-
 const createVoiceUser = (rawVoice: RawVoice, reconnecting = false) => {
   const account = useAccount();
   const users = useUsers();
-  const me = account.user()?.id;
-
-  if (sameUserId(rawVoice.userId, me) && Date.now() < ignoreSelfJoinUntil) {
-    return;
-  }
 
   if (!voiceUsers[rawVoice.channelId]) {
     setVoiceUsers(rawVoice.channelId, {});
@@ -1426,10 +1413,9 @@ function resetAll() {
   const current = currentVoiceUser();
   batch(() => {
     removeAllPeers();
-    // Peers re-announce their watch state on reconnect.
     setLiveViewers(reconcile({}));
 
-    if (current && Date.now() >= ignoreSelfJoinUntil) {
+    if (current) {
       const kept = getVoiceUser(current.channelId, account.user()?.id!);
       if (kept) {
         setVoiceUsers(
@@ -1437,8 +1423,6 @@ function resetAll() {
             [current.channelId]: { [account.user()?.id!]: kept }
           })
         );
-      } else {
-        setVoiceUsers(reconcile({}));
       }
     } else {
       setVoiceUsers(reconcile({}));
@@ -1508,8 +1492,6 @@ export default function useVoiceUsers() {
     resetAll,
     isLiveKitEnabled,
     leaveCurrentCall,
-    clearLeaveGuard,
-    isIgnoringSelfJoin,
 
     isLocalMicMuted: () => !currentVoiceUser()?.audioStream,
 
