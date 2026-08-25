@@ -23,15 +23,13 @@ import useMention from "./useMention";
 import socketClient from "../socketClient";
 import {
   postGenerateCredential,
-  postJoinVoice,
-  postLeaveVoice
+  postJoinVoice
 } from "../services/VoiceService";
 import useVoiceUsers from "./useVoiceUsers";
 import { useMatch, useNavigate } from "solid-navigator";
 import RouterEndpoints from "@/common/RouterEndpoints";
 import useServers from "./useServers";
 import { loadSimplePeer } from "@/components/LazySimplePeer";
-import { getCustomSound, playSound } from "@/common/Sound";
 import { getStorageBoolean, StorageKeys } from "@/common/localStorage";
 import { isExperimentEnabled } from "@/common/experiments";
 import { reactNativeAPI } from "@/common/ReactNative";
@@ -274,22 +272,8 @@ async function joinCall(this: Channel, reconnect = false) {
     });
 }
 function leaveCall(this: Channel) {
-  const { setCurrentChannelId, removeVoiceUser } = useVoiceUsers();
-  const account = useAccount();
-  const userId = account.user()?.id as string;
-
-  // Clear local state first so rejoin is never blocked if HTTP/WS glitches.
-  if (userId) removeVoiceUser(this.id, userId);
-  setCurrentChannelId(null);
+  useVoiceUsers().leaveCurrentCall(this.id);
   this.setCallJoinedAt(undefined);
-
-  if (!account.isAuthenticated()) return;
-
-  postLeaveVoice(this.id)
-    .then(() => playSound(getCustomSound("CALL_LEAVE")))
-    .catch((err) => {
-      log("RTC", "leave voice failed", err);
-    });
 }
 function update(this: Channel, update: Partial<RawChannel>) {
   setChannels(this.id, update);

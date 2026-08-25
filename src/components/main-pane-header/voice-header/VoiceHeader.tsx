@@ -831,8 +831,9 @@ function VoiceActions(props: {
     channel()?.joinCall();
   };
 
-  const onCallEndClick = async () => {
-    channel()?.leaveCall();
+  const onCallEndClick = () => {
+    voiceUsers.leaveCurrentCall(props.channelId);
+    channel()?.setCallJoinedAt(undefined);
   };
 
   const isInCall = () =>

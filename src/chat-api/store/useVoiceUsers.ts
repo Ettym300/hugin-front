@@ -51,8 +51,10 @@ import {
   getOutputGainLinear
 } from "@/common/outputGain";
 import {
+  postLeaveVoice,
   postLiveKitToken
 } from "../services/VoiceService";
+import { getCustomSound, playSound } from "@/common/Sound";
 import { ConnectionState, Track } from "livekit-client";
 
 export function isLiveKitEnabled() {
@@ -506,16 +508,62 @@ const getVoiceUser = (channelId?: string, userId?: string) => {
 const removeVoiceUser = (channelId: string, userId: string) => {
   const voiceUser = getVoiceUser(channelId, userId);
   if (!voiceUser) return;
-  batch(() => {
+  try {
     voiceUser.vadInstance?.destroy();
+  } catch {
+    /* empty */
+  }
+  try {
     voiceUser.peer?.destroy();
+  } catch {
+    /* empty */
+  }
+  try {
     voiceUser.audio?.remove();
+  } catch {
+    /* empty */
+  }
+  batch(() => {
     setVoiceUsers(channelId, userId, undefined);
     setLiveViewers(userId, false);
     setWatchedLives(userId, false);
     useUsers().get(userId)?.setVoiceChannelId(undefined);
     bumpVoiceList();
   });
+};
+
+const leaveCurrentCall = (channelId?: string) => {
+  const account = useAccount();
+  const current = currentVoiceUser();
+  const id = channelId || current?.channelId;
+  const userId = account.user()?.id;
+
+  try {
+    if (userId && id) removeVoiceUser(id, userId);
+    else if (userId) {
+      for (const cid of Object.keys(voiceUsers)) {
+        if (voiceUsers[cid]?.[userId]) removeVoiceUser(cid, userId);
+      }
+    }
+  } catch (err) {
+    log("RTC", "remove voice user on leave failed", err);
+  }
+
+  try {
+    setCurrentChannelId(null);
+  } catch (err) {
+    log("RTC", "clear current call failed", err);
+    setCurrentVoiceUser(undefined);
+    bumpVoiceList();
+  }
+
+  if (!account.isAuthenticated() || !id) return;
+
+  postLeaveVoice(id)
+    .then(() => playSound(getCustomSound("CALL_LEAVE")))
+    .catch((err) => {
+      log("RTC", "leave voice failed", err);
+    });
 };
 
 const createVoiceUser = (rawVoice: RawVoice, reconnecting = false) => {
@@ -1433,6 +1481,7 @@ export default function useVoiceUsers() {
     applyOutgoingLiveEncoding,
     resetAll,
     isLiveKitEnabled,
+    leaveCurrentCall,
 
     isLocalMicMuted: () => !currentVoiceUser()?.audioStream,
 

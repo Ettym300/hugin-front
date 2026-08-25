@@ -145,7 +145,10 @@ function ActionButtons(props: { channelId: string }) {
         iconName="call_end"
         color="var(--alert-color)"
         iconSize={16}
-        onClick={() => channel()?.leaveCall()}
+        onClick={() => {
+          voiceUsers.leaveCurrentCall(props.channelId);
+          channel()?.setCallJoinedAt(undefined);
+        }}
       />
     </ActionButtonsContainer>
   );
