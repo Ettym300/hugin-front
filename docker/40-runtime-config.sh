@@ -27,16 +27,19 @@ window.__CONCORD_ENV__ = {
 EOF
 
 API_URL="${VITE_SERVER_URL%/}"
-# Strip scheme+host for Docker DNS re-resolve (nginx resolves bare hostnames at start).
+# Strip scheme for Docker DNS re-resolve (nginx resolves bare hostnames at start
+# unless the host is inside a variable).
 api_host_port() {
   printf '%s' "$1" | sed -E 's#^https?://##'
 }
 API_HOSTPORT="$(api_host_port "$API_URL")"
 API_PROXY=""
 if [ -n "$API_URL" ]; then
+  # IMPORTANT: with variables, do NOT put a URI path on proxy_pass or nginx
+  # truncates the request to that path only (e.g. always "/api/").
   API_PROXY="  location /api/ {
-    set \$api_upstream http://${API_HOSTPORT};
-    proxy_pass \$api_upstream/api/;
+    set \$api_upstream ${API_HOSTPORT};
+    proxy_pass http://\$api_upstream\$request_uri;
     proxy_http_version 1.1;
     proxy_set_header Host \$proxy_host;
     proxy_set_header X-Real-IP \$remote_addr;
@@ -56,8 +59,8 @@ CDN_HOSTPORT="$(api_host_port "$CDN_UPSTREAM_URL")"
 CDN_PROXY=""
 if [ -n "$CDN_UPSTREAM_URL" ]; then
   CDN_PROXY="  location ~ ^/(avatars|profile_banners|attachments|emojis|proxy)/ {
-    set \$cdn_upstream http://${CDN_HOSTPORT};
-    proxy_pass \$cdn_upstream;
+    set \$cdn_upstream ${CDN_HOSTPORT};
+    proxy_pass http://\$cdn_upstream\$request_uri;
     proxy_http_version 1.1;
     proxy_set_header Host \$proxy_host;
     proxy_set_header X-Real-IP \$remote_addr;
@@ -73,8 +76,8 @@ WS_HOSTPORT="$(api_host_port "$WS_URL")"
 WS_PROXY=""
 if [ -n "$WS_URL" ]; then
   WS_PROXY="  location /socket.io/ {
-    set \$ws_upstream http://${WS_HOSTPORT};
-    proxy_pass \$ws_upstream/socket.io/;
+    set \$ws_upstream ${WS_HOSTPORT};
+    proxy_pass http://\$ws_upstream\$request_uri;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection \"upgrade\";
@@ -93,8 +96,9 @@ LIVEKIT_HOSTPORT="$(api_host_port "$LIVEKIT_URL")"
 LIVEKIT_PROXY=""
 if [ -n "$LIVEKIT_URL" ]; then
   LIVEKIT_PROXY="  location /livekit/ {
-    set \$livekit_upstream http://${LIVEKIT_HOSTPORT};
-    proxy_pass \$livekit_upstream/;
+    set \$livekit_upstream ${LIVEKIT_HOSTPORT};
+    rewrite ^/livekit/(.*) /\$1 break;
+    proxy_pass http://\$livekit_upstream;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection \"upgrade\";
