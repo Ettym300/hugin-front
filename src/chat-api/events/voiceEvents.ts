@@ -26,6 +26,9 @@ export function onVoiceUserLeft(payload: {
 
   if (user()?.id === payload.userId) {
     setCurrentChannelId(null);
+    void import("../store/useChannels")
+      .then((m) => m.default().get(payload.channelId)?.setCallJoinedAt(undefined))
+      .catch(() => {});
   }
 
   removeVoiceUser(payload.channelId, payload.userId);

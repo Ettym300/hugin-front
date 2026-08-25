@@ -1,4 +1,4 @@
-import { createStore, reconcile } from "solid-js/store";
+import { createStore, produce, reconcile } from "solid-js/store";
 import { RawVoice } from "../RawData";
 import { batch, createEffect, createMemo, createSignal, on } from "solid-js";
 import { getCachedCredentials } from "../services/VoiceService";
@@ -508,24 +508,33 @@ const getVoiceUser = (channelId?: string, userId?: string) => {
 
 const removeVoiceUser = (channelId: string, userId: string) => {
   const voiceUser = getVoiceUser(channelId, userId);
-  if (!voiceUser) return;
-  try {
-    voiceUser.vadInstance?.destroy();
-  } catch {
-    /* empty */
-  }
-  try {
-    voiceUser.peer?.destroy();
-  } catch {
-    /* empty */
-  }
-  try {
-    voiceUser.audio?.remove();
-  } catch {
-    /* empty */
+  if (voiceUser) {
+    try {
+      voiceUser.vadInstance?.destroy();
+    } catch {
+      /* empty */
+    }
+    try {
+      voiceUser.peer?.destroy();
+    } catch {
+      /* empty */
+    }
+    try {
+      voiceUser.audio?.remove();
+    } catch {
+      /* empty */
+    }
   }
   batch(() => {
-    setVoiceUsers(channelId, userId, undefined);
+    // produce+delete: set(..., undefined) often leaves ghosts in Solid nested stores
+    setVoiceUsers(
+      produce((state) => {
+        if (state[channelId]) delete state[channelId]![userId];
+        if (state[channelId] && Object.keys(state[channelId]!).length === 0) {
+          delete state[channelId];
+        }
+      })
+    );
     setLiveViewers(userId, false);
     setWatchedLives(userId, false);
     useUsers().get(userId)?.setVoiceChannelId(undefined);
@@ -556,6 +565,14 @@ const leaveCurrentCall = (channelId?: string) => {
     log("RTC", "clear current call failed", err);
     setCurrentVoiceUser(undefined);
     bumpVoiceList();
+  }
+
+  // Always clear the "Conectado há…" timer even if currentUser was already null.
+  // Dynamic import avoids circular dependency with useChannels.
+  if (id) {
+    void import("./useChannels")
+      .then((m) => m.default().get(id)?.setCallJoinedAt(undefined))
+      .catch(() => {});
   }
 
   if (!account.isAuthenticated() || !id) return;
