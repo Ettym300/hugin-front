@@ -18,14 +18,22 @@ const url = "/msr/";
 const iconCache: Record<string, string> = {};
 
 const fetchWithCache = async (url: string) => {
-  const cache = await window.caches?.match(url, { cacheName: "icons" });
-  if (cache) return cache.text();
+  try {
+    const cache = await window.caches?.match(url, { cacheName: "icons" });
+    if (cache?.ok) return cache.text();
+  } catch {
+    // ignore broken Cache API entries
+  }
 
-  const res = await fetch(url);
+  const res = await fetch(url, { cache: "no-cache" });
   if (!res.ok) return false;
-  await window.caches
-    ?.open("icons")
-    .then((cache) => cache.put(url, res.clone()));
+  try {
+    await window.caches
+      ?.open("icons")
+      .then((cache) => cache.put(url, res.clone()));
+  } catch {
+    // ignore quota / private mode
+  }
   return res.text();
 };
 

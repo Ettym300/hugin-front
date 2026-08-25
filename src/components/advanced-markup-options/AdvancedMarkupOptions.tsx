@@ -17,6 +17,28 @@ import DropDown from "../ui/drop-down/DropDown";
 import { WorldTimezones } from "@/common/WorldTimezones";
 import { DateTimePicker } from "../ui/DateTimePicker";
 import { t } from "@nerimity/i18lite";
+import { JSX } from "solid-js/jsx-runtime";
+
+/** Inline SVG so these toolbar icons never depend on /msr/ fetch or cache. */
+function ToolbarSvg(props: {
+  size?: number;
+  color?: string;
+  children: JSX.Element;
+}) {
+  const size = props.size ?? 18;
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={props.color || "currentColor"}
+      style={{ display: "block" }}
+    >
+      {props.children}
+    </svg>
+  );
+}
 
 const formats = {
   named_link: (url: string) => ({
@@ -263,18 +285,26 @@ export const AdvancedMarkupOptions = (props: {
         onClick={() => applyFormat("strikethrough")}
         iconSize={18}
         margin={0}
-        iconName="strikethrough_s"
         color={props.primaryColor}
         class={styles.button}
+        customChildrenLeft={
+          <ToolbarSvg size={18} color={props.primaryColor}>
+            <path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z" />
+          </ToolbarSvg>
+        }
       />
       <Button
         hoverText={t("markup.header")}
         onClick={() => applyFormat("header")}
         iconSize={18}
         margin={0}
-        iconName="title"
         color={props.primaryColor}
         class={styles.button}
+        customChildrenLeft={
+          <ToolbarSvg size={18} color={props.primaryColor}>
+            <path d="M5 4v3h5.5v12h3V7H19V4H5z" />
+          </ToolbarSvg>
+        }
       />
       <Button
         hoverText={t("markup.namedLink")}
@@ -290,9 +320,13 @@ export const AdvancedMarkupOptions = (props: {
         onClick={() => applyFormat("checkbox")}
         iconSize={18}
         margin={0}
-        iconName="check_box"
         color={props.primaryColor}
         class={styles.button}
+        customChildrenLeft={
+          <ToolbarSvg size={18} color={props.primaryColor}>
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+          </ToolbarSvg>
+        }
       />
       <Button
         hoverText={t("markup.spoiler")}
