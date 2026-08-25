@@ -32,13 +32,18 @@ export type LiveFramerateLabel = "1fps 💀" | "10fps" | "30fps" | "60fps" | "So
 export const LIVE_QUALITY_OPTIONS: readonly LiveQuality[] = [
   "480p",
   "720p",
-  "1080p",
-  "1440p",
-  "source"
+  // Temporarily hidden — re-enable when bandwidth/encoding is ready:
+  // "1080p",
+  "1440p"
+  // ,"source"
 ] as const;
 
 export const LIVE_FRAMERATE_OPTIONS: readonly LiveFramerate[] = [
-  15, 24, 30, 60
+  15,
+  24,
+  30
+  // Temporarily hidden — re-enable when ready:
+  // 60
 ] as const;
 
 export function isLiveKitSfuMode() {
@@ -46,7 +51,8 @@ export function isLiveKitSfuMode() {
 }
 
 export function getDefaultLiveQuality(): LiveQuality {
-  return isLiveKitSfuMode() ? "1080p" : "720p";
+  // Was 1080p in SFU mode; keep 720p while 1080p is hidden from the UI.
+  return "720p";
 }
 
 export function getDefaultLiveFramerate(): LiveFramerate {
