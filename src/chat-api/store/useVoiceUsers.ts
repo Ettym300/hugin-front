@@ -55,6 +55,7 @@ import {
   postLiveKitToken
 } from "../services/VoiceService";
 import { getCustomSound, playSound } from "@/common/Sound";
+import { toast } from "@/components/ui/custom-portal/CustomPortal";
 import { ConnectionState, Track } from "livekit-client";
 
 export function isLiveKitEnabled() {
@@ -563,6 +564,10 @@ const leaveCurrentCall = (channelId?: string) => {
     .then(() => playSound(getCustomSound("CALL_LEAVE")))
     .catch((err) => {
       log("RTC", "leave voice failed", err);
+      toast(
+        "O servidor não confirmou a saída. Tente de novo ou atualize a página.",
+        "Falha ao sair da call"
+      );
     });
 };
 
