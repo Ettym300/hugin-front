@@ -248,15 +248,25 @@ async function joinCall(this: Channel, reconnect = false) {
 function leaveCall(this: Channel) {
   const { setCurrentChannelId, removeVoiceUser } = useVoiceUsers();
   const account = useAccount();
+  const userId = account.user()?.id as string | undefined;
+  const channelId = this.id;
+
+  // Optimistic UI: leave locally immediately so the sidebar/header don't keep
+  // showing the current user until (or if) the WS leave event arrives.
+  if (userId) removeVoiceUser(channelId, userId);
+  setCurrentChannelId(null);
+
   if (!account.isAuthenticated()) {
-    setCurrentChannelId(null);
-    removeVoiceUser(this.id, account.user()?.id as string);
     return;
   }
-  postLeaveVoice(this.id).then(() => {
-    playSound(getCustomSound("CALL_LEAVE"));
-    setCurrentChannelId(null);
-  });
+
+  postLeaveVoice(channelId)
+    .then(() => {
+      playSound(getCustomSound("CALL_LEAVE"));
+    })
+    .catch(() => {
+      // Local leave already applied; server sync can retry on next join.
+    });
 }
 function update(this: Channel, update: Partial<RawChannel>) {
   setChannels(this.id, update);

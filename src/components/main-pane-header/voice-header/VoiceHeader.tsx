@@ -874,7 +874,7 @@ function VoiceActions(props: {
         <Button
           iconName={viewMode() === "gallery" ? "crop_free" : "grid_view"}
           color="rgba(255,255,255,0.6)"
-          title={viewMode() === "gallery" ? "Focus" : "Gallery"}
+          hoverText={viewMode() === "gallery" ? "Focus" : "Gallery"}
           onClick={() =>
             setViewMode(viewMode() === "gallery" ? "focus" : "gallery")
           }

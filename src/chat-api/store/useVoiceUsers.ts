@@ -495,7 +495,11 @@ const getVoiceUser = (channelId?: string, userId?: string) => {
 };
 const removeVoiceUser = (channelId: string, userId: string) => {
   const voiceUser = getVoiceUser(channelId, userId);
-  if (!voiceUser) return;
+  if (!voiceUser) {
+    // Still clear the user flag if a stale leave arrives after optimistic remove.
+    useUsers().get(userId)?.setVoiceChannelId(undefined);
+    return;
+  }
   batch(() => {
     voiceUser?.vadInstance?.destroy();
     voiceUser.peer?.destroy();
@@ -503,6 +507,7 @@ const removeVoiceUser = (channelId: string, userId: string) => {
     setVoiceUsers(channelId, userId, undefined);
     setLiveViewers(userId, false);
     setWatchedLives(userId, false);
+    useUsers().get(userId)?.setVoiceChannelId(undefined);
   });
 };
 

@@ -502,32 +502,41 @@
   }
 
   /*
-   * Barra de controles flutuando sobre o video, no lugar da barra no fluxo.
+   * Barra de controles sobre o video, embaixo (menos invasiva).
+   * No desktop some ate o mouse passar pelo palco; no toque fica sempre visivel.
    *
-   * Fica de fora quando o palco esta recolhido (miniView), porque ali esta
-   * barra e o unico caminho para expandir de novo: escondê-la atras do hover
-   * deixaria o palco sem volta.
+   * Em miniView fica sempre visivel: e o unico caminho para expandir de novo.
    */
   &.videoStream:not(.miniView) .voiceActions {
     position: absolute;
     z-index: 5;
-    /* Topo do palco: longe do handle de resize e da barra do chat/sistema. */
-    top: 12px;
-    bottom: auto;
+    top: auto;
+    bottom: 12px;
     left: 50%;
     padding: 6px;
     border: 1px solid var(--panel-border-color);
     border-radius: 26px;
     background: var(--call-bar-background-color);
     box-shadow: var(--panel-shadow);
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+    pointer-events: none;
+    transition:
+      opacity 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  &.videoStream:not(.miniView):hover .voiceActions,
+  &.videoStream:not(.miniView):focus-within .voiceActions {
     opacity: 1;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(0);
     pointer-events: auto;
   }
 
-  /* Espaco no topo para a barra nao cobrir os tiles. */
+  /* Espaco embaixo para a barra nao cobrir tiles ao aparecer. */
   &.videoStream:not(.miniView) .hiddenLives {
-    padding-top: 56px;
+    padding-top: 10px;
+    padding-bottom: 56px;
   }
 }
 
@@ -536,7 +545,7 @@
   :local {
     .headerVoiceParticipants.videoStream:not(.miniView) .voiceActions {
       opacity: 1;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateY(0);
       pointer-events: auto;
     }
   }
