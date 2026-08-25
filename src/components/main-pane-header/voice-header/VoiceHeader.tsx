@@ -685,20 +685,26 @@ function VoiceParticipants(props: {
 }) {
   const { voiceUsers } = useStore();
 
-  const channelVoiceUsers = () =>
-    voiceUsers.getVoiceUsersByChannelId(props.channelId!);
+  const voiceUserIds = () =>
+    voiceUsers.getVoiceUsersByChannelId(props.channelId!).map((user) => user.userId);
 
   return (
     <div class={style.voiceParticipants}>
-      <For each={channelVoiceUsers()}>
-        {(voiceUser) => (
-          <VoiceParticipantItem
-            onClick={() => props.onClick(voiceUser.userId)}
-            selected={voiceUser.userId === props.selectedUserId}
-            voiceUser={voiceUser!}
-            size={props.size}
-          />
-        )}
+      <For each={voiceUserIds()}>
+        {(userId) => {
+          const voiceUser = () =>
+            voiceUsers.getVoiceUser(props.channelId, userId);
+          return (
+            <Show when={voiceUser()}>
+              <VoiceParticipantItem
+                onClick={() => props.onClick(userId)}
+                selected={userId === props.selectedUserId}
+                voiceUser={voiceUser()!}
+                size={props.size}
+              />
+            </Show>
+          );
+        }}
       </For>
     </div>
   );

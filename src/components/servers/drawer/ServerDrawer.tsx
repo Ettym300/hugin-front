@@ -480,16 +480,16 @@ function ChannelItemVoiceUsers(props: { channelId: string }) {
   const { voiceUsers } = useStore();
   const params = useParams<{ serverId: string }>();
 
-  const channelVoiceUsers = () =>
-    voiceUsers.getVoiceUsersByChannelId(props.channelId);
+  const voiceUserIds = () =>
+    voiceUsers.getVoiceUsersByChannelId(props.channelId).map((user) => user.userId);
 
   return (
-    <Show when={channelVoiceUsers().length}>
+    <Show when={voiceUserIds().length}>
       <ChannelVoiceUsersContainer>
-        <For each={channelVoiceUsers()}>
-          {(voiceUser) => (
+        <For each={voiceUserIds()}>
+          {(userId) => (
             <ChannelVoiceUserRow
-              voiceUser={voiceUser!}
+              voiceUser={voiceUsers.getVoiceUser(props.channelId, userId)!}
               serverId={params.serverId}
             />
           )}

@@ -267,7 +267,7 @@ export const onAuthenticated = (payload: AuthenticatedPayload) => {
 
   const previousVoiceUserChannelId = voiceUsers.currentUser()?.channelId;
 
-  if (previousVoiceUserChannelId) {
+  if (previousVoiceUserChannelId && !voiceUsers.isIgnoringSelfJoin()) {
     channels.get(previousVoiceUserChannelId)?.joinCall(true);
   }
 };
