@@ -1,10 +1,8 @@
 import { createStore, reconcile } from "solid-js/store";
 import { RawVoice } from "../RawData";
 import { batch, createEffect, createMemo, createSignal, on } from "solid-js";
-import {
-  getCachedCredentials,
-  postLiveKitToken
-} from "../services/VoiceService";
+import { postGenerateCredential, postLiveKitToken } from "../services/VoiceService";
+import { getVoiceIceServers } from "../voiceIceServers";
 import { emitVoiceSignal } from "../emits/voiceEmits";
 
 import type SimplePeer from "@thaunknown/simple-peer";
@@ -50,56 +48,6 @@ import {
 export function isLiveKitEnabled() {
   return env.LIVEKIT_ENABLED;
 }
-
-const FALLBACK_ICE_SERVERS: RTCIceServer[] = [
-  {
-    urls: ["stun:stun.l.google.com:19302"]
-  },
-  {
-    urls: "stun:stun.relay.metered.ca:80"
-  },
-  {
-    urls: "turn:a.relay.metered.ca:80",
-    username: "b9fafdffb3c428131bd9ae10",
-    credential: "DTk2mXfXv4kJYPvD"
-  },
-  {
-    urls: "turn:a.relay.metered.ca:80?transport=tcp",
-    username: "b9fafdffb3c428131bd9ae10",
-    credential: "DTk2mXfXv4kJYPvD"
-  },
-  {
-    urls: "turn:a.relay.metered.ca:443",
-    username: "b9fafdffb3c428131bd9ae10",
-    credential: "DTk2mXfXv4kJYPvD"
-  },
-  {
-    urls: "turn:a.relay.metered.ca:443?transport=tcp",
-    username: "b9fafdffb3c428131bd9ae10",
-    credential: "DTk2mXfXv4kJYPvD"
-  }
-];
-
-function asIceServerList(value: unknown): RTCIceServer[] {
-  if (!value) return [];
-  if (Array.isArray(value)) {
-    return value.flatMap((item) => asIceServerList(item));
-  }
-  if (typeof value === "object") {
-    const obj = value as Record<string, unknown>;
-    if (obj.iceServers) return asIceServerList(obj.iceServers);
-    if (obj.urls || obj.url) return [value as RTCIceServer];
-  }
-  return [];
-}
-
-const createIceServers = (): RTCIceServer[] => {
-  // Avoid [null, ...] when Cloudflare TURN credentials were never fetched (DEV).
-  const extra = getStorageBoolean(StorageKeys.voiceUseTurnServers, true)
-    ? asIceServerList(getCachedCredentials())
-    : [];
-  return [...extra, ...FALLBACK_ICE_SERVERS];
-};
 
 function playRemoteMedia(el: HTMLMediaElement) {
   const tryPlay = () => {
@@ -312,6 +260,9 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
 
 async function connectLiveKitToChannel(channelId: string) {
   try {
+    if (getStorageBoolean(StorageKeys.voiceUseTurnServers, true)) {
+      await postGenerateCredential().catch(() => {});
+    }
     const auth = await postLiveKitToken(channelId);
     const latest = currentVoiceUser();
     if (!latest || latest.channelId !== channelId) return;
@@ -608,7 +559,7 @@ const createPeer = (voiceUser: VoiceUser, signal?: SimplePeer.SignalData) => {
       initiator,
       trickle: true,
       config: {
-        iceServers: createIceServers()
+        iceServers: getVoiceIceServers()
       },
       streams
     });

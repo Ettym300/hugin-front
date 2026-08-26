@@ -22,6 +22,7 @@ import {
   clampVoiceVolumeLinear,
   effectiveRemoteVolume
 } from "@/common/voiceAudioSettings";
+import { getVoiceIceServers } from "../voiceIceServers";
 
 export type LiveKitAuth = {
   url: string;
@@ -416,7 +417,11 @@ export async function connectLiveKitRoom(
   );
 
   await nextRoom.connect(auth.url, auth.token, {
-    autoSubscribe: false
+    autoSubscribe: false,
+    // When VPS UDP 7882 is blocked, relay via TURN (same servers as mesh voice).
+    rtcConfig: {
+      iceServers: getVoiceIceServers()
+    }
   });
 
   for (const participant of nextRoom.remoteParticipants.values()) {
