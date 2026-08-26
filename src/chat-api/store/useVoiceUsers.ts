@@ -1151,10 +1151,12 @@ const videoEnabled = (userId: string) => {
   return undefined;
 };
 
-/** True when there is at least one live video track (not an empty placeholder). */
+/** True when there is at least one usable video track (not an empty placeholder). */
 const hasLiveVideoFrames = (userId: string) => {
   const stream = videoEnabled(userId);
-  return !!stream?.getVideoTracks().some((t) => t.readyState === "live");
+  return !!stream
+    ?.getVideoTracks()
+    .some((t) => t.readyState !== "ended" && t.enabled !== false);
 };
 
 function reapplyAllRemoteVolumes() {

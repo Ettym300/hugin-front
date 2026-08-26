@@ -620,15 +620,21 @@ function VideoStream(props: {
       el.srcObject = stream;
     }
     const onTrackUnmute = () => tryPlay();
+    const onAddTrack = () => {
+      if (el.srcObject !== stream) el.srcObject = stream;
+      tryPlay();
+    };
     const tracks = stream.getVideoTracks();
     tracks.forEach((track) => {
       track.addEventListener("unmute", onTrackUnmute);
     });
+    stream.addEventListener("addtrack", onAddTrack);
     tryPlay();
     onCleanup(() => {
       tracks.forEach((track) => {
         track.removeEventListener("unmute", onTrackUnmute);
       });
+      stream.removeEventListener("addtrack", onAddTrack);
     });
   });
 

@@ -4,11 +4,13 @@ import {
   Track,
   RemoteTrack,
   RemoteAudioTrack,
+  RemoteVideoTrack,
   RemoteTrackPublication,
   RemoteParticipant,
   LocalTrackPublication,
   ConnectionState,
-  VideoQuality
+  VideoQuality,
+  ScreenSharePresets
 } from "livekit-client";
 import { log } from "@/common/logger";
 import {
@@ -54,6 +56,7 @@ let handlers: LiveKitTrackHandlers | null = null;
 const remoteStreams = new Map<string, MediaStream>();
 const remoteAudioTracks = new Map<string, RemoteAudioTrack>();
 const remoteAudioElements = new Map<string, HTMLMediaElement>();
+const remoteVideoTracks = new Map<string, RemoteVideoTrack>();
 const remoteVolumes = new Map<string, number>();
 let deafened = false;
 let currentSinkId: string | undefined;
@@ -107,13 +110,24 @@ function clearRemotePlayback() {
       /* already detached */
     }
   }
+  for (const track of remoteVideoTracks.values()) {
+    try {
+      track.detach();
+    } catch {
+      /* already detached */
+    }
+  }
   remoteAudioTracks.clear();
   remoteAudioElements.clear();
+  remoteVideoTracks.clear();
   remoteStreams.clear();
 }
 
 /** Mic + screen share — needed after join and after LiveKit reconnect. */
-function subscribeRemotePublications(targetRoom: Room) {
+function subscribeRemotePublications(
+  targetRoom: Room,
+  opts?: { notifyScreenShare?: boolean }
+) {
   for (const participant of targetRoom.remoteParticipants.values()) {
     for (const pub of participant.trackPublications.values()) {
       if (
@@ -123,7 +137,7 @@ function subscribeRemotePublications(targetRoom: Room) {
       ) {
         if (!pub.isSubscribed) pub.setSubscribed(true);
       }
-      if (pub.source === Track.Source.ScreenShare) {
+      if (opts?.notifyScreenShare && pub.source === Track.Source.ScreenShare) {
         handlers?.onScreenSharePublished(participant.identity);
       }
     }
@@ -224,7 +238,8 @@ export async function connectLiveKitRoom(
 
   const nextRoom = new Room({
     adaptiveStream: false,
-    dynacast: true,
+    // Dynacast + simulcast layer hopping was flickering remote screen shares to black.
+    dynacast: false,
     // Force legacy /rtc path — LiveKit server <1.9 returns 404 on /rtc/v1.
     singlePeerConnection: false,
     webAudioMix: LIVEKIT_WEB_AUDIO_MIX,
@@ -243,7 +258,9 @@ export async function connectLiveKitRoom(
     publishDefaults: {
       audioPreset: LIVEKIT_VOICE_AUDIO_PRESET,
       dtx: true,
-      red: true
+      red: true,
+      screenShareEncoding: ScreenSharePresets.h1080fps15.encoding,
+      simulcast: false
     }
   });
 
@@ -255,6 +272,7 @@ export async function connectLiveKitRoom(
 
   nextRoom.on(RoomEvent.Reconnected, () => {
     log("RTC", "LiveKit reconnected — re-subscribing remote tracks");
+    // Do not re-fire onScreenSharePublished (causes UI churn / subscribe storms).
     subscribeRemotePublications(nextRoom);
   });
 
@@ -268,6 +286,15 @@ export async function connectLiveKitRoom(
       Track.Source.ScreenShareAudio
     ]) {
       detachRemoteAudio(participant.identity, source);
+    }
+    const videoTrack = remoteVideoTracks.get(participant.identity);
+    if (videoTrack) {
+      try {
+        videoTrack.detach();
+      } catch {
+        /* ignore */
+      }
+      remoteVideoTracks.delete(participant.identity);
     }
     for (const kind of ["audio", "video"] as const) {
       remoteStreams.delete(`${participant.identity}:${kind}`);
@@ -304,18 +331,38 @@ export async function connectLiveKitRoom(
         publication.source === Track.Source.ScreenShare ||
         publication.source === Track.Source.Camera
       ) {
-        // Ask SFU for full quality even with dynacast (screen share needs pixels).
+        // Keep a LiveKit-attached <video> so the SFU keeps sending frames.
+        const videoTrack = track as RemoteVideoTrack;
+        const prev = remoteVideoTracks.get(participant.identity);
+        if (prev && prev !== videoTrack) {
+          try {
+            prev.detach();
+          } catch {
+            /* ignore */
+          }
+        }
         try {
           publication.setVideoQuality(VideoQuality.HIGH);
         } catch {
           /* older client */
         }
+        const attached = videoTrack.attach();
+        attached.playsInline = true;
+        attached.muted = true;
+        attached.autoplay = true;
+        attached.style.display = "none";
+        if (!attached.isConnected) {
+          document.body.appendChild(attached);
+        }
+        void attached.play().catch(() => {});
+        remoteVideoTracks.set(participant.identity, videoTrack);
       }
 
       handlers?.onRemoteTrack({
         userId: participant.identity,
         track: mediaTrack,
-        stream: new MediaStream(stream.getTracks()),
+        // Reuse the same MediaStream — cloning broke addTrack updates / caused flicker.
+        stream,
         source: publication.source,
         audioElement
       });
@@ -346,6 +393,16 @@ export async function connectLiveKitRoom(
           audioKey(participant.identity, publication.source)
         );
         detachRemoteAudio(participant.identity, publication.source);
+      } else if (track.kind === Track.Kind.Video) {
+        const videoTrack = remoteVideoTracks.get(participant.identity);
+        if (videoTrack) {
+          try {
+            videoTrack.detach();
+          } catch {
+            /* ignore */
+          }
+          remoteVideoTracks.delete(participant.identity);
+        }
       }
 
       handlers?.onRemoteTrackRemoved({
@@ -365,7 +422,7 @@ export async function connectLiveKitRoom(
   for (const participant of nextRoom.remoteParticipants.values()) {
     handlers?.onParticipantConnected(participant.identity);
   }
-  subscribeRemotePublications(nextRoom);
+  subscribeRemotePublications(nextRoom, { notifyScreenShare: true });
 
   nextRoom.on(RoomEvent.TrackPublished, (publication, participant) => {
     if (!(participant instanceof RemoteParticipant)) return;
@@ -449,7 +506,10 @@ export async function publishLiveKitScreenShare(stream: MediaStream) {
     await room.localParticipant.publishTrack(video, {
       source: Track.Source.ScreenShare,
       name: "screen_share",
-      simulcast: true
+      // Single layer — simulcast layer switches were blacking out remote viewers.
+      simulcast: false,
+      videoEncoding: ScreenSharePresets.h1080fps15.encoding,
+      degradationPreference: "maintain-resolution"
     });
   }
   if (audio) {
