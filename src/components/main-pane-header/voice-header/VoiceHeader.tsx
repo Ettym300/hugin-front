@@ -255,7 +255,12 @@ export function VoiceHeader(props: { channelId?: string; floating?: boolean }) {
             </Show>
             <Show when={isSomeoneVideoStreaming() && displayMode() === "gallery"}>
               <div class={style.galleryLayout}>
-                <Show when={visibleStageUsers().length} fallback={<StageEmpty />}>
+                <Show
+                  when={visibleStageUsers().length}
+                  fallback={
+                    <StageEmpty hasHidden={hiddenLiveUsers().length > 0} />
+                  }
+                >
                   <div
                     class={style.videoGrid}
                     style={{
@@ -282,7 +287,12 @@ export function VoiceHeader(props: { channelId?: string; floating?: boolean }) {
             </Show>
             <Show when={isSomeoneVideoStreaming() && displayMode() === "focus"}>
               <div class={style.stageLayout}>
-                <Show when={selectedVoiceUser()} fallback={<StageEmpty />}>
+                <Show
+                  when={selectedVoiceUser()}
+                  fallback={
+                    <StageEmpty hasHidden={hiddenLiveUsers().length > 0} />
+                  }
+                >
                   <div class={style.stageMain}>
                     <VoiceTile
                       voiceUser={selectedVoiceUser()!}
@@ -342,14 +352,16 @@ export function VoiceHeader(props: { channelId?: string; floating?: boolean }) {
   );
 }
 
-function StageEmpty() {
+function StageEmpty(props: { hasHidden?: boolean }) {
   return (
     <div class={style.stageEmpty}>
       <div class={style.stageEmptyTitle}>
         {t("mainPaneHeader.voice.noLiveSelected")}
       </div>
       <div class={style.stageEmptyHint}>
-        {t("mainPaneHeader.voice.noLiveSelectedHint")}
+        {props.hasHidden
+          ? t("mainPaneHeader.voice.hiddenLives")
+          : t("mainPaneHeader.voice.noLiveSelectedHint")}
       </div>
     </div>
   );

@@ -1114,7 +1114,9 @@ const setLiveWatched = (userId: string, watch: boolean) => {
   applyLiveWatch(userId, watch);
 
   if (isLiveKitEnabled()) {
-    setLiveKitScreenShareSubscribed(userId, watch);
+    // Keep LiveKit subscription always on — hide/show is UI-only.
+    // Unsubscribing on hide dropped remote frames and caused "Nenhuma live selecionada".
+    if (watch) setLiveKitScreenShareSubscribed(userId, true);
     return;
   }
 

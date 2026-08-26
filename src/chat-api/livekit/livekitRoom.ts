@@ -112,6 +112,24 @@ function clearRemotePlayback() {
   remoteStreams.clear();
 }
 
+/** Mic + screen share — needed after join and after LiveKit reconnect. */
+function subscribeRemotePublications(targetRoom: Room) {
+  for (const participant of targetRoom.remoteParticipants.values()) {
+    for (const pub of participant.trackPublications.values()) {
+      if (
+        pub.source === Track.Source.Microphone ||
+        pub.source === Track.Source.ScreenShare ||
+        pub.source === Track.Source.ScreenShareAudio
+      ) {
+        if (!pub.isSubscribed) pub.setSubscribed(true);
+      }
+      if (pub.source === Track.Source.ScreenShare) {
+        handlers?.onScreenSharePublished(participant.identity);
+      }
+    }
+  }
+}
+
 export function isLiveKitRoomConnected() {
   return room?.state === ConnectionState.Connected;
 }
@@ -207,6 +225,8 @@ export async function connectLiveKitRoom(
   const nextRoom = new Room({
     adaptiveStream: false,
     dynacast: true,
+    // Force legacy /rtc path — LiveKit server <1.9 returns 404 on /rtc/v1.
+    singlePeerConnection: false,
     webAudioMix: LIVEKIT_WEB_AUDIO_MIX,
     audioCaptureDefaults: {
       echoCancellation: true,
@@ -231,6 +251,11 @@ export async function connectLiveKitRoom(
 
   nextRoom.on(RoomEvent.ConnectionStateChanged, (state) => {
     handlers?.onConnectionState(state);
+  });
+
+  nextRoom.on(RoomEvent.Reconnected, () => {
+    log("RTC", "LiveKit reconnected — re-subscribing remote tracks");
+    subscribeRemotePublications(nextRoom);
   });
 
   nextRoom.on(RoomEvent.ParticipantConnected, (participant) => {
@@ -339,29 +364,13 @@ export async function connectLiveKitRoom(
 
   for (const participant of nextRoom.remoteParticipants.values()) {
     handlers?.onParticipantConnected(participant.identity);
-    for (const pub of participant.trackPublications.values()) {
-      if (pub.source === Track.Source.Microphone && !pub.isSubscribed) {
-        pub.setSubscribed(true);
-      }
-      if (
-        (pub.source === Track.Source.ScreenShare ||
-          pub.source === Track.Source.ScreenShareAudio) &&
-        !pub.isSubscribed
-      ) {
-        pub.setSubscribed(true);
-      }
-      if (pub.source === Track.Source.ScreenShare) {
-        handlers?.onScreenSharePublished(participant.identity);
-      }
-    }
   }
+  subscribeRemotePublications(nextRoom);
 
   nextRoom.on(RoomEvent.TrackPublished, (publication, participant) => {
     if (!(participant instanceof RemoteParticipant)) return;
-    if (publication.source === Track.Source.Microphone) {
-      publication.setSubscribed(true);
-    }
     if (
+      publication.source === Track.Source.Microphone ||
       publication.source === Track.Source.ScreenShare ||
       publication.source === Track.Source.ScreenShareAudio
     ) {
