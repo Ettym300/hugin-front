@@ -233,6 +233,18 @@ export async function connectLiveKitRoom(
   auth: LiveKitAuth,
   nextHandlers: LiveKitTrackHandlers
 ) {
+  // Already in this room — keep the PeerConnection (avoids CLIENT_REQUEST_LEAVE loop).
+  if (
+    room &&
+    room.state === ConnectionState.Connected &&
+    room.name === auth.room
+  ) {
+    handlers = nextHandlers;
+    log("RTC", "LiveKit already connected", auth.room);
+    subscribeRemotePublications(room);
+    return room;
+  }
+
   await disconnectLiveKitRoom();
   handlers = nextHandlers;
   deafened = false;
@@ -418,7 +430,10 @@ export async function connectLiveKitRoom(
 
   await nextRoom.connect(auth.url, auth.token, {
     autoSubscribe: false,
-    // When VPS UDP 7882 is blocked, relay via TURN (same servers as mesh voice).
+    // Renegotiation (subscribe/publish) can exceed the 15s default behind NAT/TURN
+    // and the SDK then does a full CLIENT_REQUEST_LEAVE reconnect loop.
+    peerConnectionTimeout: 60_000,
+    // When VPS UDP is blocked, relay via TURN (same servers as mesh voice).
     rtcConfig: {
       iceServers: getVoiceIceServers()
     }

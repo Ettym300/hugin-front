@@ -255,9 +255,16 @@ async function joinCall(this: Channel, reconnect = false) {
   }
   postJoinVoice(this.id, socketId)
     .then(() => {
-      if (reconnect) return;
+      // Always ensure LiveKit is up. On WS reconnect (reconnect=true) we must
+      // re-attach without wiping local mic/screen streams — previously this
+      // early-returned and left the client without a LiveKit session after
+      // VOICE_USER_LEFT cleared the call.
       setCurrentChannelId(this.id, reconnect);
-      this.setCallJoinedAt(Date.now());
+      if (!reconnect) {
+        this.setCallJoinedAt(Date.now());
+      } else if (!this.callJoinedAt) {
+        this.setCallJoinedAt(Date.now());
+      }
     })
     .catch((err) => {
       toast(err?.message || "Falha ao entrar na call.", "Call");

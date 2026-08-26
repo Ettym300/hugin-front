@@ -209,7 +209,7 @@ createEffect(
 
 const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
   const current = currentVoiceUser();
-  if (current?.channelId) {
+  if (current?.channelId && current.channelId !== channelId) {
     removeAllPeers(current?.channelId);
     current.vadInstance?.destroy();
     current.vadAudioStream?.getAudioTracks()[0]?.stop();
@@ -242,14 +242,15 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
 
     return;
   }
-  if (!reconnect) {
+  if (!reconnect || !current || current.channelId !== channelId) {
     setCurrentVoiceUser({
       channelId,
-      audioStream: null,
-      videoStream: null,
-      vadAudioStream: null,
-      vadInstance: undefined,
-      micMuted: true
+      audioStream: current?.audioStream ?? null,
+      videoStream: current?.videoStream ?? null,
+      originalAudioStream: current?.originalAudioStream,
+      vadAudioStream: current?.vadAudioStream ?? null,
+      vadInstance: current?.vadInstance,
+      micCleanup: current?.micCleanup
     });
   }
 
