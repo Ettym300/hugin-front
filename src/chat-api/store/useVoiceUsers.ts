@@ -136,6 +136,17 @@ const [livePublishers, setLivePublishers] = createStore<Record<string, boolean>>
 );
 // Placeholder so UI can show "LIVE / watch" before ScreenShare is subscribed.
 const livePublisherPlaceholders = new Map<string, MediaStream>();
+/** Delay clearing remote video UI during brief LiveKit ICE/resubscribe blips. */
+const pendingVideoRemovals = new Map<string, ReturnType<typeof setTimeout>>();
+const VIDEO_UNSUBSCRIBE_GRACE_MS = 2500;
+
+function cancelPendingVideoRemoval(userId: string) {
+  const timer = pendingVideoRemovals.get(userId);
+  if (timer) {
+    clearTimeout(timer);
+    pendingVideoRemovals.delete(userId);
+  }
+}
 // liveViewers[viewerUserId] = remotes currently watching our outbound live
 const [liveViewers, setLiveViewers] = createStore<Record<string, boolean>>({});
 export type ConnectionStatus = "CONNECTED" | "DISCONNECTED" | "CONNECTING";
@@ -334,6 +345,7 @@ async function connectLiveKitToChannel(channelId: string) {
         }
       },
       onScreenShareUnpublished: (userId) => {
+        cancelPendingVideoRemoval(userId);
         setLivePublishers(userId, false);
         setWatchedLives(userId, false);
         livePublisherPlaceholders.delete(userId);
@@ -341,6 +353,10 @@ async function connectLiveKitToChannel(channelId: string) {
       onRemoteTrack: ({ userId, track, stream, source, audioElement }) => {
         const voiceUser = getVoiceUser(channelId, userId);
         if (!voiceUser) return;
+
+        if (track.kind === "video") {
+          cancelPendingVideoRemoval(userId);
+        }
 
         pushVoiceUserTrack(voiceUser, track, stream);
 
@@ -368,6 +384,29 @@ async function connectLiveKitToChannel(channelId: string) {
       onRemoteTrackRemoved: ({ userId, kind }) => {
         const voiceUser = getVoiceUser(channelId, userId);
         if (!voiceUser?.streamWithTracks) return;
+
+        // ICE blips unsubscribe briefly — don't wipe the tile for a few seconds.
+        if (kind === "video" && isLiveKitEnabled()) {
+          cancelPendingVideoRemoval(userId);
+          const timer = setTimeout(() => {
+            pendingVideoRemovals.delete(userId);
+            const latest = getVoiceUser(channelId, userId);
+            if (!latest?.streamWithTracks) return;
+            const filtered = latest.streamWithTracks
+              .map((entry) => ({
+                stream: entry.stream,
+                tracks: entry.stream
+                  .getTracks()
+                  .filter(
+                    (t) => t.readyState !== "ended" && t.kind !== "video"
+                  )
+              }))
+              .filter((entry) => entry.tracks.length > 0);
+            setVoiceUsers(channelId, userId, "streamWithTracks", filtered);
+          }, VIDEO_UNSUBSCRIBE_GRACE_MS);
+          pendingVideoRemovals.set(userId, timer);
+          return;
+        }
 
         const filtered = voiceUser.streamWithTracks
           .map((entry) => ({
