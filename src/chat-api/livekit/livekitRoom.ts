@@ -53,6 +53,8 @@ export type LiveKitTrackHandlers = {
 };
 
 let room: Room | null = null;
+let connectPromise: Promise<Room> | null = null;
+let connectRoomName: string | null = null;
 let handlers: LiveKitTrackHandlers | null = null;
 const remoteStreams = new Map<string, MediaStream>();
 const remoteAudioTracks = new Map<string, RemoteAudioTrack>();
@@ -233,16 +235,25 @@ export async function connectLiveKitRoom(
   auth: LiveKitAuth,
   nextHandlers: LiveKitTrackHandlers
 ) {
-  // Already in this room — keep the PeerConnection (avoids CLIENT_REQUEST_LEAVE loop).
+  // Same room already up or connecting — never tear down mid-handshake.
   if (
     room &&
-    room.state === ConnectionState.Connected &&
-    room.name === auth.room
+    room.name === auth.room &&
+    (room.state === ConnectionState.Connected ||
+      room.state === ConnectionState.Connecting ||
+      room.state === ConnectionState.Reconnecting)
   ) {
     handlers = nextHandlers;
-    log("RTC", "LiveKit already connected", auth.room);
-    subscribeRemotePublications(room);
+    if (room.state === ConnectionState.Connected) {
+      log("RTC", "LiveKit already connected", auth.room);
+      subscribeRemotePublications(room);
+    }
     return room;
+  }
+
+  if (connectPromise && connectRoomName === auth.room) {
+    handlers = nextHandlers;
+    return connectPromise;
   }
 
   await disconnectLiveKitRoom();
@@ -428,22 +439,6 @@ export async function connectLiveKitRoom(
     }
   );
 
-  await nextRoom.connect(auth.url, auth.token, {
-    autoSubscribe: false,
-    // Renegotiation (subscribe/publish) can exceed the 15s default behind NAT/TURN
-    // and the SDK then does a full CLIENT_REQUEST_LEAVE reconnect loop.
-    peerConnectionTimeout: 60_000,
-    // When VPS UDP is blocked, relay via TURN (same servers as mesh voice).
-    rtcConfig: {
-      iceServers: getVoiceIceServers()
-    }
-  });
-
-  for (const participant of nextRoom.remoteParticipants.values()) {
-    handlers?.onParticipantConnected(participant.identity);
-  }
-  subscribeRemotePublications(nextRoom, { notifyScreenShare: true });
-
   nextRoom.on(RoomEvent.TrackPublished, (publication, participant) => {
     if (!(participant instanceof RemoteParticipant)) return;
     if (
@@ -465,11 +460,41 @@ export async function connectLiveKitRoom(
     }
   });
 
-  log("RTC", "LiveKit connected", auth.room);
-  return nextRoom;
+  connectRoomName = auth.room;
+  connectPromise = (async () => {
+    await nextRoom.connect(auth.url, auth.token, {
+      autoSubscribe: false,
+      // Renegotiation (subscribe/publish) can exceed the 15s default behind NAT/TURN
+      // and the SDK then does a full CLIENT_REQUEST_LEAVE reconnect loop.
+      peerConnectionTimeout: 60_000,
+      // When VPS UDP is blocked, relay via TURN (same servers as mesh voice).
+      rtcConfig: {
+        iceServers: getVoiceIceServers()
+      }
+    });
+
+    for (const participant of nextRoom.remoteParticipants.values()) {
+      handlers?.onParticipantConnected(participant.identity);
+    }
+    subscribeRemotePublications(nextRoom, { notifyScreenShare: true });
+
+    log("RTC", "LiveKit connected", auth.room);
+    return nextRoom;
+  })();
+
+  try {
+    return await connectPromise;
+  } finally {
+    if (connectRoomName === auth.room) {
+      connectPromise = null;
+      connectRoomName = null;
+    }
+  }
 }
 
 export async function disconnectLiveKitRoom() {
+  connectPromise = null;
+  connectRoomName = null;
   const current = room;
   room = null;
   handlers = null;

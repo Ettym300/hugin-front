@@ -259,8 +259,16 @@ const setCurrentChannelId = (channelId: string | null, reconnect = false) => {
   }
 };
 
+let liveKitConnectTask: Promise<void> | null = null;
+let liveKitConnectChannelId: string | null = null;
+
 async function connectLiveKitToChannel(channelId: string) {
-  try {
+  if (liveKitConnectChannelId === channelId && liveKitConnectTask) {
+    return liveKitConnectTask;
+  }
+
+  liveKitConnectChannelId = channelId;
+  liveKitConnectTask = (async () => {
     if (getStorageBoolean(StorageKeys.voiceUseTurnServers, true)) {
       await postGenerateCredential().catch(() => {});
     }
@@ -378,8 +386,17 @@ async function connectLiveKitToChannel(channelId: string) {
         }
       }
     });
+  })();
+
+  try {
+    await liveKitConnectTask;
   } catch (err) {
     log("RTC", "Failed to connect LiveKit", err);
+  } finally {
+    if (liveKitConnectChannelId === channelId) {
+      liveKitConnectTask = null;
+      liveKitConnectChannelId = null;
+    }
   }
 }
 
