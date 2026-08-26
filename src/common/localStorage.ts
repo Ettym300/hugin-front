@@ -27,6 +27,7 @@ export const StorageKeys = {
   voiceInputMode: "voiceInputMode",
   voiceMicConstraints: "voiceMicConstraints",
   voiceInputGain: "voiceInputGain",
+  voiceOutputGain: "voiceOutputGain",
   voiceUseTurnServers: "useTurnServers",
   voiceStageHeight: "voiceStageHeight",
   PTTBoundKeys: "pttBoundKeys",

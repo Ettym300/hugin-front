@@ -719,6 +719,8 @@
       "leaveCall": "You must leave the call first",
       "inputDevices": "Input Devices",
       "outputDevices": "Output Devices",
+      "outputVolume": "Output Volume",
+      "outputVolumeDescription": "Overall volume of what you hear in calls. Above 100% amplifies audio (like Discord).",
       "default": "System Default",
       "inputConstraints": {
         "echoCancelation": "Echo Cancellation",

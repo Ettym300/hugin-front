@@ -15,6 +15,10 @@ import {
   LIVEKIT_SCREEN_AUDIO_PUBLISH_OPTIONS,
   LIVEKIT_VOICE_AUDIO_PRESET
 } from "./livekitAudio";
+import {
+  clampVoiceVolumeLinear,
+  effectiveRemoteVolume
+} from "@/common/voiceAudioSettings";
 
 export type LiveKitAuth = {
   url: string;
@@ -52,6 +56,8 @@ const remoteAudioElements = new Map<string, HTMLMediaElement>();
 const remoteVolumes = new Map<string, number>();
 let deafened = false;
 let currentSinkId: string | undefined;
+/** webAudioMix enables GainNode volumes > 1 (Discord-style boost). */
+const LIVEKIT_WEB_AUDIO_MIX = true;
 
 function audioKey(userId: string, source: Track.Source) {
   return `${userId}:${source}`;
@@ -59,7 +65,10 @@ function audioKey(userId: string, source: Track.Source) {
 
 function volumeFor(userId: string, source: Track.Source) {
   if (deafened && source === Track.Source.Microphone) return 0;
-  return Math.min(1, remoteVolumes.get(audioKey(userId, source)) ?? 1);
+  const userVol = clampVoiceVolumeLinear(
+    remoteVolumes.get(audioKey(userId, source)) ?? 1
+  );
+  return effectiveRemoteVolume(userVol);
 }
 
 function applyVolume(userId: string, source: Track.Source) {
@@ -68,11 +77,14 @@ function applyVolume(userId: string, source: Track.Source) {
   if (!track) return;
 
   const volume = volumeFor(userId, source);
-  const element = remoteAudioElements.get(key);
   track.setVolume(volume);
-  if (element) {
-    element.volume = volume;
-    element.muted = volume <= 0;
+  // With webAudioMix, LiveKit mutes the element and plays via GainNode.
+  if (!LIVEKIT_WEB_AUDIO_MIX) {
+    const element = remoteAudioElements.get(key);
+    if (element) {
+      element.volume = Math.min(1, volume);
+      element.muted = volume <= 0;
+    }
   }
 }
 
@@ -157,8 +169,19 @@ export function setLiveKitRemoteVolume(
   volume: number,
   source: Track.Source = Track.Source.Microphone
 ) {
-  remoteVolumes.set(audioKey(userId, source), volume);
+  remoteVolumes.set(audioKey(userId, source), clampVoiceVolumeLinear(volume));
   applyVolume(userId, source);
+}
+
+/** Re-apply all remote volumes after master output gain changes. */
+export function reapplyLiveKitRemoteVolumes() {
+  for (const key of remoteAudioTracks.keys()) {
+    const sep = key.lastIndexOf(":");
+    if (sep < 0) continue;
+    const userId = key.slice(0, sep);
+    const source = key.slice(sep + 1) as Track.Source;
+    applyVolume(userId, source);
+  }
 }
 
 export function setLiveKitAudioOutput(deviceId: string) {
@@ -183,6 +206,7 @@ export async function connectLiveKitRoom(
   const nextRoom = new Room({
     adaptiveStream: true,
     dynacast: true,
+    webAudioMix: LIVEKIT_WEB_AUDIO_MIX,
     audioCaptureDefaults: {
       echoCancellation: true,
       noiseSuppression: true,

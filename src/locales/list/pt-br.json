@@ -524,6 +524,8 @@
             "stopButton": "Parar",
             "default": "Padrão do sistema",
             "outputDevices": "Dispositivos de saída",
+            "outputVolume": "Volume do alto-falante",
+            "outputVolumeDescription": "Volume geral do que você ouve nas calls. Acima de 100% amplifica o áudio (como no Discord).",
             "inputMode": "Modo de entrada",
             "openMic": "Microfone aberto",
             "voiceActivity": "Atividade de voz",

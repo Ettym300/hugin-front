@@ -31,6 +31,11 @@ import { setLiveKitRemoteVolume } from "@/chat-api/livekit/livekitRoom";
 import { Track } from "livekit-client";
 import { t } from "@nerimity/i18lite";
 import { StorageKeys, useLocalStorage } from "@/common/localStorage";
+import {
+  clampVoiceVolumeLinear,
+  effectiveRemoteVolume
+} from "@/common/voiceAudioSettings";
+import { setMediaElementVolume } from "@/common/voicePlaybackVolume";
 
 const [showParticipants, setShowParticipants] = createSignal(true);
 
@@ -500,22 +505,29 @@ function VideoStream(props: {
   const [playing, setPlaying] = createSignal(false);
 
   const liveVolume = () =>
-    props.userId ? (cachedLiveVolumes[props.userId] ?? 1) : 1;
+    props.userId
+      ? clampVoiceVolumeLinear(cachedLiveVolumes[props.userId] ?? 1)
+      : 1;
   const isVolumeMuted = () => liveVolume() === 0;
   const showVolumeControls = () => !props.mute && !!props.userId;
   const showFullscreen = () => !props.filmstrip;
 
+  const applyElementVolume = (el: HTMLMediaElement, userVol: number) => {
+    setMediaElementVolume(el, effectiveRemoteVolume(userVol));
+  };
+
   const applyVolume = (next: number) => {
-    const clamped = Math.max(0, Math.min(1, next));
+    const clamped = clampVoiceVolumeLinear(next);
     if (!props.userId) return;
     setCachedLiveVolumes(props.userId, clamped);
-    if (videoEl) videoEl.volume = clamped;
     if (isLiveKitEnabled()) {
       setLiveKitRemoteVolume(
         props.userId,
         clamped,
         Track.Source.ScreenShareAudio
       );
+    } else if (videoEl) {
+      applyElementVolume(videoEl, clamped);
     }
   };
 
@@ -525,17 +537,17 @@ function VideoStream(props: {
 
   createEffect(() => {
     const userId = props.userId;
-    if (!userId) return;
-    const vol = cachedLiveVolumes[userId] ?? 1;
-    if (videoEl && videoEl.volume !== vol) videoEl.volume = vol;
+    if (!userId || !videoEl || isLiveKitEnabled()) return;
+    const vol = clampVoiceVolumeLinear(cachedLiveVolumes[userId] ?? 1);
+    applyElementVolume(videoEl, vol);
   });
 
   createEffect(
     on(
       () => props.mediaStream,
       () => {
-        if (!videoEl || !playing()) return;
-        videoEl.volume = liveVolume();
+        if (!videoEl || !playing() || isLiveKitEnabled()) return;
+        applyElementVolume(videoEl, liveVolume());
       }
     )
   );
@@ -550,8 +562,13 @@ function VideoStream(props: {
       .play()
       .then(() => {
         setPlaying(true);
-        el.muted = props.mute || false;
-        el.volume = liveVolume();
+        if (props.mute) {
+          el.muted = true;
+        } else if (!isLiveKitEnabled()) {
+          applyElementVolume(el, liveVolume());
+        } else {
+          el.muted = false;
+        }
       })
       .catch(() => {});
   };
@@ -559,7 +576,15 @@ function VideoStream(props: {
   createEffect(() => {
     const el = videoEl;
     if (!el || !playing()) return;
-    el.muted = !!props.mute;
+    if (props.mute) {
+      el.muted = true;
+      return;
+    }
+    if (!isLiveKitEnabled()) {
+      applyElementVolume(el, liveVolume());
+    } else {
+      el.muted = false;
+    }
   });
 
   const attachStream = (el?: HTMLVideoElement) => {
@@ -603,8 +628,13 @@ function VideoStream(props: {
       if (!el) return;
       if (!el.paused && el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
         setPlaying(true);
-        el.muted = !!props.mute;
-        el.volume = liveVolume();
+        if (props.mute) {
+          el.muted = true;
+        } else if (!isLiveKitEnabled()) {
+          applyElementVolume(el, liveVolume());
+        } else {
+          el.muted = false;
+        }
         window.clearInterval(interval);
         return;
       }
@@ -662,7 +692,7 @@ function VideoStream(props: {
               <input
                 type="range"
                 min={0}
-                max={1}
+                max={2}
                 step={0.01}
                 value={liveVolume()}
                 onInput={(event) => {

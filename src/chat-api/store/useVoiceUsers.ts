@@ -28,8 +28,11 @@ import {
 } from "@/common/noiseSuppressor";
 import {
   getVoiceMicConstraints,
-  resolveNoiseSuppressionMode
+  resolveNoiseSuppressionMode,
+  clampVoiceVolumeLinear,
+  effectiveRemoteVolume
 } from "@/common/voiceAudioSettings";
+import { setMediaElementVolume } from "@/common/voicePlaybackVolume";
 import env from "@/common/env";
 import { ConnectionState, Track } from "livekit-client";
 import {
@@ -38,6 +41,7 @@ import {
   publishLiveKitScreenShare,
   setLiveKitDeafened,
   setLiveKitMicrophoneEnabled,
+  reapplyLiveKitRemoteVolumes,
   setLiveKitRemoteVolume,
   setLiveKitScreenShareSubscribed,
   unpublishLiveKitScreenShare
@@ -340,16 +344,13 @@ async function connectLiveKitToChannel(channelId: string) {
         }
 
         if (source === Track.Source.Microphone && audioElement) {
-          const volume = cachedVolumes[userId] || 1;
-          audioElement.volume = Math.min(1, volume);
-          audioElement.muted = deafened.enabled;
+          const volume = clampVoiceVolumeLinear(cachedVolumes[userId] || 1);
           setVoiceUsers(channelId, userId, "audio", audioElement as HTMLAudioElement);
           setLiveKitRemoteVolume(userId, volume, Track.Source.Microphone);
         }
 
         if (source === Track.Source.ScreenShareAudio && audioElement) {
-          const volume = cachedLiveVolumes[userId] || 1;
-          audioElement.volume = Math.min(1, volume);
+          const volume = clampVoiceVolumeLinear(cachedLiveVolumes[userId] || 1);
           setLiveKitRemoteVolume(userId, volume, Track.Source.ScreenShareAudio);
         }
 
@@ -645,9 +646,9 @@ const createPeer = (voiceUser: VoiceUser, signal?: SimplePeer.SignalData) => {
     if (!streams) return;
 
     const audio = newVoiceUser.audio || new Audio();
-    const volume = cachedVolumes[userId] || 1;
-    audio.volume = volume;
-    audio.muted = deafened.enabled;
+    const volume = clampVoiceVolumeLinear(cachedVolumes[userId] || 1);
+    setMediaElementVolume(audio, effectiveRemoteVolume(volume));
+    if (deafened.enabled) audio.muted = true;
     const deviceId = getStorageString(StorageKeys.outputDeviceId, undefined);
     if (deviceId) {
       audio.setSinkId(JSON.parse(deviceId));
@@ -1132,6 +1133,21 @@ const videoEnabled = (userId: string) => {
   return undefined;
 };
 
+function reapplyAllRemoteVolumes() {
+  reapplyLiveKitRemoteVolumes();
+  if (isLiveKitEnabled()) return;
+  const current = currentVoiceUser();
+  if (!current) return;
+  const users = getVoiceUsersByChannelId(current.channelId);
+  for (const voiceUser of users) {
+    const audio = voiceUser.audio;
+    if (!audio) continue;
+    const volume = clampVoiceVolumeLinear(cachedVolumes[voiceUser.userId] || 1);
+    setMediaElementVolume(audio, effectiveRemoteVolume(volume));
+    if (deafened.enabled) audio.muted = true;
+  }
+}
+
 export default function useVoiceUsers() {
   return {
     createPeer,
@@ -1157,6 +1173,7 @@ export default function useVoiceUsers() {
     isLiveWatched,
     setLiveWatched,
     toggleLiveWatched,
-    isLiveKitEnabled
+    isLiveKitEnabled,
+    reapplyAllRemoteVolumes
   };
 }

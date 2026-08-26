@@ -46,6 +46,11 @@ import {
 } from "@/chat-api/store/useVoiceUsers";
 import { setLiveKitRemoteVolume } from "@/chat-api/livekit/livekitRoom";
 import { Track } from "livekit-client";
+import {
+  clampVoiceVolumeLinear,
+  effectiveRemoteVolume
+} from "@/common/voiceAudioSettings";
+import { setMediaElementVolume } from "@/common/voicePlaybackVolume";
 
 import {
   SteppedSlider,
@@ -306,9 +311,10 @@ export default function MemberContextMenu(props: Props) {
 
 function Header(props: { userId: string }) {
   const setVoiceVolume = (volume: number) => {
-    setCachedVolumes(props.userId, volume);
+    setCachedVolumes(props.userId, clampVoiceVolumeLinear(volume));
   };
-  const voiceVolume = () => cachedVolumes[props.userId] || 1;
+  const voiceVolume = () =>
+    clampVoiceVolumeLinear(cachedVolumes[props.userId] || 1);
 
   const store = useStore();
   const user = () => store.users.get(props.userId);
@@ -320,24 +326,16 @@ function Header(props: { userId: string }) {
     );
   const audio = () => voiceUser()?.audio;
 
-  createEffect(
-    on(audio, () => {
-      const audio = voiceUser()?.audio;
-      if (!audio) return;
-      console.log(audio.volume);
-      setVoiceVolume(audio.volume);
-    })
-  );
-
   const isMe = () => user()?.id === store.account.user()?.id;
 
   const onVolumeChange = (e: any) => {
-    setVoiceVolume(Number(e.currentTarget?.value!));
-    const audio = voiceUser()?.audio;
-    const volume = Number(e.currentTarget?.value!);
-    if (audio) audio.volume = volume;
+    const volume = clampVoiceVolumeLinear(Number(e.currentTarget?.value!));
+    setVoiceVolume(volume);
     if (store.voiceUsers.isLiveKitEnabled()) {
       setLiveKitRemoteVolume(props.userId, volume, Track.Source.Microphone);
+    } else {
+      const audio = voiceUser()?.audio;
+      if (audio) setMediaElementVolume(audio, effectiveRemoteVolume(volume));
     }
   };
 
@@ -352,11 +350,14 @@ function Header(props: { userId: string }) {
 
       <Show when={audio() && !isMe()}>
         <div class={styles.voiceVolume}>
-          <div class={styles.label}>{t("userContextMenu.callVolume")}</div>
+          <div class={styles.label}>
+            {t("userContextMenu.callVolume")} ({Math.round(voiceVolume() * 100)}
+            %)
+          </div>
           <input
             type="range"
             min={0}
-            max={1}
+            max={2}
             step={0.01}
             value={voiceVolume()}
             onInput={onVolumeChange}

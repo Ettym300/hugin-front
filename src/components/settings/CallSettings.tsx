@@ -26,8 +26,12 @@ import { preloadNoiseSuppressor } from "@/common/noiseSuppressor";
 import {
   NoiseSuppressionMode,
   VoiceMicConstraints,
-  resolveNoiseSuppressionMode
+  resolveNoiseSuppressionMode,
+  getOutputGainPercent,
+  setOutputGainPercent
 } from "@/common/voiceAudioSettings";
+import Slider from "../ui/Slider";
+import Text from "../ui/Text";
 
 const Container = styled("div")`
   display: flex;
@@ -218,10 +222,12 @@ function InputDevices() {
 }
 
 function OutputDevices() {
+  const { voiceUsers } = useStore();
   const [devices, setDevices] = createSignal<MediaDeviceInfo[]>([]);
   const [outputDeviceId, setOutputDeviceId] = useLocalStorage<
     string | undefined
   >(StorageKeys.outputDeviceId, undefined);
+  const [outputGain, setOutputGain] = createSignal(getOutputGainPercent());
 
   const dropDownItem = () => {
     return devices().map((d) => ({
@@ -247,16 +253,45 @@ function OutputDevices() {
     });
   });
 
+  const onOutputGainChange = (value: number) => {
+    setOutputGain(value);
+  };
+
+  const onOutputGainEnd = () => {
+    setOutputGainPercent(outputGain());
+    voiceUsers.reapplyAllRemoteVolumes();
+  };
+
   return (
-    <SettingsBlock icon="speaker" label={t("settings.call.outputDevices")}>
-      <DropDown
-        items={dropDownItem()}
-        selectedId={
-          outputDeviceId() || defaultDeviceId() || t("settings.call.default")
-        }
-        onChange={(e) => setOutputDeviceId(e.id)}
-      />
-    </SettingsBlock>
+    <SettingsGroup>
+      <SettingsBlock icon="speaker" label={t("settings.call.outputDevices")}>
+        <DropDown
+          items={dropDownItem()}
+          selectedId={
+            outputDeviceId() || defaultDeviceId() || t("settings.call.default")
+          }
+          onChange={(e) => setOutputDeviceId(e.id)}
+        />
+      </SettingsBlock>
+      <SettingsBlock
+        icon="volume_up"
+        label={t("settings.call.outputVolume")}
+        description={t("settings.call.outputVolumeDescription")}
+      >
+        <div style={{ display: "flex", "align-items": "center", gap: "8px" }}>
+          <Slider
+            min={0}
+            max={200}
+            value={outputGain()}
+            onChange={(v) => onOutputGainChange(Number(v))}
+            onEnd={onOutputGainEnd}
+          />
+          <Text style={{ width: "48px", "text-align": "center" }}>
+            {outputGain()}%
+          </Text>
+        </div>
+      </SettingsBlock>
+    </SettingsGroup>
   );
 }
 
