@@ -7,7 +7,8 @@ import {
   RemoteTrackPublication,
   RemoteParticipant,
   LocalTrackPublication,
-  ConnectionState
+  ConnectionState,
+  VideoQuality
 } from "livekit-client";
 import { log } from "@/common/logger";
 import {
@@ -204,7 +205,7 @@ export async function connectLiveKitRoom(
   deafened = false;
 
   const nextRoom = new Room({
-    adaptiveStream: true,
+    adaptiveStream: false,
     dynacast: true,
     webAudioMix: LIVEKIT_WEB_AUDIO_MIX,
     audioCaptureDefaults: {
@@ -274,6 +275,16 @@ export async function connectLiveKitRoom(
           track as RemoteAudioTrack,
           publication.source
         );
+      } else if (
+        publication.source === Track.Source.ScreenShare ||
+        publication.source === Track.Source.Camera
+      ) {
+        // Ask SFU for full quality even with dynacast (screen share needs pixels).
+        try {
+          publication.setVideoQuality(VideoQuality.HIGH);
+        } catch {
+          /* older client */
+        }
       }
 
       handlers?.onRemoteTrack({
@@ -332,12 +343,28 @@ export async function connectLiveKitRoom(
       if (pub.source === Track.Source.Microphone && !pub.isSubscribed) {
         pub.setSubscribed(true);
       }
+      if (
+        (pub.source === Track.Source.ScreenShare ||
+          pub.source === Track.Source.ScreenShareAudio) &&
+        !pub.isSubscribed
+      ) {
+        pub.setSubscribed(true);
+      }
+      if (pub.source === Track.Source.ScreenShare) {
+        handlers?.onScreenSharePublished(participant.identity);
+      }
     }
   }
 
   nextRoom.on(RoomEvent.TrackPublished, (publication, participant) => {
     if (!(participant instanceof RemoteParticipant)) return;
     if (publication.source === Track.Source.Microphone) {
+      publication.setSubscribed(true);
+    }
+    if (
+      publication.source === Track.Source.ScreenShare ||
+      publication.source === Track.Source.ScreenShareAudio
+    ) {
       publication.setSubscribed(true);
     }
     if (publication.source === Track.Source.ScreenShare) {
@@ -351,14 +378,6 @@ export async function connectLiveKitRoom(
       handlers?.onScreenShareUnpublished(participant.identity);
     }
   });
-
-  for (const participant of nextRoom.remoteParticipants.values()) {
-    for (const pub of participant.trackPublications.values()) {
-      if (pub.source === Track.Source.ScreenShare) {
-        handlers?.onScreenSharePublished(participant.identity);
-      }
-    }
-  }
 
   log("RTC", "LiveKit connected", auth.room);
   return nextRoom;

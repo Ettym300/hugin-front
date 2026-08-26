@@ -398,7 +398,9 @@ function VoiceTile(props: {
   } | null>(null);
   const stream = () => voiceUsers.videoEnabled(props.voiceUser.userId);
   const watching = () => voiceUsers.isLiveWatched(props.voiceUser.userId);
-  const showVideo = () => !!stream() && watching();
+  // Empty LiveKit placeholders must not render as a black <video>.
+  const showVideo = () =>
+    watching() && voiceUsers.hasLiveVideoFrames(props.voiceUser.userId);
   const isSelf = () => props.voiceUser.userId === account.user()?.id;
   const user = () => props.voiceUser.user();
   const talking = () => props.voiceUser.voiceActivity;

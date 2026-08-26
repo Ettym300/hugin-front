@@ -327,6 +327,11 @@ async function connectLiveKitToChannel(channelId: string) {
       },
       onScreenSharePublished: (userId) => {
         setLivePublishers(userId, true);
+        // Discord-style: show remote lives automatically once they publish.
+        if (userId !== useAccount().user()?.id) {
+          setWatchedLives(userId, true);
+          applyLiveWatch(userId, true);
+        }
       },
       onScreenShareUnpublished: (userId) => {
         setLivePublishers(userId, false);
@@ -341,6 +346,10 @@ async function connectLiveKitToChannel(channelId: string) {
 
         if (track.kind === "video") {
           applyIncomingVideoWatch(userId, track);
+          // Ensure LiveKit screen share is visible (watch may have been set first).
+          if (isLiveKitEnabled() && watchedLives[userId]) {
+            track.enabled = true;
+          }
         }
 
         if (source === Track.Source.Microphone && audioElement) {
@@ -1086,6 +1095,11 @@ const applyIncomingVideoWatch = (
     track.enabled = true;
     return;
   }
+  // LiveKit: never leave remote video disabled — subscribe/unsubscribe controls bandwidth.
+  if (isLiveKitEnabled()) {
+    track.enabled = true;
+    return;
+  }
   track.enabled = !!watchedLives[userId];
 };
 
@@ -1120,8 +1134,10 @@ const videoEnabled = (userId: string) => {
     return currentUser?.videoStream;
   }
   const remote = activeRemoteStream(userId, "video");
-  if (remote) return remote;
-  // LiveKit: screen share is only subscribed after watch — use publisher flag.
+  if (remote?.getVideoTracks().some((t) => t.readyState !== "ended")) {
+    return remote;
+  }
+  // LiveKit: publisher flag keeps LIVE badge / stage slot before TrackSubscribed.
   if (isLiveKitEnabled() && livePublishers[userId]) {
     let placeholder = livePublisherPlaceholders.get(userId);
     if (!placeholder) {
@@ -1131,6 +1147,12 @@ const videoEnabled = (userId: string) => {
     return placeholder;
   }
   return undefined;
+};
+
+/** True when there is at least one live video track (not an empty placeholder). */
+const hasLiveVideoFrames = (userId: string) => {
+  const stream = videoEnabled(userId);
+  return !!stream?.getVideoTracks().some((t) => t.readyState === "live");
 };
 
 function reapplyAllRemoteVolumes() {
@@ -1160,6 +1182,7 @@ export default function useVoiceUsers() {
     currentUser: currentVoiceUser,
     activeRemoteStream,
     videoEnabled,
+    hasLiveVideoFrames,
     toggleMic,
     restartMic,
     setVideoStream,
