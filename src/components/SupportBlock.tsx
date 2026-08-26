@@ -1,4 +1,3 @@
-import { A } from "solid-navigator";
 import { styled } from "solid-styled-components";
 import ItemContainer from "./ui/LegacyItem";
 import { FlexRow } from "./ui/Flexbox";
@@ -29,38 +28,32 @@ const SettingItemContainer = styled(ItemContainer)<{ nested?: boolean }>`
 `;
 export function SupportBlock() {
   return (
-    <A
-      href="https://ko-fi.com/supertiger"
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{ "text-decoration": "none" }}
+    <SettingItemContainer
+      style={{
+        background: "var(--alert-color)",
+        "border-radius": "6px",
+        height: "initial",
+        padding: "6px",
+        "align-items": "start",
+        "flex-direction": "column",
+        cursor: "default"
+      }}
     >
-      <SettingItemContainer
-        style={{
-          background: "var(--alert-color)",
-          "border-radius": "6px",
-          height: "initial",
-          padding: "6px",
-          "align-items": "start",
-          "flex-direction": "column"
-        }}
-      >
-        <FlexRow gap={4}>
-          <Icon
-            style={{ "align-self": "start", "margin-top": "3px" }}
-            name="favorite"
-            size={18}
-          />
+      <FlexRow gap={4}>
+        <Icon
+          style={{ "align-self": "start", "margin-top": "3px" }}
+          name="favorite"
+          size={18}
+        />
+        <div>
+          <Text style={{ "font-weight": "bold" }}>
+            {t("supportBlock.support")}
+          </Text>
           <div>
-            <Text style={{ "font-weight": "bold" }}>
-              {t("supportBlock.support")}
-            </Text>
-            <div>
-              <Text size={12}>{t("supportBlock.supportDescription")}</Text>
-            </div>
+            <Text size={12}>{t("supportBlock.supportDescription")}</Text>
           </div>
-        </FlexRow>
-      </SettingItemContainer>
-    </A>
+        </div>
+      </FlexRow>
+    </SettingItemContainer>
   );
 }
