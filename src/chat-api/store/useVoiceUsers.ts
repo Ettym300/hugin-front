@@ -903,11 +903,8 @@ const enableMic = async () => {
     return;
   }
   const rawStream = await getUserMic();
-  let noiseMode = resolveNoiseSuppressionMode(getVoiceMicConstraints());
-  // LiveKit already encodes Opus — skip RNNoise re-encode.
-  if (isLiveKitEnabled() && noiseMode === "enhanced") {
-    noiseMode = "browser";
-  }
+  const noiseMode = resolveNoiseSuppressionMode(getVoiceMicConstraints());
+  // Process before publish: LiveKit encodes Opus of whatever track we give it.
   const wrapped = await wrapMicWithNoiseSuppression(rawStream, noiseMode);
   wrapped.setGain(getMicGainLinear());
   const stream = wrapped.stream;
