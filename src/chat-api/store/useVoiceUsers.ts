@@ -310,6 +310,17 @@ async function connectLiveKitToChannel(channelId: string) {
         setWatchedLives(userId, false);
         livePublisherPlaceholders.delete(userId);
       },
+      onScreenShareSync: (liveUserIds) => {
+        const stillLive = new Set(liveUserIds);
+        for (const userId of Object.keys(livePublishers)) {
+          if (livePublishers[userId] && !stillLive.has(userId)) {
+            cancelPendingVideoRemoval(userId);
+            setLivePublishers(userId, false);
+            setWatchedLives(userId, false);
+            livePublisherPlaceholders.delete(userId);
+          }
+        }
+      },
       onRemoteTrack: ({ userId, track, stream, source, audioElement }) => {
         const voiceUser = getVoiceUser(channelId, userId);
         if (!voiceUser) return;

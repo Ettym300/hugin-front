@@ -262,7 +262,15 @@ const constructConstraints = async (
       electronWindowAPI()?.isElectron && !audio
         ? false
         : {
-            echoCancellation: false,
+            // Browsers can't reliably isolate a single window's audio session (esp. on
+            // Windows) — sharing "a window" often ends up capturing the full system/tab
+            // audio loopback, which includes this call's own remote playback, causing the
+            // sharer to hear themselves echoed back. Outside Electron we have no native
+            // loopback control, so keep echo cancellation on to let the browser filter that
+            // self-echo out. Electron keeps its own dedicated loopback + "Prevent
+            // Application Echo" path for this (see appLoopbackStartV2 below), so its
+            // behavior here is unchanged.
+            echoCancellation: !electronWindowAPI()?.isElectron,
             noiseSuppression: false,
             autoGainControl: false
           }

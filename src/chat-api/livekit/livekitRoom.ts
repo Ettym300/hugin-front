@@ -47,6 +47,8 @@ export type LiveKitTrackHandlers = {
   }) => void;
   onScreenSharePublished: (userId: string) => void;
   onScreenShareUnpublished: (userId: string) => void;
+  /** Reconcile LIVE state after a reconnect gap — userIds still actually sharing. */
+  onScreenShareSync: (liveUserIds: string[]) => void;
   onParticipantConnected: (userId: string) => void;
   onParticipantDisconnected: (userId: string) => void;
   onConnectionState: (state: ConnectionState) => void;
@@ -298,6 +300,19 @@ export async function connectLiveKitRoom(
     log("RTC", "LiveKit reconnected — re-subscribing remote tracks");
     // Do not re-fire onScreenSharePublished (causes UI churn / subscribe storms).
     subscribeRemotePublications(nextRoom);
+    // A remote screen share can be unpublished entirely during the reconnect
+    // gap — its TrackUnpublished event never reaches us, leaving the LIVE
+    // badge stuck on. Reconcile against what's actually still published.
+    const liveUserIds: string[] = [];
+    for (const participant of nextRoom.remoteParticipants.values()) {
+      for (const pub of participant.trackPublications.values()) {
+        if (pub.source === Track.Source.ScreenShare) {
+          liveUserIds.push(participant.identity);
+          break;
+        }
+      }
+    }
+    handlers?.onScreenShareSync(liveUserIds);
   });
 
   nextRoom.on(RoomEvent.ParticipantConnected, (participant) => {
