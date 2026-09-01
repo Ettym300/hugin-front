@@ -41,6 +41,9 @@ export type LiveKitTrackHandlers = {
   onRemoteTrackRemoved: (opts: {
     userId: string;
     trackSid: string;
+    /** The removed MediaStreamTrack's own id — lets the caller drop just this
+     * track and not a freshly republished one that arrived in the meantime. */
+    mediaTrackId: string;
     kind: "audio" | "video";
     source?: Track.Source;
     audioElement?: HTMLMediaElement;
@@ -447,6 +450,7 @@ export async function connectLiveKitRoom(
       handlers?.onRemoteTrackRemoved({
         userId: participant.identity,
         trackSid: publication.trackSid,
+        mediaTrackId: track.mediaStreamTrack.id,
         kind,
         source: publication.source,
         audioElement

@@ -352,7 +352,7 @@ async function connectLiveKitToChannel(channelId: string) {
 
         updateConnectionStatus(voiceUser, "CONNECTED");
       },
-      onRemoteTrackRemoved: ({ userId, kind }) => {
+      onRemoteTrackRemoved: ({ userId, kind, mediaTrackId }) => {
         const voiceUser = getVoiceUser(channelId, userId);
         if (!voiceUser?.streamWithTracks) return;
 
@@ -366,10 +366,15 @@ async function connectLiveKitToChannel(channelId: string) {
             const filtered = latest.streamWithTracks
               .map((entry) => ({
                 stream: entry.stream,
+                // Only drop the specific track that unsubscribed — a
+                // stop+restart within the grace window republishes a new
+                // track id, which must survive this stale timer.
                 tracks: entry.stream
                   .getTracks()
                   .filter(
-                    (t) => t.readyState !== "ended" && t.kind !== "video"
+                    (t) =>
+                      t.readyState !== "ended" &&
+                      (t.kind !== "video" || t.id !== mediaTrackId)
                   )
               }))
               .filter((entry) => entry.tracks.length > 0);
@@ -426,9 +431,17 @@ const activeRemoteStream = (userId: string, kind: "audio" | "video") => {
       streams.find((s) => s.tracks.some((t) => t.kind === "audio"))?.stream
     );
   }
-  return voiceUser.streamWithTracks?.find((stream) =>
-    stream.tracks.find((track) => track.kind === kind)
-  )?.stream;
+  const videoStreams = voiceUser.streamWithTracks || [];
+  // A quick stop+restart of a screen share can leave the old (now-ended)
+  // stream sitting in front of the freshly republished one for a moment —
+  // prefer a stream whose track is still live so the tile doesn't freeze
+  // on the last frame of the previous share.
+  return (
+    videoStreams.find((s) =>
+      s.tracks.some((t) => t.kind === kind && t.readyState !== "ended")
+    )?.stream ||
+    videoStreams.find((s) => s.tracks.some((t) => t.kind === kind))?.stream
+  );
 };
 
 const removeAllPeers = (channelIdToRemove?: string) => {
