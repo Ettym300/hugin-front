@@ -30,8 +30,13 @@ EOF
 API_URL="${VITE_SERVER_URL%/}"
 API_PROXY=""
 if [ -n "$API_URL" ]; then
+  # proxy_pass with a literal host resolves once at nginx startup and never
+  # again — a redeploy of the api service changes its internal IP and this
+  # container starts 502ing until it's manually restarted. Routing through a
+  # variable forces nginx to re-resolve via the resolver directive instead.
   API_PROXY="  location /api/ {
-    proxy_pass ${API_URL}/api/;
+    set \$upstream_api ${API_URL};
+    proxy_pass \$upstream_api/api/;
     proxy_http_version 1.1;
     proxy_set_header Host \$proxy_host;
     proxy_set_header X-Real-IP \$remote_addr;
@@ -48,7 +53,8 @@ CDN_UPSTREAM_URL="${CDN_UPSTREAM_URL%/}"
 CDN_PROXY=""
 if [ -n "$CDN_UPSTREAM_URL" ]; then
   CDN_PROXY="  location ~ ^/(avatars|profile_banners|attachments|emojis|proxy)/ {
-    proxy_pass ${CDN_UPSTREAM_URL};
+    set \$upstream_cdn ${CDN_UPSTREAM_URL};
+    proxy_pass \$upstream_cdn;
     proxy_http_version 1.1;
     proxy_set_header Host \$proxy_host;
     proxy_set_header X-Real-IP \$remote_addr;
@@ -63,7 +69,8 @@ WS_URL="${VITE_WS_URL%/}"
 WS_PROXY=""
 if [ -n "$WS_URL" ]; then
   WS_PROXY="  location /socket.io/ {
-    proxy_pass ${WS_URL}/socket.io/;
+    set \$upstream_ws ${WS_URL};
+    proxy_pass \$upstream_ws/socket.io/;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection \"upgrade\";
@@ -81,7 +88,8 @@ LIVEKIT_URL="${LIVEKIT_UPSTREAM%/}"
 LIVEKIT_PROXY=""
 if [ -n "$LIVEKIT_URL" ]; then
   LIVEKIT_PROXY="  location /livekit/ {
-    proxy_pass ${LIVEKIT_URL}/;
+    set \$upstream_livekit ${LIVEKIT_URL};
+    proxy_pass \$upstream_livekit/;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection \"upgrade\";
@@ -101,6 +109,11 @@ server {
   root /usr/share/nginx/html;
   index index.html;
   client_max_body_size 20M;
+
+  # Docker's embedded DNS — combined with the \$upstream_* variables in each
+  # proxy_pass above, this makes nginx re-resolve upstream hostnames every
+  # 10s instead of caching the IP for the lifetime of the worker process.
+  resolver 127.0.0.11 valid=10s ipv6=off;
 
   gzip on;
   gzip_types text/plain text/css application/javascript application/json image/svg+xml;
