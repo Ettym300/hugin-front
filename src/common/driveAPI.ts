@@ -122,3 +122,27 @@ export const getFile = async (fileId: string, fields?: string) => {
   });
   return res.result;
 };
+
+/**
+ * Reads metadata for a *publicly shared* file via a plain REST call, using
+ * only the API key — no gapi/OAuth session needed. Attachments are shared
+ * with "anyone with the link", so any viewer should be able to see them
+ * regardless of whether they've personally linked Google Drive; routing
+ * this through gapi's OAuth-aware client made it depend on a session that
+ * only the uploader (and anyone who happened to already be signed in)
+ * actually had, so everyone else saw "couldn't get file".
+ */
+export const getPublicFile = async (
+  fileId: string,
+  fields = "name,size,modifiedTime,webContentLink,mimeType,thumbnailLink"
+): Promise<gapi.client.drive.File | null> => {
+  if (!env.GOOGLE_API_KEY) return null;
+  const url = new URL(
+    `https://www.googleapis.com/drive/v3/files/${fileId}`
+  );
+  url.searchParams.set("key", env.GOOGLE_API_KEY);
+  url.searchParams.set("fields", fields);
+  const res = await fetch(url.toString()).catch(() => undefined);
+  if (!res || !res.ok) return null;
+  return res.json();
+};

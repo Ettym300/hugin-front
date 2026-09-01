@@ -2,11 +2,7 @@ import styles from "./styles.module.scss";
 import { AttachmentProviders, RawAttachment } from "@/chat-api/RawData";
 import { classNames, conditionalClass } from "@/common/classNames";
 import { formatMillisElapsedDigital } from "@/common/date";
-import {
-  getFile,
-  googleApiInitialized,
-  initializeGoogleDrive
-} from "@/common/driveAPI";
+import { getPublicFile } from "@/common/driveAPI";
 import { electronWindowAPI } from "@/common/Electron";
 import env from "@/common/env";
 import { prettyBytes } from "@/common/prettyBytes";
@@ -20,7 +16,6 @@ import {
   createSignal,
   on,
   onCleanup,
-  onMount,
   Show
 } from "solid-js";
 import { t } from "@nerimity/i18lite";
@@ -53,17 +48,11 @@ export const GoogleDriveAudioEmbed = (props: { attachment: RawAttachment }) => {
   const [file, setFile] = createSignal<gapi.client.drive.File | null>(null);
   const [error, setError] = createSignal<string | undefined>();
 
-  onMount(async () => {
-    await initializeGoogleDrive();
-  });
-
   createEffect(async () => {
-    if (!googleApiInitialized()) return;
-    const file = await getFile(
+    const file = await getPublicFile(
       props.attachment.fileId!,
-      "name, size, modifiedTime, webContentLink, mimeType"
+      "name,size,modifiedTime,webContentLink,mimeType"
     ).catch((e) => console.log(e));
-    // const file = await getFile(props.attachment.fileId!, "*").catch((e) => console.log(e))
     if (!file) return setError(t("fileEmbed.couldNotGetFile"));
 
     if (file.mimeType !== props.attachment.mime)

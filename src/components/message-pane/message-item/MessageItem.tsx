@@ -58,11 +58,7 @@ import {
   serverDetailsByInviteCode
 } from "@/chat-api/services/ServerService";
 import { ServerVerifiedIcon } from "@/components/servers/ServerVerifiedIcon";
-import {
-  getFile,
-  googleApiInitialized,
-  initializeGoogleDrive
-} from "@/common/driveAPI";
+import { getPublicFile } from "@/common/driveAPI";
 import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 import useServerMembers, {
   ServerMember
@@ -1169,15 +1165,10 @@ const GoogleDriveVideoEmbed = (props: { attachment: RawAttachment }) => {
   const [error, setError] = createSignal<string | undefined>();
   const [t] = useTransContext();
 
-  onMount(async () => {
-    await initializeGoogleDrive();
-  });
-
   createEffect(async () => {
-    if (!googleApiInitialized()) return;
-    const file = await getFile(
+    const file = await getPublicFile(
       props.attachment.fileId!,
-      "name, size, modifiedTime, webContentLink, mimeType, thumbnailLink, videoMediaMetadata"
+      "name,size,modifiedTime,webContentLink,mimeType,thumbnailLink,videoMediaMetadata"
     ).catch((e) => console.log(e));
 
     if (!file) return setError(t("fileEmbed.videoEmbed.couldNotGetVideo"));
@@ -1448,9 +1439,6 @@ const FileEmbed = (props: {
 const GoogleDriveFileEmbed = (props: { attachment: RawAttachment }) => {
   const [file, setFile] = createSignal<gapi.client.drive.File | null>(null);
   const [error, setError] = createSignal<string | undefined>();
-  onMount(async () => {
-    await initializeGoogleDrive();
-  });
   const [t] = useTransContext();
 
   const previewUrl = () => file()?.thumbnailLink?.slice(0, -5);
@@ -1458,12 +1446,9 @@ const GoogleDriveFileEmbed = (props: { attachment: RawAttachment }) => {
     "https://drive.google.com/uc?id=" + props.attachment.fileId;
 
   createEffect(async () => {
-    if (!googleApiInitialized()) return;
-    const file = await getFile(
-      props.attachment.fileId!,
-      "name, size, modifiedTime, webContentLink, mimeType, thumbnailLink"
-    ).catch((e) => console.log(e));
-    // const file = await getFile(props.attachment.fileId!, "*").catch((e) => console.log(e))
+    const file = await getPublicFile(props.attachment.fileId!).catch((e) =>
+      console.log(e)
+    );
     if (!file) return setError(t("fileEmbed.couldNotGetFile"));
 
     if (file.mimeType !== props.attachment.mime)
