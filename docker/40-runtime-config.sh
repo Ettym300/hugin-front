@@ -30,13 +30,18 @@ EOF
 API_URL="${VITE_SERVER_URL%/}"
 API_PROXY=""
 if [ -n "$API_URL" ]; then
-  # proxy_pass with a literal host resolves once at nginx startup and never
-  # again — a redeploy of the api service changes its internal IP and this
-  # container starts 502ing until it's manually restarted. Routing through a
-  # variable forces nginx to re-resolve via the resolver directive instead.
+  # A literal proxy_pass host resolves once at nginx startup and is cached
+  # for the worker's lifetime, so a redeploy of api (new internal IP) 502s
+  # this container until it's manually restarted (`docker restart` the web
+  # container fixes it). Tried routing through a `set $upstream_*` variable
+  # + resolver to force re-resolution instead — that broke request proxying
+  # outright (confirmed: it silently turns the socket.io WS upgrade into a
+  # plain request, which engine.io then rejects; very likely breaks /api/
+  # and the CDN proxy too, both of which 404'd everything the moment this
+  # was live). Not worth the risk — back to a literal host, restart web
+  # manually after redeploying api/cdn/ws/livekit.
   API_PROXY="  location /api/ {
-    set \$upstream_api ${API_URL};
-    proxy_pass \$upstream_api/api/;
+    proxy_pass ${API_URL}/api/;
     proxy_http_version 1.1;
     proxy_set_header Host \$proxy_host;
     proxy_set_header X-Real-IP \$remote_addr;
@@ -53,8 +58,7 @@ CDN_UPSTREAM_URL="${CDN_UPSTREAM_URL%/}"
 CDN_PROXY=""
 if [ -n "$CDN_UPSTREAM_URL" ]; then
   CDN_PROXY="  location ~ ^/(avatars|profile_banners|attachments|emojis|proxy)/ {
-    set \$upstream_cdn ${CDN_UPSTREAM_URL};
-    proxy_pass \$upstream_cdn;
+    proxy_pass ${CDN_UPSTREAM_URL};
     proxy_http_version 1.1;
     proxy_set_header Host \$proxy_host;
     proxy_set_header X-Real-IP \$remote_addr;
@@ -94,8 +98,7 @@ LIVEKIT_URL="${LIVEKIT_UPSTREAM%/}"
 LIVEKIT_PROXY=""
 if [ -n "$LIVEKIT_URL" ]; then
   LIVEKIT_PROXY="  location /livekit/ {
-    set \$upstream_livekit ${LIVEKIT_URL};
-    proxy_pass \$upstream_livekit/;
+    proxy_pass ${LIVEKIT_URL}/;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection \"upgrade\";
@@ -115,11 +118,6 @@ server {
   root /usr/share/nginx/html;
   index index.html;
   client_max_body_size 20M;
-
-  # Docker's embedded DNS — combined with the \$upstream_* variables in each
-  # proxy_pass above, this makes nginx re-resolve upstream hostnames every
-  # 10s instead of caching the IP for the lifetime of the worker process.
-  resolver 127.0.0.11 valid=10s ipv6=off;
 
   gzip on;
   gzip_types text/plain text/css application/javascript application/json image/svg+xml;
