@@ -149,3 +149,16 @@ ${LIVEKIT_PROXY}
   }
 }
 EOF
+
+# proxy_pass above uses literal hostnames (hugin_api, hugin_cdn, hugin_ws, ...)
+# resolved once when nginx starts and cached for the worker's lifetime — a
+# redeploy of any of those services gives it a new internal Docker IP and
+# this container starts 502ing every proxied request until nginx re-resolves.
+# (A `set $var` + resolver was tried to force per-request resolution instead
+# — it broke the socket.io WebSocket upgrade outright, so that's out.) A
+# plain periodic reload re-reads config and re-resolves DNS with none of
+# that risk, so cron it instead of relying on someone noticing and running
+# `docker restart` by hand.
+mkdir -p /etc/crontabs
+echo '* * * * * nginx -s reload >/dev/null 2>&1' > /etc/crontabs/root
+crond -b -l 2
