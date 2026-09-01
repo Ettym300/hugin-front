@@ -68,9 +68,15 @@ fi
 WS_URL="${VITE_WS_URL%/}"
 WS_PROXY=""
 if [ -n "$WS_URL" ]; then
+  # NOTE: unlike the other proxy blocks, this one intentionally uses a
+  # literal proxy_pass, not a \$upstream_* variable. A variable target here
+  # breaks the WebSocket upgrade handshake (nginx returns it as a plain
+  # request, which engine.io then rejects with "Bad request") even with all
+  # the Upgrade/Connection headers correctly set. ws is redeployed on its
+  # own far less often than api, so the manual `docker restart` workaround
+  # for stale DNS is an acceptable trade-off here.
   WS_PROXY="  location /socket.io/ {
-    set \$upstream_ws ${WS_URL};
-    proxy_pass \$upstream_ws/socket.io/;
+    proxy_pass ${WS_URL}/socket.io/;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection \"upgrade\";
