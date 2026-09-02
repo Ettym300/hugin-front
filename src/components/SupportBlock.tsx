@@ -4,6 +4,8 @@ import { FlexRow } from "./ui/Flexbox";
 import Icon from "./ui/icon/Icon";
 import { t } from "@nerimity/i18lite";
 import Text from "./ui/Text";
+import { useCustomPortal } from "./ui/custom-portal/CustomPortal";
+import BecomeSupporterModal from "./BecomeSupporterModal";
 const SettingItemContainer = styled(ItemContainer)<{ nested?: boolean }>`
   height: 32px;
   gap: 5px;
@@ -27,8 +29,15 @@ const SettingItemContainer = styled(ItemContainer)<{ nested?: boolean }>`
   }
 `;
 export function SupportBlock() {
+  const { createPortal } = useCustomPortal();
+
+  const onClick = () => {
+    createPortal?.((close) => <BecomeSupporterModal close={close} />);
+  };
+
   return (
     <SettingItemContainer
+      onClick={onClick}
       style={{
         background: "var(--alert-color)",
         "border-radius": "6px",
@@ -36,7 +45,7 @@ export function SupportBlock() {
         padding: "6px",
         "align-items": "start",
         "flex-direction": "column",
-        cursor: "default"
+        cursor: "pointer"
       }}
     >
       <FlexRow gap={4}>

@@ -16,6 +16,15 @@ import { Presence } from "../store/useUsers";
 import { request } from "./Request";
 import ServiceEndpoints from "./ServiceEndpoints";
 
+export async function createSupporterCheckout(name: string, cpfCnpj: string) {
+  return request<{ invoiceUrl: string }>({
+    url: env.SERVER_URL + "/api/supporter/checkout",
+    method: "POST",
+    body: { name, cpfCnpj },
+    useToken: true
+  });
+}
+
 export async function createGoogleDriveAccountLink() {
   return request({
     url: env.SERVER_URL + "/api/connections/google-drive/create-link",
