@@ -25,6 +25,19 @@ export async function createSupporterCheckout(name: string, cpfCnpj: string) {
   });
 }
 
+export async function createBadgeCheckout(
+  badgeBit: number,
+  name: string,
+  cpfCnpj: string
+) {
+  return request<{ invoiceUrl: string }>({
+    url: env.SERVER_URL + "/api/shop/badge-checkout",
+    method: "POST",
+    body: { badgeBit, name, cpfCnpj },
+    useToken: true
+  });
+}
+
 export async function createGoogleDriveAccountLink() {
   return request({
     url: env.SERVER_URL + "/api/connections/google-drive/create-link",

@@ -24,7 +24,8 @@ import { RawInventoryItem } from "@/chat-api/RawData";
 import { fetchInventory, toggleBadge } from "@/chat-api/services/UserService";
 import { formatters } from "@/common/date";
 import Checkbox from "../ui/Checkbox";
-import { toast } from "../ui/custom-portal/CustomPortal";
+import { toast, useCustomPortal } from "../ui/custom-portal/CustomPortal";
+import BuyBadgeModal from "../BuyBadgeModal";
 
 const Container = styled("div")`
   display: flex;
@@ -55,8 +56,17 @@ const COSMETIC_BADGES = [
   USER_BADGES.FOX_EARS_BROWN
 ];
 
+const BADGE_PRICE_LABEL = "R$ 5,00";
+
 export default function BadgeSettings() {
   const { header } = useStore();
+  const [inventory, setInventory] = createSignal<RawInventoryItem[]>([]);
+
+  const refetchInventory = () => fetchInventory().then(setInventory);
+
+  onMount(() => {
+    refetchInventory();
+  });
 
   createEffect(() => {
     header.updateHeader({
@@ -65,6 +75,13 @@ export default function BadgeSettings() {
     });
   });
 
+  const ownedBadgeBits = () =>
+    new Set(
+      inventory()
+        .filter((item) => item.itemType === "badge")
+        .map((item) => parseInt(item.itemId))
+    );
+
   return (
     <Container>
       <Breadcrumb>
@@ -72,23 +89,37 @@ export default function BadgeSettings() {
         <BreadcrumbItem title={t("settings.drawer.badges")} />
       </Breadcrumb>
 
-      <OwnedBadges />
-      <BadgesCatalog />
+      <OwnedBadges inventory={inventory} />
+      <BadgesCatalog ownedBadgeBits={ownedBadgeBits} />
     </Container>
   );
 }
 
-const BadgesCatalog = () => {
+const BadgesCatalog = (props: { ownedBadgeBits: () => Set<number> }) => {
   const store = useStore();
+  const { createPortal } = useCustomPortal();
   const user = () => store.account.user();
 
-  const handleBadgeToggle = (badge: UserBadge) => {
+  const owns = (badge: UserBadge) =>
+    !badge.overlay || props.ownedBadgeBits().has(badge.bit);
+
+  const handleBadgeClick = (badge: UserBadge) => {
     if (badge.removable === false) {
       return toast(
         t("settings.badges.unremovableError.title"),
         t("settings.badges.unremovableError.body"),
         "error"
       );
+    }
+    if (!owns(badge)) {
+      createPortal?.((close) => (
+        <BuyBadgeModal
+          badge={badge}
+          priceLabel={BADGE_PRICE_LABEL}
+          close={close}
+        />
+      ));
+      return;
     }
     toggleBadge(badge.bit).then((result) => {
       store.account.setUser({ badges: result.badges });
@@ -98,7 +129,11 @@ const BadgesCatalog = () => {
   return (
     <Show when={user()}>
       <SettingsGroup>
-        <SettingsBlock label={t("settings.drawer.badges")} icon="pets" />
+        <SettingsBlock
+          label={t("settings.drawer.badges")}
+          icon="pets"
+          description={`Emblemas cosméticos custam ${BADGE_PRICE_LABEL} cada, pagamento único.`}
+        />
         <Block
           class={css`
             display: grid;
@@ -114,7 +149,9 @@ const BadgesCatalog = () => {
                 user={user()!}
                 badge={badge}
                 enabled={hasBit(user()?.badges || 0, badge.bit)}
-                onClick={() => handleBadgeToggle(badge)}
+                owned={owns(badge)}
+                priceLabel={BADGE_PRICE_LABEL}
+                onClick={() => handleBadgeClick(badge)}
               />
             )}
           </For>
@@ -159,6 +196,8 @@ const BadgeItem = (props: {
   user: SelfUser;
   badge: UserBadge;
   enabled: boolean;
+  owned: boolean;
+  priceLabel: string;
   onClick: () => void;
 }) => {
   const [hovered, setHovered] = createSignal(false);
@@ -168,7 +207,7 @@ const BadgeItem = (props: {
       onClick={props.onClick}
       onMouseOver={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{ opacity: props.enabled ? 1 : 0.55 }}
+      style={{ opacity: props.enabled || !props.owned ? 1 : 0.55 }}
     >
       <Avatar
         user={{ ...props.user, badges: props.badge.bit }}
@@ -197,27 +236,37 @@ const BadgeItem = (props: {
         {props.badge.name()}
       </div>
       <div class="badge-desc">{props.badge.description?.()}</div>
-      <Checkbox
-        style={{ "pointer-events": "none" }}
-        checked={props.enabled}
-        disabled={props.badge.removable === false}
-      />
+      <Show
+        when={props.owned}
+        fallback={
+          <div
+            style={{
+              "font-size": "12px",
+              "font-weight": "bold",
+              color: "var(--primary-color)"
+            }}
+          >
+            🛒 {props.priceLabel}
+          </div>
+        }
+      >
+        <Checkbox
+          style={{ "pointer-events": "none" }}
+          checked={props.enabled}
+          disabled={props.badge.removable === false}
+        />
+      </Show>
     </div>
   );
 };
 
-const OwnedBadges = () => {
+const OwnedBadges = (props: { inventory: () => RawInventoryItem[] }) => {
   const store = useStore();
-  const [inventory, setInventory] = createSignal<RawInventoryItem[]>([]);
 
   const user = () => store.account.user();
 
-  onMount(() => {
-    fetchInventory().then(setInventory);
-  });
-
   const ownedBadges = () => {
-    return inventory()
+    return props.inventory()
       .filter((item) => item.itemType === "badge")
       .map((item) => {
         const badge = USER_BADGES_VALUES.find(
