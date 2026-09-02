@@ -306,6 +306,7 @@ export default function UserPage() {
                   <Show when={!user()?.shadowBan}>
                     <WarnBlock user={user()!} setUser={setUser} />
                   </Show>
+                  <SupporterBlock user={user()!} setUser={setUser} />
                   <Show when={!user()?.suspension}>
                     <ShadowBanBlock user={user()!} setUser={setUser} />
                   </Show>
@@ -669,6 +670,121 @@ function WarnBlock(props: {
             primary
             margin={0}
           />
+        </FlexColumn>
+      </SettingsBlock>
+    </div>
+  );
+}
+function SupporterBlock(props: {
+  user: ModerationUser;
+  setUser: (user: ModerationUser) => void;
+}) {
+  const [days, setDays] = createSignal("30");
+  const [password, setPassword] = createSignal("");
+  const [showPasswordInput, setShowPasswordInput] = createSignal(false);
+  const [sending, setSending] = createSignal(false);
+  const [error, setError] = createSignal<string | null>(null);
+
+  const expiresAt = () => props.user.account?.supporterExpiresAt;
+  const isActive = () =>
+    !!expiresAt() && new Date(expiresAt()!).getTime() > Date.now();
+  const daysLeft = () =>
+    isActive()
+      ? Math.ceil(
+          (new Date(expiresAt()!).getTime() - Date.now()) /
+            (1000 * 60 * 60 * 24)
+        )
+      : 0;
+
+  const onGrantClick = () => {
+    setError(null);
+    if (!showPasswordInput()) {
+      setShowPasswordInput(true);
+      return;
+    }
+    grant();
+  };
+
+  const grant = async () => {
+    const parsedDays = parseInt(days());
+    if (!parsedDays || parsedDays <= 0) {
+      return setError("Enter a valid number of days.");
+    }
+    if (sending()) return;
+    setSending(true);
+    setError(null);
+    await updateUser(props.user.id, {
+      supporterDays: parsedDays,
+      password: password()
+    })
+      .then((updated: any) => {
+        props.setUser({
+          ...props.user,
+          account: {
+            ...props.user.account!,
+            supporterExpiresAt: updated?.account?.supporterExpiresAt
+          }
+        });
+        setPassword("");
+        setShowPasswordInput(false);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setSending(false));
+  };
+
+  const Description = () => (
+    <Show
+      when={isActive()}
+      fallback={
+        <Text size={12} opacity={0.6}>
+          Not a supporter.
+        </Text>
+      }
+    >
+      <Text size={12} opacity={0.8}>
+        Active — expires in {daysLeft()} day(s).
+      </Text>
+    </Show>
+  );
+
+  return (
+    <div>
+      <SettingsBlock
+        icon="favorite"
+        label="Supporter Subscription"
+        description={<Description />}
+      >
+        <FlexColumn gap={4} style={{ "align-items": "flex-end" }}>
+          <FlexRow gap={4}>
+            <Input
+              type="number"
+              value={days()}
+              onText={setDays}
+              class={css`
+                width: 70px;
+              `}
+            />
+            <Button
+              onClick={onGrantClick}
+              label={sending() ? "Granting..." : "Grant Days"}
+              color="var(--primary-color)"
+              primary
+              margin={0}
+            />
+          </FlexRow>
+          <Show when={showPasswordInput()}>
+            <Input
+              type="password"
+              placeholder="Your password"
+              value={password()}
+              onText={setPassword}
+            />
+          </Show>
+          <Show when={error()}>
+            <Text size={12} color="var(--alert-color)">
+              {error()}
+            </Text>
+          </Show>
         </FlexColumn>
       </SettingsBlock>
     </div>

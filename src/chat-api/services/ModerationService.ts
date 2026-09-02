@@ -535,6 +535,7 @@ export type ModerationUser = RawUser & {
     emailConfirmed?: boolean;
     warnCount?: number;
     warnExpiresAt?: number;
+    supporterExpiresAt?: number | null;
   };
   inventory: RawInventoryItem[];
   application?: RawApplication;
@@ -552,7 +553,18 @@ export interface ModerationSuspension {
 
 export const updateUser = async (
   userId: string,
-  update: { email?: string; username?: string; tag?: string }
+  update: {
+    email?: string;
+    username?: string;
+    tag?: string;
+    password?: string;
+    newPassword?: string;
+    emailConfirmed?: boolean;
+    addedInventoryItems?: { itemType: string; itemId: string }[];
+    removedInventoryIds?: string[];
+    /** Extends (or starts) the SUPPORTER subscription by this many days. */
+    supporterDays?: number;
+  }
 ) => {
   const data = await request<any[]>({
     method: "POST",
