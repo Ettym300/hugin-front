@@ -75,3 +75,9 @@
 .secondaryButton {
   min-width: 140px;
 }
+
+.supportNote {
+  margin-top: 28px;
+  max-width: 340px;
+  line-height: 1.5;
+}

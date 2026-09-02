@@ -36,6 +36,11 @@ export default function HomePage() {
               color="white"
             />
           </div>
+          <Text size={13} opacity={0.5} class={style.supportNote}>
+            Esse aplicativo foi desenvolvido por apenas 1 dev, muito café e
+            falta de sono — considere apoiar o projeto para ele continuar
+            vivo. 💜
+          </Text>
         </div>
       </div>
     </div>
