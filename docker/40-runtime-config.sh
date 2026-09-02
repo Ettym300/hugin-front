@@ -22,6 +22,8 @@ window.__RUGIN_ENV__ = {
   VITE_EMOJI_URL: "$(json_quote "${VITE_EMOJI_URL:-}")",
   VITE_OFFICIAL_SERVER: "$(json_quote "${VITE_OFFICIAL_SERVER:-rugin}")",
   VITE_LIVEKIT_ENABLED: "$(json_quote "${VITE_LIVEKIT_ENABLED:-false}")",
+  VITE_GOOGLE_CLIENT_ID: "$(json_quote "${VITE_GOOGLE_CLIENT_ID:-}")",
+  VITE_GOOGLE_API_KEY: "$(json_quote "${VITE_GOOGLE_API_KEY:-}")",
   VITE_BUILD_ID: "$(json_quote "${BUILD_ID}")"
 };
 window.__CONCORD_ENV__ = window.__RUGIN_ENV__;
