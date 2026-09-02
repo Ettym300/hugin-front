@@ -73,6 +73,7 @@ export interface SelfUser {
   friendRequestStatus: FriendRequestStatus;
   lastOnlineStatus?: number;
   emailConfirmed: boolean;
+  supporterExpiresAt?: number | null;
   connections: RawUserConnection[];
   notices: RawNotice[];
   serverFolders: RawServerFolder[];

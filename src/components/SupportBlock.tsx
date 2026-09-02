@@ -6,6 +6,9 @@ import { t } from "@nerimity/i18lite";
 import Text from "./ui/Text";
 import { useCustomPortal } from "./ui/custom-portal/CustomPortal";
 import BecomeSupporterModal from "./BecomeSupporterModal";
+import useAccount from "@/chat-api/store/useAccount";
+import { formatTimestamp } from "@/common/date";
+import { Show } from "solid-js";
 const SettingItemContainer = styled(ItemContainer)<{ nested?: boolean }>`
   height: 32px;
   gap: 5px;
@@ -30,6 +33,11 @@ const SettingItemContainer = styled(ItemContainer)<{ nested?: boolean }>`
 `;
 export function SupportBlock() {
   const { createPortal } = useCustomPortal();
+  const account = useAccount();
+
+  const expiresAt = () => account.user()?.supporterExpiresAt;
+  const isActive = () =>
+    !!expiresAt() && new Date(expiresAt()!).getTime() > Date.now();
 
   const onClick = () => {
     createPortal?.((close) => <BecomeSupporterModal close={close} />);
@@ -39,7 +47,7 @@ export function SupportBlock() {
     <SettingItemContainer
       onClick={onClick}
       style={{
-        background: "var(--alert-color)",
+        background: isActive() ? "var(--primary-color)" : "var(--alert-color)",
         "border-radius": "6px",
         height: "initial",
         padding: "6px",
@@ -55,12 +63,29 @@ export function SupportBlock() {
           size={18}
         />
         <div>
-          <Text style={{ "font-weight": "bold" }}>
-            {t("supportBlock.support")}
-          </Text>
-          <div>
-            <Text size={12}>{t("supportBlock.supportDescription")}</Text>
-          </div>
+          <Show
+            when={isActive()}
+            fallback={
+              <>
+                <Text style={{ "font-weight": "bold" }}>
+                  {t("supportBlock.support")}
+                </Text>
+                <div>
+                  <Text size={12}>{t("supportBlock.supportDescription")}</Text>
+                </div>
+              </>
+            }
+          >
+            <Text style={{ "font-weight": "bold" }}>
+              Você é Apoiador(a)! 💜
+            </Text>
+            <div>
+              <Text size={12}>
+                Ativo até {formatTimestamp(expiresAt()!)}. Clique para
+                renovar.
+              </Text>
+            </div>
+          </Show>
         </div>
       </FlexRow>
     </SettingItemContainer>
