@@ -121,6 +121,7 @@ const settings: Setting[] = [
     routePath: "/developer",
     name: () => t("settings.drawer.developer"),
     icon: "code",
+    hide: true, // Not ready for users yet — keep the route working, just off the menu.
     element: lazy(
       () => import("@/components/settings/developer/DeveloperSettings")
     )
